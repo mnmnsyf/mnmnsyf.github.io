@@ -1,51 +1,103 @@
 @import './base.css';
 
-/* Global styles for the portfolio website */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* Layout primitives shared by every section. Component styles stay scoped to
+   their own file; anything appearing in three or more places lives here. */
 
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.6;
-  color: #1e293b;
-  background-color: #f8fafc;
-}
-
-#app {
-  min-height: 100vh;
-  max-width: none;
-  margin: 0;
-  padding: 0;
-  font-weight: normal;
-}
-
-/* Smooth scrolling for anchor links */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Remove default styles */
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-ul {
-  list-style: none;
-}
-
-/* Utility classes */
-.container {
-  max-width: 1200px;
+.page {
+  max-width: var(--measure-wide);
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 1.5rem 6rem;
 }
 
-@media (max-width: 768px) {
-  .container {
-    padding: 0 15px;
+/* Prose column, narrower than the page so media can break out around it. */
+.measure {
+  max-width: var(--measure);
+}
+
+.section {
+  margin-top: var(--gap-section);
+}
+
+.section-title {
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 1.75rem;
+}
+
+/* Inline link row: header contacts, project resource links. */
+.link-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.link-row > a {
+  padding: 0.2rem 0.7rem;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.link-row > a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* Technology labels. Plain text, comma-free, no pill fill. */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.82rem;
+  color: var(--text-faint);
+}
+
+/* Quantified outcomes. The one line a skimming reader should not miss. */
+.metrics {
+  margin-top: 0.6rem;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.metrics li {
+  padding-left: 0.9rem;
+  position: relative;
+}
+
+.metrics li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.faint {
+  color: var(--text-faint);
+}
+
+.caption {
+  font-size: 0.82rem;
+  color: var(--text-faint);
+  margin-top: 0.4rem;
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 0 1.1rem 4rem;
+  }
+
+  :root {
+    --gap-section: 3rem;
   }
 }
