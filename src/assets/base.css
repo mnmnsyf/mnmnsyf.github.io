@@ -1,58 +1,25 @@
-/* Portfolio Website Color Palette and Variables */
+/* Design tokens. One accent, four greys, one rule colour — anything that needs
+   more than this probably wants less decoration instead. */
 :root {
-  /* Primary Colors */
-  --primary-color: #1e40af;
-  --primary-color-rgb: 30, 64, 175; /* RGB值用于rgba函数 */
-  --primary-light: #3b82f6;
-  --primary-dark: #1e3a8a;
-  
-  /* Secondary Colors */
-  --secondary-color: #f59e0b;
-  --secondary-light: #fbbf24;
-  --secondary-dark: #d97706;
-  
-  /* Background Colors */
-  --background-color: #f8fafc;
-  --background-light: #ffffff;
-  --background-dark: #1e293b;
-  
-  /* Text Colors */
-  --text-color: #1e293b;
-  --text-light: #64748b;
-  --text-muted: #94a3b8;
-  
-  /* Border Colors */
-  --border-color: #e2e8f0;
-  --border-light: #f1f5f9;
-  
-  /* Shadow */
-  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --card-shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.15);
-  
-  /* Transitions */
-  --transition: all 0.3s ease;
-  --transition-fast: all 0.15s ease;
-  
-  /* Spacing */
-  --section-gap: 80px;
-  --container-padding: 20px;
-  
-  /* Typography */
-  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-size-base: 16px;
-  --font-size-sm: 14px;
-  --font-size-lg: 18px;
-  --font-size-xl: 24px;
-  --font-size-2xl: 32px;
-  --font-size-3xl: 48px;
-  
-  /* Line Heights */
-  --line-height-tight: 1.25;
-  --line-height-normal: 1.5;
-  --line-height-relaxed: 1.75;
+  --accent: #1f4e9c;
+  --accent-hover: #143a78;
+
+  --text: #1a1a1a;
+  --text-muted: #5c5c5c;
+  --text-faint: #8a8a8a;
+  --rule: #e4e4e4;
+  --bg: #ffffff;
+  --bg-inset: #f7f7f7;
+
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Prose stays narrow enough to read; media may break out to --measure-wide. */
+  --measure: 780px;
+  --measure-wide: 1060px;
+
+  --gap-section: 4.5rem;
 }
 
-/* Base Styles */
 *,
 *::before,
 *::after {
@@ -60,82 +27,84 @@
   margin: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   min-height: 100vh;
-  color: var(--text-color);
-  background: var(--background-color);
-  font-family: var(--font-family);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-normal);
+  color: var(--text);
+  background: var(--bg);
+  font-family: var(--font);
+  font-size: 16.5px;
+  line-height: 1.65;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: var(--transition);
 }
 
-/* Typography */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4 {
   font-weight: 600;
-  line-height: var(--line-height-tight);
-  color: var(--text-color);
+  line-height: 1.3;
+  color: var(--text);
 }
-
-h1 { font-size: var(--font-size-3xl); }
-h2 { font-size: var(--font-size-2xl); }
-h3 { font-size: var(--font-size-xl); }
-h4 { font-size: var(--font-size-lg); }
 
 p {
   margin-bottom: 1rem;
-  line-height: var(--line-height-relaxed);
 }
 
-/* Links */
+p:last-child {
+  margin-bottom: 0;
+}
+
 a {
-  color: var(--primary-color);
+  color: var(--accent);
   text-decoration: none;
-  transition: var(--transition-fast);
 }
 
 a:hover {
-  color: var(--primary-dark);
+  color: var(--accent-hover);
+  text-decoration: underline;
 }
 
-/* Buttons */
+/* Inside a paragraph, colour alone is not a reliable affordance. */
+.prose a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+}
+
+img,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
 button {
-  font-family: inherit;
+  font: inherit;
+  color: inherit;
   cursor: pointer;
   border: none;
   background: none;
   padding: 0;
 }
 
-/* Lists */
-ul, ol {
-  list-style: none;
-  padding: 0;
-}
-
-/* Images */
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* Smooth Scrolling */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Focus Styles */
-:focus {
-  outline: 2px solid var(--primary-color);
+:focus-visible {
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-/* Selection */
 ::selection {
-  background-color: var(--primary-color);
-  color: white;
+  background: var(--accent);
+  color: #fff;
 }
