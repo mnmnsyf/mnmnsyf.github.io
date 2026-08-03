@@ -102,8 +102,11 @@ defineProps<{ project: Project }>()
   margin-top: 1.25rem;
 }
 
+/* Constrained to the prose column so the rule lines up with the centred text.
+   Project-level media above still breaks out to the full page width. */
 .module {
-  margin-top: 2rem;
+  max-width: var(--measure);
+  margin: 2rem auto 0;
   padding-left: 1.25rem;
   border-left: 1px solid var(--rule);
 }

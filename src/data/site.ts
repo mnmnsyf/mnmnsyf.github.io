@@ -17,7 +17,7 @@ export const site = {
   name: 'Yongfei She',
   nameZh: '佘泳霏',
   roleLine: 'MS Computer Science, USC · AIVC Lab, UCLA',
-  photo: { src: '/syf1.jpg', alt: 'Yongfei She' },
+  photo: { src: '/portrait.jpg', alt: 'Yongfei She' },
 
   /**
    * Rendered with v-html so institution and advisor names can carry links, the

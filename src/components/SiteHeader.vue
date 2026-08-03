@@ -60,7 +60,7 @@ import IconGlyph from './IconGlyph.vue'
 
 .cols {
   display: grid;
-  grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 392px) minmax(0, 1fr);
   gap: 3.5rem;
   align-items: center;
   padding-top: 2.5rem;
