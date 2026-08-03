@@ -1,8 +1,6 @@
 <template>
   <header id="top" class="banner">
     <div class="inner">
-      <SiteNav />
-
       <div class="cols">
         <div class="photo-col">
           <img class="portrait" :src="site.photo.src" :alt="site.photo.alt" />
@@ -43,7 +41,6 @@
 
 <script setup lang="ts">
 import { site, navLinks } from '@/data/site'
-import SiteNav from './SiteNav.vue'
 import IconGlyph from './IconGlyph.vue'
 </script>
 
@@ -63,7 +60,7 @@ import IconGlyph from './IconGlyph.vue'
   grid-template-columns: minmax(0, 392px) minmax(0, 1fr);
   gap: 3.5rem;
   align-items: center;
-  padding-top: 2.5rem;
+  padding-top: 1.5rem;
 }
 
 .portrait {

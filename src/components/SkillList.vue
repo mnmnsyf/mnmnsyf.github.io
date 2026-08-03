@@ -1,5 +1,5 @@
 <template>
-  <div class="skills measure">
+  <div v-reveal class="skills measure">
     <p class="summary muted">{{ skillsSummary }}</p>
     <dl>
       <template v-for="group in skills" :key="group.label">

@@ -1,6 +1,6 @@
 <template>
   <ol class="education measure prose">
-    <li v-for="item in education" :key="item.school" class="entry">
+    <li v-for="item in education" :key="item.school" v-reveal class="entry">
       <div class="head">
         <h3 class="school">{{ item.school }}</h3>
         <span class="period faint">{{ item.period }}</span>

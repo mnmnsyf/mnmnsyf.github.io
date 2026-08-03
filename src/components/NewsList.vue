@@ -1,6 +1,6 @@
 <template>
   <ul class="news measure prose">
-    <li v-for="item in news" :key="item.date + item.text">
+    <li v-for="(item, i) in news" :key="item.date + item.text" v-reveal="i * 60">
       <span class="date">{{ item.date }}</span>
       <span class="body">
         {{ item.text }}

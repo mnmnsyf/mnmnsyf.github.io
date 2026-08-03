@@ -1,6 +1,6 @@
 <template>
   <section :id="id" class="section">
-    <h2 class="section-title">{{ title }}</h2>
+    <h2 v-reveal class="section-title">{{ title }}</h2>
     <slot />
   </section>
 </template>
