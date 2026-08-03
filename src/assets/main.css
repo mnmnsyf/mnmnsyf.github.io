@@ -9,9 +9,11 @@
   padding: 0 1.5rem 6rem;
 }
 
-/* Prose column, narrower than the page so media can break out around it. */
+/* Prose column, narrower than the page and centred within it, so wide media
+   can break out symmetrically on both sides. */
 .measure {
   max-width: var(--measure);
+  margin-inline: auto;
 }
 
 .section {
@@ -19,6 +21,8 @@
 }
 
 .section-title {
+  max-width: var(--measure);
+  margin-inline: auto;
   font-size: 0.76rem;
   font-weight: 600;
   letter-spacing: 0.1em;
