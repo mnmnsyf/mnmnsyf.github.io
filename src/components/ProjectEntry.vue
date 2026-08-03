@@ -1,38 +1,40 @@
 <template>
   <article class="project">
-    <div class="head measure">
-      <h3 class="title">
-        {{ project.title }}
-        <span v-if="project.role" class="role faint">— {{ project.role }}</span>
-      </h3>
-      <span v-if="project.period" class="period faint">{{ project.period }}</span>
+    <div v-reveal class="intro">
+      <div class="head measure">
+        <h3 class="title">
+          {{ project.title }}
+          <span v-if="project.role" class="role faint">— {{ project.role }}</span>
+        </h3>
+        <span v-if="project.period" class="period faint">{{ project.period }}</span>
+      </div>
+
+      <p class="summary measure">{{ project.summary }}</p>
+
+      <ul v-if="project.metrics?.length" class="metrics measure">
+        <li v-for="m in project.metrics" :key="m">{{ m }}</li>
+      </ul>
+
+      <div v-if="project.tech.length" class="tags measure">
+        <span v-for="t in project.tech" :key="t">{{ t }}</span>
+      </div>
+
+      <div v-if="project.body?.length" class="body prose measure">
+        <p v-for="(para, i) in project.body" :key="i">{{ para }}</p>
+      </div>
+
+      <nav v-if="project.links?.length" class="link-row measure">
+        <a v-for="l in project.links" :key="l.href" :href="l.href" target="_blank" rel="noopener">{{
+          l.label
+        }}</a>
+      </nav>
+
+      <p v-if="project.note" class="note faint measure">{{ project.note }}</p>
+
+      <MediaGrid v-if="project.media?.length" :items="project.media" class="media" />
     </div>
 
-    <p class="summary measure">{{ project.summary }}</p>
-
-    <ul v-if="project.metrics?.length" class="metrics measure">
-      <li v-for="m in project.metrics" :key="m">{{ m }}</li>
-    </ul>
-
-    <div v-if="project.tech.length" class="tags measure">
-      <span v-for="t in project.tech" :key="t">{{ t }}</span>
-    </div>
-
-    <div v-if="project.body?.length" class="body prose measure">
-      <p v-for="(para, i) in project.body" :key="i">{{ para }}</p>
-    </div>
-
-    <nav v-if="project.links?.length" class="link-row measure">
-      <a v-for="l in project.links" :key="l.href" :href="l.href" target="_blank" rel="noopener">{{
-        l.label
-      }}</a>
-    </nav>
-
-    <p v-if="project.note" class="note faint measure">{{ project.note }}</p>
-
-    <MediaGrid v-if="project.media?.length" :items="project.media" class="media" />
-
-    <section v-for="mod in project.modules ?? []" :key="mod.title" class="module">
+    <section v-for="mod in project.modules ?? []" :key="mod.title" v-reveal class="module">
       <h4 class="module-title measure">{{ mod.title }}</h4>
       <div class="prose measure">
         <p v-for="(para, i) in mod.body" :key="i">{{ para }}</p>

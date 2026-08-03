@@ -1,6 +1,6 @@
 <template>
   <ol class="experience measure prose">
-    <li v-for="item in experience" :key="item.org + item.period" class="entry">
+    <li v-for="item in experience" :key="item.org + item.period" v-reveal class="entry">
       <div class="head">
         <h3 class="role">{{ item.role }}</h3>
         <span class="period faint">{{ item.period }}</span>

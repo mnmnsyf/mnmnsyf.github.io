@@ -1,5 +1,5 @@
 <template>
-  <ul class="awards measure">
+  <ul v-reveal class="awards measure">
     <li v-for="a in awards" :key="a.year + a.title">
       <span class="year faint">{{ a.year }}</span>
       <span class="title">{{ a.title }}</span>

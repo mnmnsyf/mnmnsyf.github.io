@@ -1,4 +1,5 @@
 <template>
+  <SiteNav />
   <SiteHeader />
 
   <div class="page">
@@ -35,6 +36,7 @@
 </template>
 
 <script setup lang="ts">
+import SiteNav from '@/components/SiteNav.vue'
 import SiteHeader from '@/components/SiteHeader.vue'
 import SectionBlock from '@/components/SectionBlock.vue'
 import NewsList from '@/components/NewsList.vue'
