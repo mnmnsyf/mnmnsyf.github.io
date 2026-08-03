@@ -27,9 +27,16 @@ defineProps<{ media: Media }>()
   min-width: 0;
 }
 
-video,
-img {
+video {
   width: 100%;
+  background: var(--bg-inset);
+}
+
+/* No `width: 100%` on stills: a render upscaled past its native size just looks
+   soft. Narrower sources sit centred in their cell instead. */
+img {
+  max-width: 100%;
+  margin-inline: auto;
   background: var(--bg-inset);
 }
 </style>

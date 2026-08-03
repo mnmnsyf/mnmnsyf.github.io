@@ -31,7 +31,12 @@
 
       <p v-if="project.note" class="note faint measure">{{ project.note }}</p>
 
-      <MediaGrid v-if="project.media?.length" :items="project.media" class="media" />
+      <MediaGrid
+        v-if="project.media?.length"
+        :items="project.media"
+        :columns="project.mediaColumns"
+        class="media"
+      />
     </div>
 
     <section v-for="mod in project.modules ?? []" :key="mod.title" v-reveal class="module">
@@ -40,7 +45,12 @@
         <p v-for="(para, i) in mod.body" :key="i">{{ para }}</p>
       </div>
       <VariantToggle v-if="mod.variants?.length" :variants="mod.variants" class="media" />
-      <MediaGrid v-else-if="mod.media?.length" :items="mod.media" class="media" />
+      <MediaGrid
+        v-else-if="mod.media?.length"
+        :items="mod.media"
+        :columns="mod.mediaColumns"
+        class="media"
+      />
     </section>
   </article>
 </template>
