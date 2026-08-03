@@ -1,8 +1,8 @@
 /* Design tokens. One accent, four greys, one rule colour — anything that needs
    more than this probably wants less decoration instead. */
 :root {
-  --accent: #1f4e9c;
-  --accent-hover: #143a78;
+  --accent: #4b55af;
+  --accent-hover: #333c8c;
 
   --text: #1a1a1a;
   --text-muted: #5c5c5c;
@@ -10,6 +10,7 @@
   --rule: #e4e4e4;
   --bg: #ffffff;
   --bg-inset: #f7f7f7;
+  --bg-banner: #f5f5f5;
 
   --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
@@ -17,6 +18,7 @@
   --measure: 780px;
   --measure-wide: 1060px;
 
+  --nav-h: 66px;
   --gap-section: 4.5rem;
 }
 

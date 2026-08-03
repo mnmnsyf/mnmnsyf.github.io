@@ -1,55 +1,64 @@
-import type { Link } from './types'
+export type IconName = 'mail' | 'github' | 'cv' | 'linkedin' | 'scholar'
+
+export interface NavLink {
+  label: string
+  href: string
+  icon: IconName
+}
 
 /**
- * Header identity and contact block.
+ * Header identity block.
  *
- * TODO before publishing: add the two entries below to `links` once available.
- *   { label: 'CV', href: '/cv.pdf' }            -- export 参考/佘泳霏简历.docx to PDF into public/
- *   { label: 'LinkedIn', href: 'https://...' }
- * Both are expected by recruiters; the link row renders whatever is present.
+ * TODO before publishing: add the two entries commented out in `navLinks` once
+ * the files exist. Both are expected by recruiters; the row renders whatever
+ * is present.
  */
 export const site = {
   name: 'Yongfei She',
   nameZh: '佘泳霏',
-  title: 'Graphics / Engine / Gameplay Programmer',
+  roleLine: 'MS Computer Science, USC · AIVC Lab, UCLA',
   photo: { src: '/syf1.jpg', alt: 'Yongfei She' },
 
-  affiliations: [
-    {
-      text: 'M.S. Computer Science (Graphics), University of Southern California',
-      detail: 'expected 2028',
-    },
-    {
-      text: 'Visiting Student, Artificial Intelligence & Visual Computing Lab, UCLA',
-      detail: 'advised by Prof. Chenfanfu Jiang',
-      href: 'https://www.math.ucla.edu/aivc/',
-    },
-    {
-      text: 'Previously UE5 Gameplay Engineer, Chengdu Digital Sky Technology',
-      detail: 'shipped title',
-    },
-  ],
-
-  seeking: 'Seeking a Summer 2027 internship in engine, graphics, or gameplay programming.',
-
-  intro: [
-    'I build the systems underneath games: renderers, engine subsystems, and the geometry and graph algorithms that gameplay runs on. Eighteen months on a commercial Unreal Engine 5 strategy title taught me what holds up in production; a competitive programming background is why I reach for the data structure that makes a feature affordable.',
-    'At UCLA I work on generative 3D content for embodied-AI simulation. At USC I have been writing renderers and engine subsystems from scratch — rasterization, skeletal animation, and multithreaded physics — to understand the layers I used to build on top of.',
+  /**
+   * Rendered with v-html so institution and advisor names can carry links, the
+   * way an academic homepage bio does. These are authored here as constants —
+   * no external or user input reaches this field.
+   */
+  bio: [
+    `I'm Yongfei She, a master's student in Computer Science at the
+     <a href="https://www.usc.edu/" target="_blank" rel="noopener">University of Southern California</a>,
+     working on graphics. I'm also a visiting student at the
+     <a href="https://www.math.ucla.edu/aivc/" target="_blank" rel="noopener">AIVC Lab</a>
+     at UCLA, advised by Prof.
+     <a href="https://www.math.ucla.edu/~cffjiang/index.html" target="_blank" rel="noopener">Chenfanfu Jiang</a>,
+     where I work on generative 3D content for embodied-AI simulation.`,
+    `Before USC I spent eighteen months as a gameplay engineer at
+     <a href="https://www.digisky.com/" target="_blank" rel="noopener">Chengdu Digital Sky</a>,
+     owning the geometry and graph algorithms behind unit command, terrain ownership
+     and construction on a commercial
+     <a href="https://www.digisky.com/product/mo" target="_blank" rel="noopener">Unreal Engine 5 strategy title</a>.
+     Since then I have been writing renderers and engine subsystems from scratch —
+     a software rasterizer, a DirectX 11 engine, a multithreaded physics simulation.`,
+    `<strong>I am looking for a Summer 2027 internship in engine, graphics, or
+     gameplay programming.</strong>`,
   ],
 
   lastUpdated: 'August 2026',
-} satisfies {
-  name: string
-  nameZh: string
-  title: string
-  photo: { src: string; alt: string }
-  affiliations: { text: string; detail?: string; href?: string }[]
-  seeking: string
-  intro: string[]
-  lastUpdated: string
 }
 
-export const links: Link[] = [
-  { label: 'Email', href: 'mailto:sheyfff@gmail.com' },
-  { label: 'GitHub', href: 'https://github.com/mnmnsyf' },
+export const navLinks: NavLink[] = [
+  { label: 'Email', href: 'mailto:sheyfff@gmail.com', icon: 'mail' },
+  { label: 'GitHub', href: 'https://github.com/mnmnsyf', icon: 'github' },
+  // { label: 'CV', href: '/cv.pdf', icon: 'cv' },
+  // { label: 'LinkedIn', href: 'https://www.linkedin.com/in/...', icon: 'linkedin' },
+]
+
+/** Anchor targets for the top navigation, in page order. */
+export const sections = [
+  { id: 'news', label: 'News' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'projects', label: 'Projects' },
+  { id: 'education', label: 'Education' },
+  { id: 'awards', label: 'Awards' },
+  { id: 'skills', label: 'Skills' },
 ]
