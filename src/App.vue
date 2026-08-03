@@ -1,7 +1,7 @@
 <template>
-  <div class="page">
-    <SiteHeader />
+  <SiteHeader />
 
+  <div class="page">
     <!-- TODO: demo reel goes here, above News. A 60-90s cut of the strongest
          moments across the engine, rasterizer, mocap and UE5 work. Game studios
          screen on reels, so this is the highest-value addition still missing. -->

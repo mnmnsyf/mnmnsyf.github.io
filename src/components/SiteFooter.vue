@@ -2,22 +2,25 @@
   <footer class="footer">
     <div class="measure">
       <p class="faint">Last updated {{ site.lastUpdated }}</p>
-      <nav class="link-row">
+      <nav class="link-row" aria-label="Contact and profiles">
         <a
-          v-for="l in links"
+          v-for="l in navLinks"
           :key="l.href"
           :href="l.href"
           :target="l.href.startsWith('mailto:') ? undefined : '_blank'"
           rel="noopener"
-          >{{ l.label }}</a
         >
+          <IconGlyph :name="l.icon" />
+          {{ l.label }}
+        </a>
       </nav>
     </div>
   </footer>
 </template>
 
 <script setup lang="ts">
-import { site, links } from '@/data/site'
+import { site, navLinks } from '@/data/site'
+import IconGlyph from './IconGlyph.vue'
 </script>
 
 <style scoped>
@@ -30,5 +33,11 @@ import { site, links } from '@/data/site'
 .faint {
   font-size: 0.86rem;
   margin-bottom: 0.8rem;
+}
+
+.link-row a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 </style>
