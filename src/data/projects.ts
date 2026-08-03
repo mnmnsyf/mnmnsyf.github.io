@@ -1,32 +1,33 @@
 import type { ProjectGroup } from './types'
 
-/**
- * TODO before publishing — the three USC/personal projects below have no media
- * or repository links yet. Each is marked with the assets it needs. The layout
- * renders fine without them, but these are the entries an internship reviewer
- * will care about most, so they are worth filling first.
- */
-
 const engineRendering: ProjectGroup = {
   id: 'engine-rendering',
   title: 'Engine & Rendering',
-  blurb: 'Renderers and engine subsystems built from the ground up.',
+  blurb: 'Rendering pipelines and engine-level systems.',
   projects: [
     {
-      id: 'custom-engine',
-      title: 'Custom Game Engine',
+      id: 'engine-subsystems',
+      title: 'Engine Subsystems & Shader Authoring Tool',
       period: 'Jan – May 2026',
-      tech: ['C++', 'Lua', 'DirectX 11', 'HLSL'],
+      tech: ['C++', 'Lua', 'DirectX 11', 'HLSL', 'Python'],
       summary:
-        'A from-scratch DirectX 11 engine with live-reloading shaders, layered skeletal animation, and a multithreaded physics simulation.',
+        'Rendering, animation and physics subsystems plus a natural-language shader authoring tool, built inside PrimeEngine — the C++/Lua DirectX 11 engine framework used in USC’s engine course.',
       body: [
-        'Built a prompt-assisted shader pipeline that exposes D3D11 JIT compilation to Lua, giving real-time HLSL hot-reloading and modular material templates.',
-        'Architected the skeletal animation system, supporting partial-body blending, additive layers, and recursive state machine updates for high-fidelity character motion.',
-        'Designed a multithreaded physics engine with an independent simulation lifecycle, optimized primitive collision detection, and a fully decoupled component-based architecture.',
+        'The shader tool runs outside the engine and talks to a live session. It offers manual parameter controls and style presets, and takes natural-language input that produces either a parameter set or an HLSL snippet dropped into a controlled region of a fixed template — a snippet rather than a whole shader, which is what keeps the output predictable. Generated code stays visible and editable before it is applied.',
+        'Applying recompiles against the running engine, so the target object updates without a restart. A failed compile keeps the last working shader and surfaces the error instead of leaving the object in a broken state.',
+        'Alongside the tool I implemented the skeletal animation system — partial-body blending, additive layers, recursive state machine updates — a multithreaded physics simulation with an independent lifecycle and a decoupled component architecture, and GPU instance culling through the engine’s RHI.',
       ],
-      // TODO media: screen capture of HLSL hot-reloading, plus a still of the animation blending.
-      media: [],
-      // TODO links: { label: 'Code', href: '...' }
+      note: 'PrimeEngine is the course framework; the subsystems and tooling described here are my own work.',
+      media: [
+        {
+          kind: 'image',
+          src: '/engine-authoring-tool.jpg',
+          alt: 'Shader authoring tool interface',
+          caption: 'Natural-language effect authoring, applied to a live engine session',
+        },
+      ],
+      // TODO media: a capture of an effect changing in the engine window on Apply
+      // would show the hot-reload loop far better than the tool UI alone.
     },
     {
       id: 'software-rasterizer',
@@ -36,13 +37,35 @@ const engineRendering: ProjectGroup = {
       summary:
         'A complete 3D rendering pipeline written against nothing but the C++ standard library — no OpenGL, no DirectX.',
       metrics: ['Fragment-shades meshes of 10,000+ vertices'],
+      mediaColumns: 1,
       body: [
         'Implemented rasterization, Z-buffering and a programmable shader pipeline from first principles, with no external graphics API.',
         'Added perspective-correct interpolation and Blinn-Phong shading, which is where the pipeline stopped being a demo and started producing images worth looking at.',
       ],
-      // TODO media: a render output. This is the single most useful image on the site for a graphics role.
-      media: [],
+      media: [
+        {
+          kind: 'image',
+          src: '/raster-shading.jpg',
+          alt: 'Flat, Gouraud and Phong shading compared',
+          caption: 'Flat, Gouraud and Phong shading, same geometry and light',
+        },
+        {
+          kind: 'image',
+          src: '/raster-obj.jpg',
+          alt: 'Textured character mesh rendered by the software rasterizer',
+          caption: 'Textured OBJ mesh, rasterized and shaded on the CPU',
+        },
+      ],
     },
+  ],
+}
+
+const animationSimulation: ProjectGroup = {
+  id: 'animation-simulation',
+  title: 'Animation & Simulation',
+  blurb:
+    'Character animation and physical simulation, with the tooling to measure whether they are right.',
+  projects: [
     {
       id: 'mocap-interpolation',
       title: 'Motion Capture Interpolation & Analysis',
@@ -50,13 +73,96 @@ const engineRendering: ProjectGroup = {
       tech: ['C++', 'OpenGL'],
       summary:
         'ASF/AMC motion reconstruction across four interpolation schemes, with tooling built to see and measure the difference between them.',
+      metrics: [
+        'Bezier quaternion interpolation costs 21x linear Euler — 1108 ms against 52 ms, averaged over 1000 runs',
+      ],
       body: [
         'Reconstructed motion capture frames using linear Euler, Bezier Euler, SLERP quaternion, and Bezier SLERP quaternion interpolation.',
-        'Built the analysis and visualization tooling alongside it: overlapping playback, ghosting trails, motion paths, gimbal lock detection, and benchmarks comparing each scheme on visual quality against runtime cost.',
-        'The comparison quantified what the theory predicts — quaternion interpolation stays robust on segments with difficult root rotation, where Euler angles degrade.',
+        'Built the analysis and visualization tooling alongside it: overlapping playback against the input motion, ghosting trails, motion paths, gimbal lock detection, and benchmarks comparing each scheme on visual quality against runtime cost.',
+        'The comparison quantified what the theory predicts. On root rotation the input peaks near -105 degrees; SLERP tracks it to -117 while linear Euler overshoots past -135, and the cost table shows what that accuracy is worth in milliseconds.',
       ],
-      // TODO media: motion trail visualization and a benchmark chart. Both would render well here.
-      media: [],
+      mediaColumns: 2,
+      media: [
+        {
+          kind: 'image',
+          src: '/mocap-euler-vs-slerp.png',
+          alt: 'Input, linear Euler and SLERP quaternion angle curves compared',
+          caption: 'Root Z rotation: linear Euler overshoots where SLERP tracks the input',
+        },
+        {
+          kind: 'image',
+          src: '/mocap-benchmark.png',
+          alt: 'Computation time per interpolation scheme',
+          caption: 'Average time per run over 1000 repeats',
+        },
+        {
+          kind: 'video',
+          src: '/mocap-slerp-comparison.mp4',
+          poster: '/mocap-slerp-poster.jpg',
+          alt: 'Input motion played back against SLERP quaternion reconstruction',
+          caption: 'Input motion overlaid with the SLERP quaternion reconstruction',
+        },
+      ],
+    },
+    {
+      id: 'ik-skinning',
+      title: 'Inverse Kinematics with Skinning',
+      period: 'Spring 2026',
+      tech: ['C++', 'OpenGL', 'ADOL-C', 'Eigen'],
+      summary:
+        'An interactive IK system where dragging a handle solves for joint angles and the mesh deforms in real time — with the Jacobian obtained by automatically differentiating the forward kinematics.',
+      body: [
+        'Forward kinematics composes global joint transforms from local Euler angles under Maya conventions (M = T · JO · R) with configurable rotation orders; linear blend skinning drives the mesh from the resulting transforms.',
+        'IK solves (JᵀJ + αI)Δθ = JᵀΔb with Tikhonov regularisation, using ADOL-C to differentiate the forward kinematics into the Jacobian and Eigen’s LDLT to solve it. A pseudoinverse solver built on SVD is available at runtime as an alternative, since it degrades more gracefully on rank-deficient configurations.',
+        'Dual quaternion skinning can be toggled against LBS, which removes the candy-wrapper volume loss that shows up at the armadillo’s shoulders under large joint rotations.',
+        'Handles can also be placed at mesh vertices rather than joints. There the ADOL-C tape records the entire pipeline — forward kinematics, skinning transforms, blend — so the Jacobian maps joint angles directly to vertex positions.',
+        'Large drags are subdivided into up to three intermediate solves with the per-joint angle change clamped, which converges more reliably than one long step. A scripted stair climb drives four handles at once, with parabolic foot arcs and the root translating to track the body.',
+      ],
+      mediaColumns: 1,
+      media: [
+        {
+          kind: 'image',
+          src: '/ik-lbs-vs-dqs.jpg',
+          alt: 'Linear blend skinning compared with dual quaternion skinning',
+          caption: 'Linear blend skinning, left; dual quaternion skinning, right',
+        },
+        {
+          kind: 'video',
+          src: '/ik-demo.mp4',
+          poster: '/ik-demo-poster.jpg',
+          alt: 'IK and skinning demo across armadillo, dragon and hand models',
+          caption: 'Automated pass over three rigs: IK solvers, skinning modes, vertex handles',
+        },
+      ],
+    },
+    {
+      id: 'jello-simulation',
+      title: 'Mass-Spring Deformable Simulation',
+      period: 'Spring 2026',
+      tech: ['C++', 'OpenGL'],
+      summary:
+        'An 8×8×8 mass-spring lattice with structural, shear and bend springs, integrated with Euler or RK4 and colliding against analytic geometry.',
+      body: [
+        'Collision response is constraint-based rather than penalty-based. A penalty spring injects energy on fast impacts and eventually explodes; resolving positions against the constraint instead stays stable.',
+        'A volume-conservation pressure force keeps the lattice from collapsing or inverting during high-speed collisions and fast mouse drags. That one force is what made the simulation robust enough to be worth playing with.',
+        'Past the box walls, the cube collides against inclined planes, spheres and cones, and against a second cube through node-to-node repulsion. Force fields are sampled by trilinear interpolation.',
+        'A travelling sine wave field with buoyancy and Stokes drift carries the cube along like water. Dragging works both globally, with the force aligned to the camera so the cube moves the way the mouse does, and per-node through a spring anchor that pulls neighbouring points along smoothly.',
+      ],
+      media: [
+        {
+          kind: 'image',
+          src: '/jello-scene.jpg',
+          alt: 'Deformable cube in a scene with helix, sphere, cone and inclined planes',
+          caption: 'Collision geometry: helix, sphere, cone and inclined planes',
+        },
+        {
+          kind: 'video',
+          src: '/jello-demo.mp4',
+          poster: '/jello-demo-poster.jpg',
+          alt: 'Mass-spring cube simulation',
+          caption: 'Constraint-based collision response with volume conservation',
+        },
+      ],
     },
   ],
 }
@@ -271,4 +377,8 @@ const gameplayEngineering: ProjectGroup = {
   ],
 }
 
-export const projectGroups: ProjectGroup[] = [engineRendering, gameplayEngineering]
+export const projectGroups: ProjectGroup[] = [
+  engineRendering,
+  animationSimulation,
+  gameplayEngineering,
+]

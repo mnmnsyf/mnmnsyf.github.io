@@ -27,6 +27,8 @@ export interface ProjectModule {
   title: string
   body: string[]
   media?: Media[]
+  /** Overrides the media grid width. Charts need room; screenshots tile fine. */
+  mediaColumns?: 1 | 2 | 3
   variants?: MediaVariant[]
 }
 
@@ -44,6 +46,8 @@ export interface Project {
   body?: string[]
   links?: Link[]
   media?: Media[]
+  /** Overrides the media grid width. Charts need room; screenshots tile fine. */
+  mediaColumns?: 1 | 2 | 3
   modules?: ProjectModule[]
   /** Rendered in small italics, e.g. a confidentiality note. */
   note?: string
