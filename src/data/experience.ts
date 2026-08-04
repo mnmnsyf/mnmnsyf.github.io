@@ -4,7 +4,7 @@ export const experience: Experience[] = [
   {
     org: 'Artificial Intelligence & Visual Computing Lab, UCLA',
     role: 'Visiting Student',
-    period: 'Jun 2025 – Present',
+    period: 'Jun 2026 – Present',
     location: 'Los Angeles, CA',
     advisor: {
       label: 'Prof. Chenfanfu Jiang',
