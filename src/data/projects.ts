@@ -14,6 +14,7 @@ const engineRendering: ProjectGroup = {
         'Rendering, animation and physics subsystems plus a natural-language shader authoring tool, built inside PrimeEngine — the C++/Lua DirectX 11 engine framework used in USC’s engine course.',
       body: [
         'The shader tool runs outside the engine and talks to a live session. It offers manual parameter controls and style presets, and takes natural-language input that produces either a parameter set or an HLSL snippet dropped into a controlled region of a fixed template — a snippet rather than a whole shader, which is what keeps the output predictable. Generated code stays visible and editable before it is applied.',
+        'A request looks like "a stable single-emitter boss orbit effect: icy blue magic orbs rotating around the boss body, additive blending, bright cyan core, pale blue outer glow, long lifetime, no electric arcs" — specific enough to constrain the result, still a sentence rather than a parameter table.',
         'Applying recompiles against the running engine, so the target object updates without a restart. A failed compile keeps the last working shader and surfaces the error instead of leaving the object in a broken state.',
         'Alongside the tool I implemented the skeletal animation system — partial-body blending, additive layers, recursive state machine updates — a multithreaded physics simulation with an independent lifecycle and a decoupled component architecture, and GPU instance culling through the engine’s RHI.',
       ],
@@ -24,9 +25,9 @@ const engineRendering: ProjectGroup = {
           kind: 'video',
           src: '/engine-shader-live.mp4',
           poster: '/engine-shader-live-poster.jpg',
-          alt: 'Generated effect applied to a character in the running engine',
+          alt: 'The boss aura changing from orange fireballs to cyan orbs after applying a generated effect',
           caption:
-            'A generated effect applied to the boss character without restarting the engine. Tool on the right, live session on the left.',
+            'Before, prompt, after: the boss aura goes from orange fireballs to cyan orbs on Apply, with the engine still running. Tool on the right, live session on the left.',
         },
         {
           kind: 'image',
