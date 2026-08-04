@@ -3,12 +3,13 @@ import type { NewsItem } from './types'
 /** Reverse-chronological. Keep the newest three or four meaningful; prune below that. */
 export const news: NewsItem[] = [
   {
-    date: 'Aug 2026',
-    text: 'Continuing at UCLA on an end-to-end texture generation and data augmentation pipeline for multi-part 3D assets.',
+    date: 'Jun 2026',
+    text: 'Joined the Artificial Intelligence & Visual Computing Lab at UCLA as a visiting student, advised by Prof. Chenfanfu Jiang, working on end-to-end texture generation and data augmentation for multi-part 3D assets.',
+    links: [{ label: 'AIVC Lab', href: 'https://www.math.ucla.edu/aivc/' }],
   },
   {
     date: 'May 2026',
-    text: 'Finished two spring-semester projects at USC: a custom C++/DirectX 11 engine with Lua-driven HLSL hot-reloading, and a motion capture interpolation and visualization tool.',
+    text: 'Finished the spring semester at USC: engine subsystems and a natural-language shader authoring tool in PrimeEngine, plus motion capture interpolation, inverse kinematics with skinning, and a mass-spring simulation.',
   },
   {
     date: 'Jan 2026',
@@ -16,11 +17,6 @@ export const news: NewsItem[] = [
   },
   {
     date: 'Dec 2025',
-    text: 'Wrapped up eighteen months as a UE5 gameplay engineer at Chengdu Digital Sky, and built a software rasterizer from scratch over the winter.',
-  },
-  {
-    date: 'Jun 2025',
-    text: 'Joined the Artificial Intelligence & Visual Computing Lab at UCLA as a visiting student, advised by Prof. Chenfanfu Jiang.',
-    links: [{ label: 'AIVC Lab', href: 'https://www.math.ucla.edu/aivc/' }],
+    text: 'Left Chengdu Digital Sky after eighteen months as a UE5 gameplay engineer, and built a software rasterizer from scratch over the winter.',
   },
 ]
