@@ -18,16 +18,23 @@ const engineRendering: ProjectGroup = {
         'Alongside the tool I implemented the skeletal animation system — partial-body blending, additive layers, recursive state machine updates — a multithreaded physics simulation with an independent lifecycle and a decoupled component architecture, and GPU instance culling through the engine’s RHI.',
       ],
       note: 'PrimeEngine is the course framework; the subsystems and tooling described here are my own work.',
+      mediaColumns: 1,
       media: [
+        {
+          kind: 'video',
+          src: '/engine-shader-live.mp4',
+          poster: '/engine-shader-live-poster.jpg',
+          alt: 'Generated effect applied to a character in the running engine',
+          caption:
+            'A generated effect applied to the boss character without restarting the engine. Tool on the right, live session on the left.',
+        },
         {
           kind: 'image',
           src: '/engine-authoring-tool.jpg',
           alt: 'Shader authoring tool interface',
-          caption: 'Natural-language effect authoring, applied to a live engine session',
+          caption: 'The authoring tool: presets, manual parameters, and natural-language input',
         },
       ],
-      // TODO media: a capture of an effect changing in the engine window on Apply
-      // would show the hot-reload loop far better than the tool UI alone.
     },
     {
       id: 'software-rasterizer',
