@@ -182,19 +182,23 @@ const gameplayEngineering: ProjectGroup = {
   projects: [
     {
       id: 'project-mo',
-      title: 'Project Mo',
+      title: 'Mandate Order',
       role: 'Gameplay Programmer',
       period: '2023 – 2025',
       tech: ['Unreal Engine 5', 'C++', 'Computational Geometry', 'Strategy'],
       summary:
-        'A commercial historical strategy game set in the Spring and Autumn and Warring States periods, where I owned the geometry and graph algorithms behind unit command, terrain ownership and construction.',
+        'An ancient Chinese war city-builder (Warring States period) that shipped on Steam Early Access — I owned the geometry and graph algorithms behind unit command, terrain ownership and construction.',
       metrics: [
         'Connected-component computation cut to ~25% of original time at 120 unit clusters',
+        'Released on Steam Early Access, 12 Aug 2026',
       ],
       body: [
-        'An in-development title built in Unreal Engine 5. I worked on it as a gameplay programmer; the systems below are the ones I designed and owned.',
+        'Mandate Order is a Warring States war city-builder developed by Chengdu Digital Sky: build a stronghold, manage industries and logistics, raise armies, and command real-time tactical battles with thousands of soldiers. I worked on it as a gameplay programmer; the systems below are the ones I designed and owned.',
       ],
-      links: [{ label: 'Official Site', href: 'https://www.digisky.com/product/mo' }],
+      links: [
+        { label: 'Steam', href: 'https://store.steampowered.com/app/1733690' },
+        { label: 'Official Site', href: 'https://www.digisky.com/product/mo' },
+      ],
       note: 'Content here complies with the project confidentiality agreement.',
       media: [
         { kind: 'image', src: '/project-mo-chariot.png', alt: 'Ancient chariot' },

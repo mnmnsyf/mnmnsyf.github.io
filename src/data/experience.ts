@@ -21,6 +21,7 @@ export const experience: Experience[] = [
     period: 'Jul 2024 – Dec 2025',
     location: 'Chengdu, China',
     bullets: [
+      'Gameplay programmer on Mandate Order — an ancient Chinese war city-builder (Warring States period) that launched in Steam Early Access on 12 Aug 2026.',
       "Extended Unreal's spline module into a dynamic navigation system supporting single-source and multi-source shortest-path tactical pathfinding.",
       'Built a supply transportation system on the navigation mesh, automating strategic resource routing across large-scale battles.',
       'Designed a multi-mode input and UI system on Enhanced Input, supporting layered, context-aware interaction.',
