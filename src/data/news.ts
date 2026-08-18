@@ -3,6 +3,13 @@ import type { NewsItem } from './types'
 /** Reverse-chronological. Keep the newest three or four meaningful; prune below that. */
 export const news: NewsItem[] = [
   {
+    date: 'Aug 2026',
+    text: 'Mandate Order — the game I worked on as a UE5 gameplay engineer — launched in Steam Early Access on August 12.',
+    links: [
+      { label: 'Steam', href: 'https://store.steampowered.com/app/1733690' },
+    ],
+  },
+  {
     date: 'Jun 2026',
     text: 'Joined the Artificial Intelligence & Visual Computing Lab at UCLA as a visiting student, advised by Prof. Chenfanfu Jiang, working on end-to-end texture generation and data augmentation for multi-part 3D assets.',
     links: [{ label: 'AIVC Lab', href: 'https://www.math.ucla.edu/aivc/' }],
