@@ -18,6 +18,11 @@
 
 .section {
   margin-top: var(--gap-section);
+  padding: 2rem 2.25rem 2.5rem;
+  border: 1px solid color-mix(in srgb, var(--rule) 75%, transparent);
+  border-radius: 12px;
+  background: linear-gradient(145deg, #fff 0%, #fbfbfd 100%);
+  box-shadow: 0 12px 35px rgb(30 35 90 / 5%);
   /* Keep anchor jumps clear of the sticky bar. */
   scroll-margin-top: calc(var(--nav-h) + 1rem);
 }
@@ -25,11 +30,11 @@
 .section-title {
   max-width: var(--measure);
   margin-inline: auto;
-  font-size: 0.76rem;
+  font-size: 0.86rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--text-faint);
+  color: var(--accent);
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--rule);
   margin-bottom: 1.75rem;
@@ -131,5 +136,10 @@
 
   :root {
     --gap-section: 3rem;
+  }
+
+  .section {
+    padding: 1.35rem 1rem 1.75rem;
+    border-radius: 9px;
   }
 }

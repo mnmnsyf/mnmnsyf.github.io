@@ -35,8 +35,6 @@ export const experience: Experience[] = [
     ],
     media: [
       { kind: 'image', src: '/mandate-order.png', alt: 'Mandate Order Steam store page', caption: 'Mandate Order on Steam Early Access' },
-      { kind: 'image', src: '/project-mo-chariot.png', alt: 'Mandate Order in-game scene' },
-      { kind: 'image', src: '/project-mo-character.png', alt: 'Mandate Order character and store artwork' },
     ],
   },
   {
