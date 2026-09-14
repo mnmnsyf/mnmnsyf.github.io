@@ -16,12 +16,14 @@
       <ul class="bullets">
         <li v-for="(b, i) in item.bullets" :key="i">{{ b }}</li>
       </ul>
+      <MediaGrid v-if="item.media?.length" :items="item.media" :columns="2" />
     </li>
   </ol>
 </template>
 
 <script setup lang="ts">
 import { experience } from '@/data/experience'
+import MediaGrid from './MediaGrid.vue'
 </script>
 
 <style scoped>
