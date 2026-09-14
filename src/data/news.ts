@@ -11,7 +11,7 @@ export const news: NewsItem[] = [
   },
   {
     date: 'Jun 2026',
-    text: 'Joined the Artificial Intelligence & Visual Computing Lab at UCLA as a visiting student, advised by Prof. Chenfanfu Jiang, working on end-to-end texture generation and data augmentation for multi-part 3D assets.',
+    text: 'Joined the Artificial Intelligence & Visual Computing Lab at UCLA as a research assistant, advised by Prof. Chenfanfu Jiang, working on end-to-end texture generation and data augmentation for multi-part 3D assets.',
     links: [{ label: 'AIVC Lab', href: 'https://www.math.ucla.edu/aivc/' }],
   },
   {
@@ -24,6 +24,9 @@ export const news: NewsItem[] = [
   },
   {
     date: 'Dec 2025',
-    text: 'Left Chengdu Digital Sky after eighteen months as a UE5 gameplay engineer, and built a software rasterizer from scratch over the winter.',
+    text: 'Completed eighteen months at Chengdu Digital Sky as a UE5 gameplay engineer, contributing to Mandate Order, a commercial strategy game.',
+    links: [
+      { label: 'Steam', href: 'https://store.steampowered.com/app/1733690' },
+    ],
   },
 ]

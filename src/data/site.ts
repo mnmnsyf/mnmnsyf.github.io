@@ -16,7 +16,7 @@ export interface NavLink {
 export const site = {
   name: 'Yongfei She',
   nameZh: '佘泳霏',
-  roleLine: 'MS Computer Science, USC · AIVC Lab, UCLA',
+  roleLine: 'Software Engineer · Graphics, Systems & AI',
   photo: { src: '/portrait.jpg', alt: 'Yongfei She' },
 
   /**
@@ -25,13 +25,13 @@ export const site = {
    * no external or user input reaches this field.
    */
   bio: [
-    `I'm Yongfei She, a master's student in Computer Science at the
+    `I'm Yongfei She, a software engineer and master's student in Computer Science at the
      <a href="https://www.usc.edu/" target="_blank" rel="noopener">University of Southern California</a>,
-     working on graphics. I'm also a visiting student at the
+     working on graphics. I'm also a research assistant at the
      <a href="https://www.math.ucla.edu/aivc/" target="_blank" rel="noopener">AIVC Lab</a>
      at UCLA, advised by Prof.
      <a href="https://www.math.ucla.edu/~cffjiang/index.html" target="_blank" rel="noopener">Chenfanfu Jiang</a>,
-     where I work on generative 3D content for embodied-AI simulation.`,
+     where I build generative 3D content pipelines for embodied-AI simulation.`,
     `Before USC I spent eighteen months as a gameplay engineer at
      <a href="https://www.digisky.com/" target="_blank" rel="noopener">Chengdu Digital Sky</a>,
      owning the geometry and graph algorithms behind unit command, terrain ownership
@@ -39,8 +39,7 @@ export const site = {
      <a href="https://www.digisky.com/product/mo" target="_blank" rel="noopener">Unreal Engine 5 strategy title</a>.
      Since then I have been writing renderers and engine subsystems from scratch —
      a software rasterizer, a DirectX 11 engine, a multithreaded physics simulation.`,
-    `<strong>I am looking for a Summer 2027 internship in engine, graphics, or
-     gameplay programming.</strong>`,
+    `<strong>I am looking for a Summer 2027 software engineering internship, with a focus on C++, systems, graphics, or performance.</strong>`,
   ],
 
   lastUpdated: 'August 2026',
@@ -49,8 +48,8 @@ export const site = {
 export const navLinks: NavLink[] = [
   { label: 'Email', href: 'mailto:sheyfff@gmail.com', icon: 'mail' },
   { label: 'GitHub', href: 'https://github.com/mnmnsyf', icon: 'github' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/yongfei-she-a28945392/', icon: 'linkedin' },
   // { label: 'CV', href: '/cv.pdf', icon: 'cv' },
-  // { label: 'LinkedIn', href: 'https://www.linkedin.com/in/...', icon: 'linkedin' },
 ]
 
 /** Anchor targets for the top navigation, in page order. */

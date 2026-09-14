@@ -67,6 +67,7 @@ export interface Experience {
   location?: string
   advisor?: Link
   bullets: string[]
+  media?: Media[]
 }
 
 export interface Education {
