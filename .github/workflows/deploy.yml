@@ -1,9 +1,9 @@
 name: Deploy to GitHub Pages
 
 on:
-  # 每次推送到master分支时触发部署
+  # 每次推送到发布分支时触发部署
   push:
-    branches: [master, main]
+    branches: [master, main, codex/sde-portfolio-update]
   # 允许手动触发部署
   workflow_dispatch:
 
