@@ -15,7 +15,7 @@
       <ExperienceList />
     </SectionBlock>
 
-    <SectionBlock id="projects" title="Selected Projects">
+    <SectionBlock id="projects" title="Projects">
       <ProjectGroups />
     </SectionBlock>
 
