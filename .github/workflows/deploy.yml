@@ -1,0 +1,35 @@
+name: Deploy to GitHub Pages
+
+on:
+  # 每次推送到发布分支时触发部署
+  push:
+    branches: [master, main, codex/sde-portfolio-update]
+  # 允许手动触发部署
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js ⚙️
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install Dependencies 📦
+        run: npm ci
+
+      - name: Build 🔧
+        run: npm run build
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist # 构建输出的文件夹
+          repository-name: mnmnsyf/mnmnsyf.github.io # 部署到的仓库
+          branch: main # 部署到的分支
+          token: ${{ secrets.DEPLOY_TOKEN }} # 需要在GitHub设置中添加此密钥
