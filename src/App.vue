@@ -3,12 +3,12 @@
   <SiteHeader />
 
   <div class="page">
-    <!-- TODO: demo reel goes here, above News. A 60-90s cut of the strongest
-         moments across the engine, rasterizer, mocap and UE5 work. Game studios
-         screen on reels, so this is the highest-value addition still missing. -->
-
     <SectionBlock id="news" title="News">
       <NewsList />
+    </SectionBlock>
+
+    <SectionBlock id="research" title="Research">
+      <ProjectEntry :project="articulateArena" />
     </SectionBlock>
 
     <SectionBlock id="experience" title="Experience">
@@ -42,6 +42,8 @@ import SectionBlock from '@/components/SectionBlock.vue'
 import NewsList from '@/components/NewsList.vue'
 import ExperienceList from '@/components/ExperienceList.vue'
 import ProjectGroups from '@/components/ProjectGroups.vue'
+import ProjectEntry from '@/components/ProjectEntry.vue'
+import { articulateArena } from '@/data/publications'
 import EducationList from '@/components/EducationList.vue'
 import AwardList from '@/components/AwardList.vue'
 import SkillList from '@/components/SkillList.vue'

@@ -35,12 +35,22 @@
           </nav>
         </div>
       </div>
+
+      <nav class="featured-work" aria-label="Selected work">
+        <a v-for="item in featuredWork" :key="item.href" :href="item.href" class="work-link">
+          <img :src="item.image" :alt="item.alt" loading="lazy" />
+          <span class="work-copy">
+            <span class="work-label">{{ item.label }}</span>
+            <strong>{{ item.title }}</strong>
+          </span>
+        </a>
+      </nav>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
-import { site, navLinks } from '@/data/site'
+import { site, navLinks, featuredWork } from '@/data/site'
 import IconGlyph from './IconGlyph.vue'
 </script>
 
@@ -52,13 +62,13 @@ import IconGlyph from './IconGlyph.vue'
 .inner {
   max-width: var(--measure-wide);
   margin: 0 auto;
-  padding: 0 1.5rem 5rem;
+  padding: 0 1.5rem 3rem;
 }
 
 .cols {
   display: grid;
-  grid-template-columns: minmax(0, 392px) minmax(0, 1fr);
-  gap: 3.5rem;
+  grid-template-columns: minmax(0, 270px) minmax(0, 1fr);
+  gap: 3rem;
   align-items: center;
   padding-top: 1.5rem;
 }
@@ -147,6 +157,50 @@ import IconGlyph from './IconGlyph.vue'
   text-decoration: none;
 }
 
+.featured-work {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+
+.work-link {
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.work-link:hover {
+  border-color: var(--accent);
+  text-decoration: none;
+}
+
+.work-link img {
+  width: 100%;
+  aspect-ratio: 2.4;
+  object-fit: contain;
+  background: var(--bg-inset);
+}
+
+.work-copy {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.8rem 1rem;
+}
+
+.work-label {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.work-copy strong {
+  font-size: 0.93rem;
+  font-weight: 600;
+}
+
 @media (max-width: 860px) {
   .cols {
     grid-template-columns: 1fr;
@@ -160,6 +214,37 @@ import IconGlyph from './IconGlyph.vue'
 
   .inner {
     padding-bottom: 3rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .photo-col {
+    max-width: 168px;
+  }
+
+  .cols {
+    gap: 1.5rem;
+  }
+
+  .featured-work {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+    margin-top: 2rem;
+  }
+
+  .work-link {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .work-link img {
+    height: 84px;
+    aspect-ratio: auto;
+  }
+
+  .work-copy {
+    padding: 0.6rem 0.8rem;
   }
 }
 </style>

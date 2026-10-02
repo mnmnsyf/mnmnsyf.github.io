@@ -1,6 +1,6 @@
 <template>
   <div>
-    <section v-for="group in projectGroups" :key="group.id" class="group">
+    <section v-for="group in projectGroups" :id="group.id" :key="group.id" class="group">
       <div v-reveal class="group-head measure">
         <h3 class="group-title">{{ group.title }}</h3>
         <p v-if="group.blurb" class="group-blurb faint">{{ group.blurb }}</p>

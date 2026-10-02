@@ -7,16 +7,19 @@ const engineRendering: ProjectGroup = {
   projects: [
     {
       id: 'engine-subsystems',
-      title: 'Engine Subsystems & Shader Authoring Tool',
+      title: 'AI-Assisted Shader Authoring & Multithreaded Engine Systems',
       period: 'Jan – May 2026',
       tech: ['C++', 'Lua', 'DirectX 11', 'HLSL', 'Python'],
       summary:
-        'Rendering, animation and physics subsystems plus a natural-language shader authoring tool, built inside PrimeEngine — the C++/Lua DirectX 11 engine framework used in USC’s engine course.',
+        'A shader-authoring tool with live HLSL recompilation, alongside animation, physics and rendering subsystems in the course-provided PrimeEngine framework.',
       body: [
-        'The shader tool runs outside the engine and talks to a live session. It offers manual parameter controls and style presets, and takes natural-language input that produces either a parameter set or an HLSL snippet dropped into a controlled region of a fixed template — a snippet rather than a whole shader, which is what keeps the output predictable. Generated code stays visible and editable before it is applied.',
-        'A request looks like "a stable single-emitter boss orbit effect: icy blue magic orbs rotating around the boss body, additive blending, bright cyan core, pale blue outer glow, long lifetime, no electric arcs" — specific enough to constrain the result, still a sentence rather than a parameter table.',
-        'Applying recompiles against the running engine, so the target object updates without a restart. A failed compile keeps the last working shader and surfaces the error instead of leaving the object in a broken state.',
-        'Alongside the tool I implemented the skeletal animation system — partial-body blending, additive layers, recursive state machine updates — a multithreaded physics simulation with an independent lifecycle and a decoupled component architecture, and GPU instance culling through the engine’s RHI.',
+        'The external tool connects to a live engine session. Manual controls, presets and natural-language input generate editable parameters or HLSL snippets within fixed templates.',
+        'Applying a change recompiles the shader without restarting the engine. Failed compilations retain the last working shader and report the error.',
+        'My engine subsystems include layered skeletal animation, multithreaded ECS physics with independent update cycles, and GPU instance culling through the Rendering Hardware Interface.',
+      ],
+      links: [
+        { label: 'Live shader demo', href: 'https://mnmnsyf.github.io/engine-shader-live.mp4' },
+        { label: 'Course repository', href: 'https://github.com/mnmnsyf/csci522-peworkspace' },
       ],
       note: 'PrimeEngine is the course framework; the subsystems and tooling described here are my own work.',
       mediaColumns: 1,
@@ -43,13 +46,14 @@ const engineRendering: ProjectGroup = {
       period: 'Nov – Dec 2025',
       tech: ['C++'],
       summary:
-        'A complete 3D rendering pipeline written against nothing but the C++ standard library — no OpenGL, no DirectX.',
+        'A CPU software rasterizer written in C++, with a programmable shader pipeline and textured OBJ rendering.',
       metrics: ['Fragment-shades meshes of 10,000+ vertices'],
       mediaColumns: 1,
       body: [
         'Implemented rasterization, Z-buffering and a programmable shader pipeline from first principles, with no external graphics API.',
-        'Added perspective-correct interpolation and Blinn-Phong shading, which is where the pipeline stopped being a demo and started producing images worth looking at.',
+        'Added perspective-correct interpolation and Blinn–Phong lighting; compared flat, Gouraud and Phong shading on the same geometry.',
       ],
+      links: [{ label: 'Source code', href: 'https://github.com/mnmnsyf/SoftRendererDemo' }],
       media: [
         {
           kind: 'image',
@@ -90,6 +94,7 @@ const animationSimulation: ProjectGroup = {
         'The comparison quantified what the theory predicts. On root rotation the input peaks near -105 degrees; SLERP tracks it to -117 while linear Euler overshoots past -135, and the cost table shows what that accuracy is worth in milliseconds.',
       ],
       mediaColumns: 2,
+      links: [{ label: 'Source code', href: 'https://github.com/mnmnsyf/csci520-mocap' }],
       media: [
         {
           kind: 'image',
@@ -127,6 +132,7 @@ const animationSimulation: ProjectGroup = {
         'Large drags are subdivided into up to three intermediate solves with the per-joint angle change clamped, which converges more reliably than one long step. A scripted stair climb drives four handles at once, with parabolic foot arcs and the root translating to track the body.',
       ],
       mediaColumns: 1,
+      links: [{ label: 'Source code', href: 'https://github.com/mnmnsyf/csci520-ik' }],
       media: [
         {
           kind: 'image',
@@ -148,6 +154,7 @@ const animationSimulation: ProjectGroup = {
       title: 'Mass-Spring Deformable Simulation',
       period: 'Spring 2026',
       tech: ['C++', 'OpenGL'],
+      links: [{ label: 'Source code', href: 'https://github.com/mnmnsyf/csci520-jello' }],
       summary:
         'An 8×8×8 mass-spring lattice with structural, shear and bend springs, integrated with Euler or RK4 and colliding against analytic geometry.',
       body: [
@@ -177,8 +184,8 @@ const animationSimulation: ProjectGroup = {
 
 const gameplayEngineering: ProjectGroup = {
   id: 'gameplay-engineering',
-  title: 'Gameplay Engineering',
-  blurb: 'Systems and algorithms shipped inside Unreal Engine 5 projects.',
+  title: 'Production Systems & Gameplay',
+  blurb: 'Navigation, geometry and rendering systems in Unreal Engine 5 projects.',
   projects: [
     {
       id: 'project-mo',

@@ -4,11 +4,15 @@ export const education: Education[] = [
   {
     school: 'University of Southern California',
     degree: 'M.S. Computer Science',
-    period: '2026 – 2028 (expected)',
+    period: 'Jan 2026 – May 2027 (expected)',
     location: 'Los Angeles, CA',
     focus: 'Graphics track',
-    // TODO: fill in the Fall 2026 course list.
-    coursework: [],
+    coursework: [
+      'Game Engine Development',
+      'Computer Animation and Simulation',
+      'Foundations of Artificial Intelligence',
+      'Deep Learning and Its Applications',
+    ],
   },
   {
     school: 'Chengdu University of Information Technology',

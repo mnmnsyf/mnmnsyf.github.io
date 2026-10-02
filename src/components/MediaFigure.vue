@@ -6,19 +6,33 @@
       preload="metadata"
       :poster="media.poster"
       :aria-label="media.alt"
+      :width="dimensions?.width"
+      :height="dimensions?.height"
     >
       <source :src="media.src" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
-    <img v-else :src="media.src" :alt="media.alt" loading="lazy" />
+    <img
+      v-else
+      :src="media.src"
+      :alt="media.alt"
+      :width="dimensions?.width"
+      :height="dimensions?.height"
+      loading="lazy"
+    />
     <figcaption v-if="media.caption" class="caption">{{ media.caption }}</figcaption>
   </figure>
 </template>
 
 <script setup lang="ts">
 import type { Media } from '@/data/types'
+import { computed } from 'vue'
+import { mediaDimensions } from '@/data/mediaDimensions'
 
-defineProps<{ media: Media }>()
+const props = defineProps<{ media: Media }>()
+const dimensions = computed(
+  () => mediaDimensions[props.media.src] ?? mediaDimensions[props.media.poster ?? ''],
+)
 </script>
 
 <style scoped>
