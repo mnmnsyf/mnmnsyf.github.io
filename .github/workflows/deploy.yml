@@ -36,6 +36,8 @@ jobs:
           folder: dist # 构建输出的文件夹
           branch: main # 部署到的分支
           token: ${{ github.token }}
+          force: false
+          clean: false
 
       # GITHUB_TOKEN pushes do not trigger branch-based Pages builds automatically.
       - name: Build GitHub Pages from main
