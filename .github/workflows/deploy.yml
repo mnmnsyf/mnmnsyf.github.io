@@ -7,6 +7,10 @@ on:
   # 允许手动触发部署
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pages: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -30,6 +34,11 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: dist # 构建输出的文件夹
-          repository-name: mnmnsyf/mnmnsyf.github.io # 部署到的仓库
           branch: main # 部署到的分支
-          token: ${{ secrets.DEPLOY_TOKEN }} # 需要在GitHub设置中添加此密钥
+          token: ${{ github.token }}
+
+      # GITHUB_TOKEN pushes do not trigger branch-based Pages builds automatically.
+      - name: Build GitHub Pages from main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api --method POST "repos/${{ github.repository }}/pages/builds"
