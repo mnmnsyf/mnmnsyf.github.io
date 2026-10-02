@@ -1,5 +1,5 @@
 <template>
-  <article class="project">
+  <article :id="project.id" class="project">
     <div v-reveal class="intro">
       <div class="head measure">
         <h3 class="title">
@@ -64,6 +64,10 @@ defineProps<{ project: Project }>()
 </script>
 
 <style scoped>
+.project {
+  scroll-margin-top: calc(var(--nav-h) + 1rem);
+}
+
 .head {
   display: flex;
   align-items: baseline;

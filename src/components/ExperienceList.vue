@@ -16,7 +16,7 @@
       <ul class="bullets">
         <li v-for="(b, i) in item.bullets" :key="i">{{ b }}</li>
       </ul>
-      <MediaGrid v-if="item.media?.length" :items="item.media" :columns="2" />
+      <MediaGrid v-if="item.media?.length" class="experience-media" :items="item.media" :columns="1" />
     </li>
   </ol>
 </template>
@@ -28,7 +28,24 @@ import MediaGrid from './MediaGrid.vue'
 
 <style scoped>
 .entry + .entry {
-  margin-top: 2rem;
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--rule);
+}
+
+.experience-media {
+  margin-top: 1.5rem;
+}
+
+.experience-media :deep(img) {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--rule);
+}
+
+.experience-media :deep(.caption) {
+  margin-top: 0.65rem;
+  text-align: center;
 }
 
 .head {
