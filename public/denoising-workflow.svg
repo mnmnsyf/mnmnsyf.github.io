@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 320" role="img" aria-labelledby="title desc">
+  <title id="title">Path tracing denoising workflow</title>
+  <desc id="desc">UE5 rendering data is used for SVGF and DLSS baseline comparisons and PyTorch denoiser training. Quality and temporal stability are the evaluation goals.</desc>
+  <rect width="960" height="320" fill="#f7f7f7"/>
+  <g font-family="Inter, Arial, sans-serif" fill="#1a1a1a">
+    <text x="36" y="42" font-size="15" fill="#5c5c5c" letter-spacing="2">PATH TRACING DENOISING · IN PROGRESS</text>
+    <g fill="white" stroke="#d9d9d9"><rect x="36" y="118" width="235" height="100" rx="8"/><rect x="326" y="70" width="286" height="88" rx="8"/><rect x="326" y="182" width="286" height="88" rx="8"/><rect x="670" y="118" width="254" height="100" rx="8"/></g>
+    <g font-size="21" font-weight="600"><text x="56" y="154">UE5 rendering data</text><text x="346" y="106">Baseline comparison</text><text x="346" y="218">PyTorch denoiser</text><text x="690" y="154">Evaluation goals</text></g>
+    <g font-size="15" fill="#5c5c5c"><text x="56" y="182">Data collection pipeline</text><text x="346" y="135">SVGF · DLSS Ray Reconstruction</text><text x="346" y="247">Neural model training ongoing</text><text x="690" y="182">Quality · temporal stability</text></g>
+    <g stroke="#4b55af" stroke-width="2" fill="none"><path d="M279 168h18v-54h17m-8-6 8 6-8 6"/><path d="M297 168v58h17m-8-6 8 6-8 6"/><path d="M620 114h18v54h20m-8-6 8 6-8 6"/><path d="M620 226h18v-58"/></g>
+    <text x="36" y="299" font-size="14" fill="#5c5c5c">Training in progress · Reconstruction quality and temporal stability at low sample counts</text>
+  </g>
+</svg>

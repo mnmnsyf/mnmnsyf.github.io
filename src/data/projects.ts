@@ -6,6 +6,55 @@ const engineRendering: ProjectGroup = {
   blurb: 'Rendering pipelines and engine-level systems.',
   projects: [
     {
+      id: 'angle-graphics-sdk',
+      title: 'ANGLE Graphics SDK & Developer Tools',
+      tech: ['C++', 'C#', '.NET', 'EGL', 'OpenGL ES', 'ANGLE'],
+      summary:
+        'A .NET graphics SDK built on ANGLE, connecting a native C++ EGL bridge to managed OpenGL ES APIs and developer tools.',
+      body: [
+        'Built a native EGL bridge and dynamically loaded GLES entry points for offscreen rendering with pixel readback and window-surface presentation. The managed SDK exposes context-bound GPU resources with explicit disposal and thread-access checks.',
+        'Generated GLES 3.0 bindings from Khronos XML, preserving existing signatures and testing generator idempotency. Native C++ and managed C# demos produce images for deterministic rendering comparisons.',
+        'Added a WinForms demo host with renderer/plugin hot reload, shader recompilation with last-working-shader fallback, and rendering benchmarks to make iteration and validation easier.',
+      ],
+      links: [
+        { label: 'Source code & documentation', href: 'https://github.com/mnmnsyf/angle-dotnet' },
+      ],
+      note: 'Built on the upstream ANGLE project; my work is the native bridge, managed SDK, validation, and developer tooling. Windows / .NET 9.',
+      mediaColumns: 1,
+      media: [
+        {
+          kind: 'image',
+          src: '/angle-sdk-architecture.svg',
+          alt: 'Managed C# SDK connected through a native C++ EGL bridge to ANGLE and the GPU',
+          caption: 'SDK architecture: managed resources and API bindings over a native EGL bridge.',
+        },
+      ],
+    },
+    {
+      id: 'path-tracing-denoising',
+      title: 'Path Tracing Denoising',
+      role: 'Personal project · In progress',
+      period: 'Sep 2026 – Present',
+      tech: ['C++', 'Unreal Engine 5', 'PyTorch', 'SVGF', 'DLSS Ray Reconstruction'],
+      summary:
+        'A UE5 data collection and benchmarking pipeline for studying reconstruction quality and temporal stability under low-sample-count path tracing.',
+      body: [
+        'Built an Unreal Engine 5 data collection pipeline to prepare path-traced rendering data for neural denoiser training.',
+        'Implemented an SVGF denoising baseline and integrated NVIDIA DLSS Ray Reconstruction into a comparative benchmarking pipeline.',
+        'Currently training a neural denoiser in PyTorch to investigate reconstruction quality and temporal stability at low sample counts. The project is ongoing; measured results will be added as experiments are completed.',
+      ],
+      note: 'Personal project, started September 2026. Neural denoiser training and evaluation are ongoing.',
+      mediaColumns: 1,
+      media: [
+        {
+          kind: 'image',
+          src: '/denoising-workflow.svg',
+          alt: 'UE5 rendering data feeding baseline comparison and neural denoiser training, evaluated for quality and temporal stability',
+          caption: 'Project workflow; neural denoiser training is still in progress.',
+        },
+      ],
+    },
+    {
       id: 'engine-subsystems',
       title: 'AI-Assisted Shader Authoring & Multithreaded Engine Systems',
       period: 'Jan – May 2026',

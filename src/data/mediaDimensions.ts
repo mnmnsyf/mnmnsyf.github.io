@@ -1,5 +1,7 @@
 /** Intrinsic asset sizes reserve layout space before lazy media loads. */
 export const mediaDimensions: Record<string, { width: number; height: number }> = {
+  '/angle-sdk-architecture.svg': { width: 960, height: 260 },
+  '/denoising-workflow.svg': { width: 960, height: 320 },
   '/articulatearena-category.png': { width: 4343, height: 1818 },
   '/connected-component-poster.png': { width: 1936, height: 1056 },
   '/dynamic-battle-frontline-1.png': { width: 1928, height: 1048 },

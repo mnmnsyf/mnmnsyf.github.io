@@ -31,7 +31,9 @@ export const site = {
      I built production C++ systems for
      <a href="https://www.digisky.com/product/mo" target="_blank" rel="noopener">Mandate Order</a>:
      GPU instancing for 10,000+ entities, multithreaded ECS, and routing for 1,000+ agents.
-     I also write renderers and simulation tools, and am the second author of
+     My recent projects include an <a href="#angle-graphics-sdk">ANGLE-based .NET graphics SDK</a>
+     and <a href="#path-tracing-denoising">path-tracing denoising in UE5</a>, with a PyTorch model currently in training.
+     I am also the second author of
      <a href="#articulatearena">ArticulateArena</a>, now on arXiv.`,
   ],
 
@@ -43,7 +45,7 @@ export const navLinks: NavLink[] = [
   { label: 'GitHub', href: 'https://github.com/mnmnsyf', icon: 'github' },
   {
     label: 'LinkedIn',
-    href: 'https://www.linkedin.com/in/yongfei-she-a28945392/',
+    href: 'https://www.linkedin.com/in/yongfei-she/',
     icon: 'linkedin',
   },
 ]
@@ -58,18 +60,18 @@ export const featuredWork = [
     alt: 'Five joint types covered by ArticulateArena',
   },
   {
-    label: 'C++ · Rendering',
-    title: 'Software Rasterizer',
-    href: '#software-rasterizer',
-    image: '/raster-shading.jpg',
-    alt: 'Flat, Gouraud and Phong shading rendered on the CPU',
+    label: 'C++ / C# · SDK & Tools',
+    title: 'ANGLE Graphics SDK',
+    href: '#angle-graphics-sdk',
+    image: '/angle-sdk-architecture.svg',
+    alt: 'ANGLE graphics SDK architecture',
   },
   {
-    label: 'Tools · Engine systems',
-    title: 'Shader Authoring & ECS',
-    href: '#engine-subsystems',
-    image: '/engine-shader-live-poster.jpg',
-    alt: 'Shader authoring tool connected to a live engine session',
+    label: 'UE5 / PyTorch · In progress',
+    title: 'Path Tracing Denoising',
+    href: '#path-tracing-denoising',
+    image: '/denoising-workflow.svg',
+    alt: 'Path-tracing denoising training and evaluation workflow',
   },
 ]
 

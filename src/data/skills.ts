@@ -9,7 +9,7 @@ export const skills: SkillGroup[] = [
     label: 'Systems',
     items: ['Data Structures & Algorithms', 'Multithreading', 'ECS', 'Performance Optimization'],
   },
-  { label: 'Graphics', items: ['DirectX 11', 'OpenGL'] },
+  { label: 'Graphics', items: ['DirectX 11', 'OpenGL', 'OpenGL ES', 'EGL', 'ANGLE'] },
   {
     label: 'Simulation & Research',
     items: ['Kinematics', 'Physics Simulation', 'Multi-model Evaluation', 'Benchmarking'],
@@ -17,6 +17,6 @@ export const skills: SkillGroup[] = [
   { label: 'Engines', items: ['Unreal Engine', 'Unity'] },
   {
     label: 'Tools',
-    items: ['Git', 'Visual Studio', 'Blender', 'Cursor', 'Confluence', 'Jira'],
+    items: ['Git', 'Visual Studio', '.NET', 'PyTorch', 'Blender', 'Cursor', 'Confluence', 'Jira'],
   },
 ]
