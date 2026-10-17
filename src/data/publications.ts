@@ -17,7 +17,7 @@ export const articulateArena: Project = {
     { label: 'Read paper', href: 'https://arxiv.org/abs/2609.33931' },
     { label: 'Project & demos', href: 'https://heyumeng.com/ArticulateArena-web/' },
   ],
-  note: 'Authors: Yumeng He, Yongfei She, Huanyu Chen, Chun Yuan, Peihao Li, Joseph Masterjohn, Yin Yang, Ying Jiang, and Chenfanfu Jiang. arXiv preprint, September 27, 2026.',
+  note: 'Second author. arXiv preprint, September 27, 2026; submitted to ICLR. See the linked paper for the complete author list as published.',
   mediaColumns: 1,
   media: [
     {

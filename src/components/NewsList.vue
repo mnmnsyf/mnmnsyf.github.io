@@ -1,15 +1,17 @@
 <template>
-  <ul class="news measure prose">
-    <li v-for="(item, i) in news" :key="item.date + item.text" v-reveal="i * 60">
-      <span class="date">{{ item.date }}</span>
-      <span class="body">
-        {{ item.text }}
-        <template v-for="l in item.links ?? []" :key="l.href">
-          <a :href="l.href" target="_blank" rel="noopener">{{ l.label }}</a>
-        </template>
-      </span>
+  <ol class="news">
+    <li v-for="(item, i) in news" :key="item.date + item.text" v-reveal="i * 50">
+      <time class="date">{{ item.date }}</time>
+      <div class="body">
+        <p>{{ item.text }}</p>
+        <nav v-if="item.links?.length" class="link-row" :aria-label="`${item.date} links`">
+          <a v-for="l in item.links" :key="l.href" :href="l.href" target="_blank" rel="noopener"
+            >{{ l.label }} <span aria-hidden="true">↗</span></a
+          >
+        </nav>
+      </div>
     </li>
-  </ul>
+  </ol>
 </template>
 
 <script setup lang="ts">
@@ -18,34 +20,37 @@ import { news } from '@/data/news'
 
 <style scoped>
 .news li {
-  display: flex;
-  gap: 1rem;
-  font-size: 0.94rem;
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 48px;
+  padding: 28px 0;
+  border-top: 1px solid var(--rule);
 }
-
-.news li + li {
-  margin-top: 0.7rem;
+.news li:first-child {
+  border-top-color: var(--text);
 }
-
 .date {
-  flex: 0 0 5.5rem;
+  font-family: var(--font-mono);
+  font-size: 12px;
   color: var(--text-faint);
-  font-variant-numeric: tabular-nums;
+  padding-top: 5px;
 }
-
-.body {
-  color: var(--text-muted);
+.body p {
+  font-size: 19px;
+  line-height: 1.6;
+  max-width: 62ch;
 }
-
-@media (max-width: 640px) {
+.body .link-row {
+  margin-top: 12px;
+}
+@media (max-width: 860px) {
   .news li {
-    flex-direction: column;
-    gap: 0.1rem;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 22px 0;
   }
-
-  .date {
-    flex: none;
-    font-size: 0.85rem;
+  .body p {
+    font-size: 17px;
   }
 }
 </style>

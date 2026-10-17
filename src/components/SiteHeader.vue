@@ -1,83 +1,109 @@
 <template>
-  <header id="top" class="intro-header">
-    <div class="editorial-kicker">
-      <span class="small-star" aria-hidden="true">✳</span> A few things I've built.
-    </div>
-    <h1>Systems that scale.<br />Worlds that <em>move.</em></h1>
-    <div class="intro-bottom">
-      <div class="intro-copy">
-        <p>
-          I'm <strong>{{ site.name }}</strong
-          >, a C++ software engineer working where systems, graphics, and simulation meet.
+  <div id="top" class="entry">
+    <header class="hero">
+      <VoronoiField />
+      <div class="hero-scrim" aria-hidden="true"></div>
+      <div class="hero-inner">
+        <p class="hero-kicker">
+          <span class="status-dot" aria-hidden="true"></span>Welcome to my personal website.
         </p>
-        <p>
-          From large-scale battles at
-          <a href="https://www.digisky.com/" target="_blank" rel="noopener noreferrer"
-            >Digital Sky ↗</a
+        <h1 class="hero-title">
+          <span class="hero-line"
+            ><span>{{ site.name }}</span></span
           >
-          to articulated-object research at
-          <a href="https://www.math.ucla.edu/aivc/" target="_blank" rel="noopener noreferrer"
-            >UCLA's AIVC Lab ↗</a
-          >, I build the algorithms and tools behind interactive worlds.
+        </h1>
+        <p class="hero-role">
+          C++ software engineer building <em>systems</em>, <em>graphics</em> &amp;
+          <em>simulation</em>.
         </p>
-        <a class="text-cta" href="#projects"
-          >Explore selected work <span aria-hidden="true">↓</span></a
-        >
+        <ul class="hero-facts">
+          <li><span>Now</span>Research · UCLA AIVC Lab</li>
+          <li><span>Study</span>M.S. CS · USC, May 2027</li>
+          <li><span>Open to</span>2027 full-time roles</li>
+        </ul>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#/projects"
+            >Selected work <span aria-hidden="true">→</span></a
+          >
+          <a class="button" href="mailto:sheyfff@gmail.com">Get in touch</a>
+        </div>
       </div>
-      <aside class="intro-note">
-        <span class="note-pin" aria-hidden="true">✳</span>
-        <span class="eyebrow">CURRENTLY</span>
-        <p>Research at UCLA.<br />Computer science at USC.</p>
-        <span class="availability"
-          ><span aria-hidden="true"></span> Seeking 2027 full-time roles</span
-        >
-        <a href="mailto:sheyfff@gmail.com">Let's connect <span aria-hidden="true">↗</span></a>
-      </aside>
-    </div>
-    <div class="featured-heading">
-      <span class="eyebrow">A FEW STARTING POINTS</span><span aria-hidden="true">↙</span>
-    </div>
-    <nav class="featured-work" aria-label="Featured work">
-      <a
-        v-for="(item, index) in highlights"
-        :key="item.href"
-        :href="item.href"
-        class="featured-row"
-      >
-        <span class="featured-number">0{{ index + 1 }}</span>
-        <span class="featured-copy"
-          ><span class="eyebrow">{{ item.label }}</span
-          ><strong>{{ item.title }}</strong></span
-        >
-        <img :src="item.image" :alt="item.alt" loading="lazy" width="140" height="84" />
-        <span class="featured-arrow" aria-hidden="true">↗</span>
-      </a>
-    </nav>
-  </header>
+      <p class="hero-hint" data-no-site>
+        <span class="hint-desktop">Move to disturb the field · click to add a site.</span>
+        Voronoi partitions also ran
+        <a href="#/projects/project-mo">land ownership in Mandate Order →</a>
+      </p>
+    </header>
+
+    <section class="entry-section about" aria-labelledby="about-heading">
+      <h2 id="about-heading" class="entry-label">About</h2>
+      <div class="about-copy prose">
+        <!-- Authored HTML constants in src/data/site.ts; no external input is rendered. -->
+        <p
+          v-for="(paragraph, index) in site.bio"
+          :key="index"
+          v-reveal="index * 40"
+          v-html="paragraph"
+        />
+      </div>
+    </section>
+
+    <section class="entry-section" aria-labelledby="numbers-heading">
+      <h2 id="numbers-heading" class="entry-label">In numbers</h2>
+      <StatStrip v-reveal />
+    </section>
+
+    <section class="entry-section" aria-labelledby="work-heading">
+      <div class="entry-label-row">
+        <h2 id="work-heading" class="entry-label">Selected work</h2>
+        <a class="entry-more" href="#/projects">All projects →</a>
+      </div>
+      <WorkIndex />
+    </section>
+
+    <section class="entry-section shipped" aria-labelledby="shipped-heading">
+      <h2 id="shipped-heading" class="entry-label">Shipped</h2>
+      <div class="shipped-grid">
+        <ScreenshotCarousel
+          :slides="mandateOrderScreenshots"
+          label="Mandate Order featured screenshots"
+          class="shipped-carousel"
+        />
+        <div class="shipped-copy">
+          <p class="mono-label">Digital Sky · Steam Early Access · Aug 2026</p>
+          <h3>Mandate Order</h3>
+          <p>
+            A Warring States war city-builder with real-time battles of thousands of soldiers. I
+            built production C++ systems for it in Unreal Engine 5 — instanced rendering, a
+            multithreaded ECS, threat-aware routing, Voronoi land plots and a living frontline.
+          </p>
+          <a class="button" href="#/projects/project-mo"
+            >Inside the systems <span aria-hidden="true">→</span></a
+          >
+        </div>
+      </div>
+    </section>
+
+    <section class="entry-section" aria-labelledby="latest-heading">
+      <div class="entry-label-row">
+        <h2 id="latest-heading" class="entry-label">Latest</h2>
+        <a class="entry-more" href="#/news">All updates →</a>
+      </div>
+      <ol class="latest">
+        <li v-for="item in news.slice(0, 3)" :key="item.date + item.text" v-reveal>
+          <time>{{ item.date }}</time>
+          <p>{{ item.text }}</p>
+        </li>
+      </ol>
+    </section>
+  </div>
 </template>
 <script setup lang="ts">
 import { site } from '@/data/site'
-const highlights = [
-  {
-    label: 'RESEARCH / SECOND AUTHOR',
-    title: 'ArticulateArena',
-    href: '#articulatearena',
-    image: '/articulatearena-category.png',
-    alt: 'Articulated objects from ArticulateArena',
-  },
-  {
-    label: 'C++ / C# / DEVELOPER TOOLS',
-    title: 'ANGLE Graphics SDK',
-    href: '#angle-graphics-sdk',
-    image: '/angle-sdk-architecture.svg',
-    alt: 'ANGLE SDK architecture',
-  },
-  {
-    label: 'SHIPPED / C++ / UNREAL ENGINE',
-    title: 'Mandate Order',
-    href: '#project-mo',
-    image: '/mandate-order.png',
-    alt: 'Mandate Order on Steam',
-  },
-]
+import { news } from '@/data/news'
+import { mandateOrderScreenshots } from '@/data/mandateOrderScreenshots'
+import ScreenshotCarousel from './ScreenshotCarousel.vue'
+import StatStrip from './StatStrip.vue'
+import WorkIndex from './WorkIndex.vue'
+import VoronoiField from './demos/VoronoiField.vue'
 </script>

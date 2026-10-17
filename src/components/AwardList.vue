@@ -1,55 +1,77 @@
 <template>
-  <ul v-reveal class="awards measure">
+  <ol v-reveal class="awards">
     <li v-for="a in awards" :key="a.year + a.title">
-      <span class="year faint">{{ a.year }}</span>
-      <span class="title">{{ a.title }}</span>
-      <span v-if="a.org" class="org muted">{{ a.org }}</span>
+      <span class="year">{{ a.year }}</span>
+      <span class="medal" :data-tier="tier(a.title)">
+        <span class="medal-dot" aria-hidden="true"></span>{{ a.title }}
+      </span>
+      <span v-if="a.org" class="org">{{ a.org }}</span>
     </li>
-  </ul>
+  </ol>
 </template>
 
 <script setup lang="ts">
 import { awards } from '@/data/awards'
+
+function tier(title: string) {
+  if (/gold|first/i.test(title)) return 'gold'
+  if (/silver/i.test(title)) return 'silver'
+  return 'bronze'
+}
 </script>
 
 <style scoped>
 .awards li {
-  display: flex;
-  gap: 1rem;
-  font-size: 0.92rem;
-  padding: 0.35rem 0;
-}
-
-.awards li + li {
+  display: grid;
+  grid-template-columns: 240px 180px minmax(0, 1fr);
+  gap: 24px;
+  align-items: baseline;
+  padding: 20px 0;
   border-top: 1px solid var(--rule);
 }
-
+.awards li:first-child {
+  border-top-color: var(--text);
+}
 .year {
-  flex: 0 0 5.5rem;
-  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-faint);
 }
-
-.title {
-  flex: 0 0 7rem;
+.medal {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
 }
-
-@media (max-width: 640px) {
+.medal-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #b08d57;
+  box-shadow: inset 0 0 0 1px #00000026;
+}
+[data-tier='gold'] .medal-dot {
+  background: linear-gradient(135deg, #f3d27a, #b8892c);
+}
+[data-tier='silver'] .medal-dot {
+  background: linear-gradient(135deg, #e6e6e6, #9a9a9a);
+}
+[data-tier='bronze'] .medal-dot {
+  background: linear-gradient(135deg, #e0a676, #96582c);
+}
+.org {
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1.3;
+}
+@media (max-width: 860px) {
   .awards li {
-    flex-wrap: wrap;
-    gap: 0 0.6rem;
+    grid-template-columns: 1fr;
+    gap: 4px;
+    padding: 18px 0;
   }
-
-  .year {
-    flex: none;
-  }
-
-  .title {
-    flex: none;
-  }
-
   .org {
-    flex-basis: 100%;
-    font-size: 0.86rem;
+    font-size: 20px;
   }
 }
 </style>

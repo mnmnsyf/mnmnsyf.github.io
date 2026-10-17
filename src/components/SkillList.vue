@@ -1,12 +1,17 @@
 <template>
-  <div v-reveal class="skills measure">
-    <p class="summary muted">{{ skillsSummary }}</p>
-    <dl>
-      <template v-for="group in skills" :key="group.label">
-        <dt class="faint">{{ group.label }}</dt>
-        <dd>{{ group.items.join(', ') }}</dd>
-      </template>
-    </dl>
+  <div class="skills">
+    <p v-reveal class="summary">{{ skillsSummary }}</p>
+    <div class="skill-grid">
+      <section v-for="(group, g) in skills" :key="group.label" v-reveal="g * 40" class="skill-card">
+        <h2>
+          <span aria-hidden="true">{{ String(g + 1).padStart(2, '0') }}</span
+          >{{ group.label }}
+        </h2>
+        <ul>
+          <li v-for="item in group.items" :key="item">{{ item }}</li>
+        </ul>
+      </section>
+    </div>
   </div>
 </template>
 
@@ -16,33 +21,50 @@ import { skills, skillsSummary } from '@/data/skills'
 
 <style scoped>
 .summary {
-  font-size: 0.94rem;
-  margin-bottom: 1.1rem;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 2.6vw, 34px);
+  line-height: 1.3;
+  max-width: 34ch;
+  margin-bottom: 48px;
 }
-
-dl {
+.skill-grid {
   display: grid;
-  grid-template-columns: 6rem 1fr;
-  gap: 0.35rem 1rem;
-  font-size: 0.92rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  border-top: 1px solid var(--text);
+  border-left: 1px solid var(--rule);
 }
-
-dt {
-  font-size: 0.88rem;
+.skill-card {
+  padding: 22px 22px 26px;
+  border-right: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  transition: background-color 0.3s;
 }
-
-dd {
+.skill-card:hover {
+  background: var(--bg-raised);
+}
+.skill-card h2 {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 14px;
+}
+.skill-card h2 span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+}
+.skill-card ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.skill-card li {
+  font-size: 13px;
+  padding: 3px 10px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
   color: var(--text-muted);
-}
-
-@media (max-width: 640px) {
-  dl {
-    grid-template-columns: 1fr;
-    gap: 0 0;
-  }
-
-  dd {
-    margin-bottom: 0.6rem;
-  }
 }
 </style>

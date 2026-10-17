@@ -7,8 +7,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
-  // GitHub Pages部署配置
-  // 由于是部署到username.github.io根目录，base设置为'/'
+  base: process.env.VITE_BASE_PATH || '/',
   plugins: [vue(), vueJsx(), vueDevTools()],
   resolve: {
     alias: {

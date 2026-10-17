@@ -1,75 +1,109 @@
 <template>
-  <aside class="sidebar">
-    <a href="#top" class="profile-link" aria-label="Yongfei She — back to introduction">
-      <img
-        class="sidebar-portrait"
-        :src="site.photo.src"
-        :alt="site.photo.alt"
-        width="112"
-        height="112"
-      />
-      <span class="profile-name">{{ site.name }}</span>
-      <span class="profile-zh" lang="zh">{{ site.nameZh }}</span>
-    </a>
-    <p class="sidebar-role">C++ engineer.<br />Graphics & simulation.</p>
-    <nav class="section-nav" aria-label="Main navigation">
-      <a
-        v-for="(section, index) in sections"
-        :key="section.id"
-        :href="`#${section.id}`"
-        :class="{ active: active === section.id }"
-        :aria-current="active === section.id ? 'location' : undefined"
-      >
-        <span class="nav-number" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span>
-        {{ section.label }}<span class="nav-dot" aria-hidden="true">●</span>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="#/" class="brand" :aria-label="`${site.name} — back to introduction`">
+        <img class="brand-portrait" :src="assetUrl(site.photo.src)" alt="" width="28" height="28" />
+        <span class="brand-name">{{ site.name }}</span>
       </a>
-    </nav>
-    <div class="sidebar-bottom">
-      <p>Los Angeles, CA</p>
-      <nav class="sidebar-socials" aria-label="Contact and profiles">
+      <nav ref="nav" class="section-nav" aria-label="Main navigation">
         <a
-          v-for="link in navLinks"
-          :key="link.href"
-          :href="link.href"
-          :target="link.href.startsWith('mailto:') ? undefined : '_blank'"
-          rel="noopener noreferrer"
+          v-for="(section, index) in sections"
+          :key="section.id"
+          :ref="(el) => (links[index] = el as HTMLElement | null)"
+          :href="sectionHref(section.id)"
+          :class="{ active: active === section.id }"
+          :aria-current="active === section.id ? 'page' : undefined"
         >
-          {{ link.label }} <span aria-hidden="true">↗</span>
+          <span class="nav-number" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span
+          >{{ section.label }}
         </a>
+        <span class="nav-indicator" :style="indicator" aria-hidden="true"></span>
       </nav>
-      <span class="sidebar-edition">PORTFOLIO / 2026</span>
+      <div class="topbar-actions">
+        <button
+          type="button"
+          class="search-trigger"
+          aria-label="Open command palette"
+          aria-keyshortcuts="Control+K Meta+K"
+          @click="$emit('open-palette')"
+        >
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.4" />
+            <path d="m10.5 10.5 3 3" stroke="currentColor" stroke-width="1.4" />
+          </svg>
+          <span class="search-label">Jump to</span>
+          <kbd>{{ shortcut }}</kbd>
+        </button>
+        <button
+          type="button"
+          class="theme-toggle"
+          :aria-label="theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
+          @click="onToggle"
+        >
+          <svg viewBox="0 0 20 20" aria-hidden="true" :class="theme">
+            <mask id="theme-mask">
+              <rect width="20" height="20" fill="#fff" />
+              <circle class="moon-cut" cx="15" cy="5" r="5" fill="#000" />
+            </mask>
+            <circle class="sun-core" cx="10" cy="10" r="4.5" mask="url(#theme-mask)" />
+            <g class="sun-rays" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+              <path
+                d="M10 1.5v2M10 16.5v2M1.5 10h2M16.5 10h2M4 4l1.4 1.4M14.6 14.6 16 16M4 16l1.4-1.4M14.6 5.4 16 4"
+              />
+            </g>
+          </svg>
+        </button>
+      </div>
     </div>
-  </aside>
+    <span class="scroll-progress" aria-hidden="true"></span>
+  </header>
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
-import { site, navLinks, sections } from '@/data/site'
-const active = ref('top')
-let pending = false
-function updateActive() {
-  const line = window.innerHeight * 0.3
-  let current = 'top'
-  for (const section of sections) {
-    const element = document.getElementById(section.id)
-    if (element && element.getBoundingClientRect().top <= line) current = section.id
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { assetUrl } from '@/assetUrl'
+import { site, sections } from '@/data/site'
+import { sectionHref, type SectionId } from '@/navigation'
+import { useTheme } from '@/theme'
+
+const props = defineProps<{ active: SectionId }>()
+defineEmits<{ 'open-palette': [] }>()
+
+const { theme, toggle } = useTheme()
+const nav = ref<HTMLElement | null>(null)
+const links = ref<(HTMLElement | null)[]>([])
+const indicator = ref<Record<string, string>>({ opacity: '0' })
+const shortcut = ref('Ctrl K')
+
+/** A single underline slides between links instead of each link owning one. */
+function placeIndicator() {
+  const index = sections.findIndex((section) => section.id === props.active)
+  const link = links.value[index]
+  if (!link) return
+  indicator.value = {
+    opacity: '1',
+    transform: `translateX(${link.offsetLeft}px)`,
+    width: `${link.offsetWidth}px`,
   }
-  active.value = current
-  pending = false
+  link.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' })
 }
-function onScroll() {
-  if (!pending) {
-    pending = true
-    window.requestAnimationFrame(updateActive)
-  }
+
+function onToggle(event: MouseEvent) {
+  const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
+  toggle(rect.left + rect.width / 2, rect.top + rect.height / 2)
 }
+
+let resizeObserver: ResizeObserver | undefined
+watch(
+  () => props.active,
+  () => void nextTick(placeIndicator),
+)
 onMounted(() => {
-  updateActive()
-  window.addEventListener('scroll', onScroll, { passive: true })
-  window.addEventListener('resize', onScroll)
+  if (/Mac|iPhone|iPad/.test(navigator.platform)) shortcut.value = '⌘K'
+  resizeObserver = new ResizeObserver(placeIndicator)
+  if (nav.value) resizeObserver.observe(nav.value)
+  void document.fonts?.ready.then(placeIndicator)
+  placeIndicator()
 })
-onBeforeUnmount(() => {
-  window.removeEventListener('scroll', onScroll)
-  window.removeEventListener('resize', onScroll)
-})
+onBeforeUnmount(() => resizeObserver?.disconnect())
 </script>

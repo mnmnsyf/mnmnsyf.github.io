@@ -1,20 +1,81 @@
+/*
+ * Design tokens. Light is the authored default; dark follows the system unless
+ * the visitor picks a theme, which is stored as `data-theme` on <html>.
+ * Canvas demos read the --gl-* tokens, so keep those as plain hex.
+ */
 :root {
-  --accent: #755240;
-  --accent-hover: #4f372b;
-  --text: #302e2a;
-  --text-muted: #66635b;
-  --text-faint: #77736a;
-  --rule: #ded9ce;
-  --bg: #f7f5ef;
-  --bg-inset: #eeebe2;
-  --bg-banner: #f7f5ef;
-  --font: 'Inter', 'Segoe UI', sans-serif;
-  --font-display: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
-  --measure: 100%;
-  --measure-wide: 1240px;
-  --nav-h: 24px;
-  --gap-section: 6rem;
+  --bg: #f3f2ee;
+  --bg-raised: #fbfaf7;
+  --bg-inset: #e9e7e1;
+  --text: #151513;
+  --text-muted: #5d5b55;
+  --text-faint: #6f6c65;
+  --rule: #dad7cf;
+  --rule-strong: #b9b5ab;
+  --accent: #d9461b;
+  --accent-hover: #b0360f;
+  --accent-soft: #d9461b1a;
+  --ok: #3f7a4a;
+
+  --gl-bg: #f3f2ee;
+  --gl-ink: #151513;
+  --gl-line: #bdb9ae;
+  --gl-accent: #d9461b;
+
+  --font: 'Geist', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  --font-display: 'Instrument Serif', 'Times New Roman', Georgia, serif;
+
+  --page: 1280px;
+  --gutter: 40px;
+  --header-h: 64px;
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.7, 0, 0.2, 1);
+  color-scheme: light;
 }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #0b0b0a;
+    --bg-raised: #131311;
+    --bg-inset: #1a1a17;
+    --text: #edece6;
+    --text-muted: #a3a097;
+    --text-faint: #8a877e;
+    --rule: #262521;
+    --rule-strong: #3d3b35;
+    --accent: #ff6a3d;
+    --accent-hover: #ff8a63;
+    --accent-soft: #ff6a3d1f;
+    --ok: #7fbf7f;
+    --gl-bg: #0b0b0a;
+    --gl-ink: #edece6;
+    --gl-line: #34322c;
+    --gl-accent: #ff6a3d;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg: #0b0b0a;
+  --bg-raised: #131311;
+  --bg-inset: #1a1a17;
+  --text: #edece6;
+  --text-muted: #a3a097;
+  --text-faint: #8a877e;
+  --rule: #262521;
+  --rule-strong: #3d3b35;
+  --accent: #ff6a3d;
+  --accent-hover: #ff8a63;
+  --accent-soft: #ff6a3d1f;
+  --ok: #7fbf7f;
+  --gl-bg: #0b0b0a;
+  --gl-ink: #edece6;
+  --gl-line: #34322c;
+  --gl-accent: #ff6a3d;
+  color-scheme: dark;
+}
+
 *,
 *::before,
 *::after {
@@ -22,9 +83,9 @@
   margin: 0;
 }
 html {
-  scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
-  scroll-padding-top: 2rem;
+  scroll-padding-top: calc(var(--header-h) + 24px);
+  background: var(--bg);
 }
 body {
   min-height: 100vh;
@@ -32,9 +93,13 @@ body {
   background: var(--bg);
   font-family: var(--font);
   font-size: 16px;
-  line-height: 1.8;
+  line-height: 1.7;
+  font-feature-settings: 'ss01', 'cv11';
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 h1,
 h2,
@@ -42,10 +107,12 @@ h3,
 h4 {
   color: var(--text);
   font-weight: 500;
-  line-height: 1.25;
+  line-height: 1.2;
+  text-wrap: balance;
 }
 p {
   margin-bottom: 1rem;
+  text-wrap: pretty;
 }
 p:last-child {
   margin-bottom: 0;
@@ -54,6 +121,7 @@ a {
   color: var(--accent);
   text-decoration: none;
   text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
 }
 a:hover {
   color: var(--accent-hover);
@@ -68,7 +136,8 @@ ol {
   padding: 0;
 }
 img,
-video {
+video,
+canvas {
   display: block;
   max-width: 100%;
   height: auto;
@@ -81,22 +150,37 @@ button {
   background: none;
   padding: 0;
 }
+kbd {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 1px 5px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 4px;
+  color: var(--text-muted);
+}
 :focus-visible {
   outline: 2px solid var(--accent);
-  outline-offset: 5px;
+  outline-offset: 4px;
+  border-radius: 2px;
 }
 ::selection {
-  background: #dcd0bc;
-  color: #302e2a;
+  background: var(--accent);
+  color: #fff;
 }
+
+/* Theme switch: the new theme grows as a circle from the toggle. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
   *,
   *::before,
   *::after {
-    animation: none !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
     transition: none !important;
   }
 }

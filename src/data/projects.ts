@@ -33,12 +33,19 @@ const engineRendering: ProjectGroup = {
     {
       id: 'path-tracing-denoising',
       links: [{ label: 'Pipeline overview', href: '/denoising-workflow.svg' }],
-      title: 'Path Tracing Denoising',
+      title: 'Path Tracing Denoising with Deep Learning',
       role: 'Personal project · In progress',
       period: 'Sep 2026 – Present',
-      tech: ['C++', 'Unreal Engine 5', 'PyTorch', 'SVGF', 'DLSS Ray Reconstruction'],
+      tech: [
+        'C++',
+        'Unreal Engine 5',
+        'Deep Learning',
+        'PyTorch',
+        'SVGF',
+        'DLSS Ray Reconstruction',
+      ],
       summary:
-        'A UE5 data collection and benchmarking pipeline for studying reconstruction quality and temporal stability under low-sample-count path tracing.',
+        'An ongoing deep-learning project combining UE5 training-data collection, PyTorch neural denoiser training, and baseline comparisons to study reconstruction quality and temporal stability in low-sample-count path tracing.',
       body: [
         'Built an Unreal Engine 5 data collection pipeline to prepare path-traced rendering data for neural denoiser training.',
         'Implemented an SVGF denoising baseline and integrated NVIDIA DLSS Ray Reconstruction into a comparative benchmarking pipeline.',
@@ -454,7 +461,16 @@ const gameplayEngineering: ProjectGroup = {
 }
 
 export const projectGroups: ProjectGroup[] = [
+  {
+    id: 'production-work',
+    title: 'Production Work · Digital Sky',
+    blurb: 'C++ gameplay and engine systems for Mandate Order, released on Steam Early Access.',
+    projects: gameplayEngineering.projects.filter((project) => project.id === 'project-mo'),
+  },
   engineRendering,
   animationSimulation,
-  gameplayEngineering,
+  {
+    ...gameplayEngineering,
+    projects: gameplayEngineering.projects.filter((project) => project.id !== 'project-mo'),
+  },
 ]

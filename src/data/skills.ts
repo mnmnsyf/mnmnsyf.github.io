@@ -1,7 +1,7 @@
 import type { SkillGroup } from './types'
 
 export const skillsSummary =
-  'Production C++ systems, real-time graphics and simulation, with research experience in articulated-object evaluation.'
+  'Production C++ software systems, real-time graphics and simulation, articulated-object research, and ongoing deep-learning work on neural rendering denoising.'
 
 export const skills: SkillGroup[] = [
   { label: 'Languages', items: ['C++', 'C', 'C#', 'Java', 'Python', 'Lua', 'HLSL', 'MySQL'] },
@@ -15,6 +15,10 @@ export const skills: SkillGroup[] = [
     items: ['Kinematics', 'Physics Simulation', 'Multi-model Evaluation', 'Benchmarking'],
   },
   { label: 'Engines', items: ['Unreal Engine', 'Unity'] },
+  {
+    label: 'Deep Learning',
+    items: ['PyTorch', 'Neural Denoising', 'Training-Data Pipelines', 'Comparative Evaluation'],
+  },
   {
     label: 'Tools',
     items: ['Git', 'Visual Studio', '.NET', 'PyTorch', 'Blender', 'Cursor', 'Confluence', 'Jira'],

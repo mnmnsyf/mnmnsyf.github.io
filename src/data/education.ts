@@ -12,7 +12,7 @@ export const education: Education[] = [
       'Game Engine Development',
       'Computer Animation and Simulation',
       'Foundations of Artificial Intelligence',
-      'Deep Learning and Its Applications',
+      'CSCI 566: Deep Learning and Its Applications (in progress)',
     ],
   },
   {

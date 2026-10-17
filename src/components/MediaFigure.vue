@@ -5,23 +5,23 @@
       controls
       preload="none"
       playsinline
-      :poster="media.poster"
+      :poster="assetUrl(media.poster)"
       :aria-label="media.alt"
       :width="dimensions?.width"
       :height="dimensions?.height"
     >
-      <source :src="media.src" type="video/mp4" />
+      <source :src="assetUrl(media.src)" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
     <a
       v-else
-      :href="media.src"
+      :href="assetUrl(media.src)"
       target="_blank"
       rel="noopener noreferrer"
       :aria-label="`Open full-size image: ${media.alt}`"
     >
       <img
-        :src="media.src"
+        :src="assetUrl(media.src)"
         :alt="media.alt"
         :width="dimensions?.width"
         :height="dimensions?.height"
@@ -33,6 +33,7 @@
 </template>
 
 <script setup lang="ts">
+import { assetUrl } from '@/assetUrl'
 import type { Media } from '@/data/types'
 import { computed } from 'vue'
 import { mediaDimensions } from '@/data/mediaDimensions'

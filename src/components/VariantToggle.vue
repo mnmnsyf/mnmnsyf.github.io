@@ -1,6 +1,6 @@
 <template>
   <figure class="variant">
-    <img :src="active.src" :alt="active.alt" loading="lazy" />
+    <img :src="assetUrl(active.src)" :alt="active.alt" loading="lazy" />
     <div class="switch link-row">
       <button
         v-for="v in variants"
@@ -17,6 +17,7 @@
 </template>
 
 <script setup lang="ts">
+import { assetUrl } from '@/assetUrl'
 import { computed, ref } from 'vue'
 import type { MediaVariant } from '@/data/types'
 
