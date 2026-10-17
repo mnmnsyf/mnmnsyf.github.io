@@ -33,7 +33,7 @@ import ProjectEntry from './ProjectEntry.vue'
   margin: -5px 0 35px;
 }
 .project-index a {
-  font-size: 10px;
+  font-size: 12px;
   padding: 6px 0;
   border-bottom: 1px solid var(--rule);
 }
