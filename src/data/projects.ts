@@ -32,6 +32,7 @@ const engineRendering: ProjectGroup = {
     },
     {
       id: 'path-tracing-denoising',
+      links: [{ label: 'Pipeline overview', href: '/denoising-workflow.svg' }],
       title: 'Path Tracing Denoising',
       role: 'Personal project · In progress',
       period: 'Sep 2026 – Present',
@@ -330,6 +331,7 @@ const gameplayEngineering: ProjectGroup = {
     },
     {
       id: 'sight-tour',
+      links: [{ label: 'Source code', href: 'https://github.com/mnmnsyf/SightTour' }],
       title: 'Sight Tour',
       period: '2023',
       tech: ['Unreal Engine 5', 'C++', 'Post-Process Materials', 'Stereo Rendering'],
@@ -399,6 +401,7 @@ const gameplayEngineering: ProjectGroup = {
     },
     {
       id: 'orca',
+      links: [{ label: 'Source code', href: 'https://github.com/mnmnsyf/ORCA_UE5' }],
       title: 'ORCA Collision Avoidance in UE5',
       tech: ['Unreal Engine 5', 'C++', 'Multi-Agent Navigation'],
       summary:
@@ -418,6 +421,11 @@ const gameplayEngineering: ProjectGroup = {
     },
     {
       id: 'others',
+      links: [
+        { label: 'Jumping Party', href: 'https://github.com/mnmnsyf/JumpingParty' },
+        { label: 'Tavern & Adventure', href: 'https://github.com/mnmnsyf/TavernAndAdventure' },
+        { label: 'Little Adventurer', href: 'https://github.com/mnmnsyf/LittleAdventurer' },
+      ],
       title: 'Smaller Projects',
       tech: ['Unreal Engine 5', 'C++'],
       summary: 'Prototypes exploring different gameplay mechanics and visual styles.',

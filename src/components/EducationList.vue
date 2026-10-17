@@ -2,7 +2,11 @@
   <ol class="education measure prose">
     <li v-for="item in education" :key="item.school" v-reveal class="entry">
       <div class="head">
-        <h3 class="school">{{ item.school }}</h3>
+        <h3 class="school">
+          <a :href="item.href" target="_blank" rel="noopener noreferrer"
+            >{{ item.school }} <span aria-hidden="true">↗</span></a
+          >
+        </h3>
         <span class="period faint">{{ item.period }}</span>
       </div>
       <p class="degree">

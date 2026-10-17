@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test": "node --test tests/portfolio.test.mjs",
     "dev": "vite",
     "dev:lan": "vite --host 0.0.0.0",
     "build": "run-p type-check \"build-only {@}\" --",

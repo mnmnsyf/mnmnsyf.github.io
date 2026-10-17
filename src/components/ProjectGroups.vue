@@ -1,5 +1,10 @@
 <template>
   <div>
+    <nav class="project-index" aria-label="Project categories">
+      <a v-for="group in projectGroups" :key="group.id" :href="`#${group.id}`"
+        >{{ group.title }} <span aria-hidden="true">↓</span></a
+      >
+    </nav>
     <section v-for="group in projectGroups" :id="group.id" :key="group.id" class="group">
       <div v-reveal class="group-head measure">
         <h3 class="group-title">{{ group.title }}</h3>
@@ -21,6 +26,24 @@ import ProjectEntry from './ProjectEntry.vue'
 </script>
 
 <style scoped>
+.project-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin: -5px 0 35px;
+}
+.project-index a {
+  font-size: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.project-index a:hover {
+  text-decoration: none;
+  border-color: var(--accent);
+}
+.group {
+  scroll-margin-top: 32px;
+}
 .group + .group {
   margin-top: 3.5rem;
 }

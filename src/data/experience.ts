@@ -4,6 +4,10 @@ export const experience: Experience[] = [
   {
     org: 'Artificial Intelligence & Visual Computing Lab, UCLA',
     role: 'Research Assistant',
+    links: [
+      { label: 'AIVC Lab', href: 'https://www.math.ucla.edu/aivc/' },
+      { label: 'ArticulateArena paper', href: 'https://arxiv.org/abs/2609.33931' },
+    ],
     period: 'Jun 2026 – Present',
     location: 'Los Angeles, CA',
     advisor: {
@@ -19,6 +23,10 @@ export const experience: Experience[] = [
   {
     org: 'Chengdu Digital Sky Technology',
     role: 'Software Engineer · C++ / Unreal Systems',
+    links: [
+      { label: 'Digital Sky', href: 'https://www.digisky.com/' },
+      { label: 'Mandate Order on Steam', href: 'https://store.steampowered.com/app/1733690' },
+    ],
     period: 'Jul 2024 – Dec 2025 · Full-time',
     location: 'Chengdu, China',
     bullets: [
@@ -42,6 +50,10 @@ export const experience: Experience[] = [
   {
     org: 'Chengdu Digital Sky Technology',
     role: 'Software Engineer Intern · C++ / Unreal Systems',
+    links: [
+      { label: 'Digital Sky', href: 'https://www.digisky.com/' },
+      { label: 'Mandate Order', href: 'https://www.digisky.com/product/mo' },
+    ],
     period: 'Sep 2023 – Jul 2024 · Internship',
     location: 'Chengdu, China',
     bullets: [
@@ -54,6 +66,7 @@ export const experience: Experience[] = [
   {
     org: 'Data Structures & Algorithms Lab, Chengdu University of Information Technology',
     role: 'Member',
+    links: [{ label: 'University website', href: 'https://www.cuit.edu.cn/' }],
     period: 'Sep 2020 – Jun 2023',
     location: 'Chengdu, China',
     bullets: [

@@ -1,37 +1,40 @@
 <template>
-  <SiteNav />
-  <SiteHeader />
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div class="site-layout">
+    <SiteNav />
+    <main id="main-content" class="page" tabindex="-1">
+      <SiteHeader />
 
-  <div class="page">
-    <SectionBlock id="news" title="News">
-      <NewsList />
-    </SectionBlock>
+      <SectionBlock id="projects" title="Selected projects">
+        <ProjectGroups />
+      </SectionBlock>
 
-    <SectionBlock id="research" title="Research">
-      <ProjectEntry :project="articulateArena" />
-    </SectionBlock>
+      <SectionBlock id="research" title="Research">
+        <ProjectEntry :project="articulateArena" />
+      </SectionBlock>
 
-    <SectionBlock id="experience" title="Experience">
-      <ExperienceList />
-    </SectionBlock>
+      <SectionBlock id="experience" title="Experience">
+        <ExperienceList />
+      </SectionBlock>
 
-    <SectionBlock id="projects" title="Projects">
-      <ProjectGroups />
-    </SectionBlock>
+      <SectionBlock id="news" title="Updates">
+        <NewsList />
+      </SectionBlock>
 
-    <SectionBlock id="education" title="Education">
-      <EducationList />
-    </SectionBlock>
+      <SectionBlock id="education" title="Education">
+        <EducationList />
+      </SectionBlock>
 
-    <SectionBlock id="awards" title="Awards">
-      <AwardList />
-    </SectionBlock>
+      <SectionBlock id="awards" title="Awards">
+        <AwardList />
+      </SectionBlock>
 
-    <SectionBlock id="skills" title="Skills">
-      <SkillList />
-    </SectionBlock>
+      <SectionBlock id="skills" title="Skills">
+        <SkillList />
+      </SectionBlock>
 
-    <SiteFooter />
+      <SiteFooter />
+    </main>
   </div>
 </template>
 

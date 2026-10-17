@@ -77,10 +77,11 @@ export const featuredWork = [
 
 /** Anchor targets for the top navigation, in page order. */
 export const sections = [
-  { id: 'news', label: 'News' },
+  { id: 'top', label: 'Entry' },
+  { id: 'projects', label: 'Projects' },
   { id: 'research', label: 'Research' },
   { id: 'experience', label: 'Experience' },
-  { id: 'projects', label: 'Projects' },
+  { id: 'news', label: 'Updates' },
   { id: 'education', label: 'Education' },
   { id: 'awards', label: 'Awards' },
   { id: 'skills', label: 'Skills' },

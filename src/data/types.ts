@@ -67,11 +67,13 @@ export interface Experience {
   location?: string
   advisor?: Link
   bullets: string[]
+  links: Link[]
   media?: Media[]
 }
 
 export interface Education {
   school: string
+  href: string
   degree: string
   period: string
   location?: string

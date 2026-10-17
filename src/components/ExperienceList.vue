@@ -16,7 +16,22 @@
       <ul class="bullets">
         <li v-for="(b, i) in item.bullets" :key="i">{{ b }}</li>
       </ul>
-      <MediaGrid v-if="item.media?.length" class="experience-media" :items="item.media" :columns="1" />
+      <nav class="link-row experience-links" :aria-label="`${item.role} resources`">
+        <a
+          v-for="link in item.links"
+          :key="link.href"
+          :href="link.href"
+          target="_blank"
+          rel="noopener noreferrer"
+          >{{ link.label }} <span aria-hidden="true">↗</span></a
+        >
+      </nav>
+      <MediaGrid
+        v-if="item.media?.length"
+        class="experience-media"
+        :items="item.media"
+        :columns="1"
+      />
     </li>
   </ol>
 </template>

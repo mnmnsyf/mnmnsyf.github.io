@@ -3,7 +3,8 @@
     <video
       v-if="media.kind === 'video'"
       controls
-      preload="metadata"
+      preload="none"
+      playsinline
       :poster="media.poster"
       :aria-label="media.alt"
       :width="dimensions?.width"
@@ -12,14 +13,21 @@
       <source :src="media.src" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
-    <img
+    <a
       v-else
-      :src="media.src"
-      :alt="media.alt"
-      :width="dimensions?.width"
-      :height="dimensions?.height"
-      loading="lazy"
-    />
+      :href="media.src"
+      target="_blank"
+      rel="noopener noreferrer"
+      :aria-label="`Open full-size image: ${media.alt}`"
+    >
+      <img
+        :src="media.src"
+        :alt="media.alt"
+        :width="dimensions?.width"
+        :height="dimensions?.height"
+        loading="lazy"
+      />
+    </a>
     <figcaption v-if="media.caption" class="caption">{{ media.caption }}</figcaption>
   </figure>
 </template>

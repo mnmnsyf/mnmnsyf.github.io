@@ -23,17 +23,35 @@ npm run dev
 Production checks and preview:
 
 ```sh
+npm test
 npm run build
 npm run preview
 ```
 
-The build runs both Vue/TypeScript checking and Vite compilation.
+The tests render the actual Vue app and check resource links, anchor integrity,
+and keyboard navigation landmarks. The build runs both Vue/TypeScript checking
+and Vite compilation.
+
+## Layout
+
+The October 2026 redesign uses a warm paper surface, a persistent profile index,
+and an editorial content column, inspired by https://ianka1.github.io/#/.
+Below 760px, navigation wraps above a single-column layout. All project resource
+links and previews stay visible; technical notes and additional media expand
+through native keyboard-accessible disclosures. Images link to their full-size
+versions, and videos load on demand.
+
+Every project and experience must include a useful resource link. Link to an
+actual repository, paper, product, institution, or clearly labelled local visual;
+do not imply private or unpublished source code is public. Path Tracing Denoising
+currently links to its pipeline overview because no public repository is verified.
 
 ## Updating content
 
 Content lives in `src/data/`:
 
-- `site.ts`: identity, recruiting information, featured work and navigation.
+- `site.ts`: identity, recruiting information and navigation.
+- `src/components/SiteHeader.vue`: introductory copy and featured project index.
 - `publications.ts`: ArticulateArena, contribution statement, links and authors.
 - `experience.ts`, `education.ts`, `news.ts`: timeline and dates.
 - `projects.ts`, `skills.ts`, `awards.ts`: engineering evidence and skills.

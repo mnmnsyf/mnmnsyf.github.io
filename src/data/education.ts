@@ -3,6 +3,7 @@ import type { Education } from './types'
 export const education: Education[] = [
   {
     school: 'University of Southern California',
+    href: 'https://www.usc.edu/',
     degree: 'M.S. Computer Science',
     period: 'Jan 2026 – May 2027 (expected)',
     location: 'Los Angeles, CA',
@@ -16,6 +17,7 @@ export const education: Education[] = [
   },
   {
     school: 'Chengdu University of Information Technology',
+    href: 'https://www.cuit.edu.cn/',
     degree: 'B.Eng., School of Computer Science',
     period: '2020 – 2024',
     location: 'Chengdu, China',
