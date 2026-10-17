@@ -13,17 +13,21 @@
           >
         </h1>
         <p class="hero-role">
-          C++ software engineer building <em>systems</em>, <em>graphics</em> &amp;
+          Software engineer building high-performance <em>C++ systems</em>, <em>tools</em> &amp;
           <em>simulation</em>.
         </p>
         <ul class="hero-facts">
           <li><span>Now</span>Research · UCLA AIVC Lab</li>
           <li><span>Study</span>M.S. CS · USC, May 2027</li>
-          <li><span>Open to</span>2027 full-time roles</li>
+          <li><span>Algorithms</span>ICPC silver medalist</li>
+          <li><span>Open to</span>2027 full-time SDE roles</li>
         </ul>
         <div class="hero-actions">
           <a class="button button-primary" href="#/projects"
             >Selected work <span aria-hidden="true">→</span></a
+          >
+          <a class="button" :href="assetUrl(resumeHref)" target="_blank" rel="noopener"
+            >Résumé (PDF) <span aria-hidden="true">↗</span></a
           >
           <a class="button" href="mailto:sheyfff@gmail.com">Get in touch</a>
         </div>
@@ -74,8 +78,9 @@
           <h3>Mandate Order</h3>
           <p>
             A Warring States war city-builder with real-time battles of thousands of soldiers. I
-            built production C++ systems for it in Unreal Engine 5 — instanced rendering, a
-            multithreaded ECS, threat-aware routing, Voronoi land plots and a living frontline.
+            built production C++ systems for it in Unreal Engine 5: threat-aware routing, spatial
+            grouping, command relay, Voronoi land plots, the battle frontline, the skill system, and
+            the input and UI layers.
           </p>
           <a class="button" href="#/projects/project-mo"
             >Inside the systems <span aria-hidden="true">→</span></a
@@ -99,7 +104,8 @@
   </div>
 </template>
 <script setup lang="ts">
-import { site } from '@/data/site'
+import { assetUrl } from '@/assetUrl'
+import { resumeHref, site } from '@/data/site'
 import { news } from '@/data/news'
 import { mandateOrderScreenshots } from '@/data/mandateOrderScreenshots'
 import ScreenshotCarousel from './ScreenshotCarousel.vue'

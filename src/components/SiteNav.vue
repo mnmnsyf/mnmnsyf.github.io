@@ -20,6 +20,9 @@
         <span class="nav-indicator" :style="indicator" aria-hidden="true"></span>
       </nav>
       <div class="topbar-actions">
+        <a class="resume-link" :href="assetUrl(resumeHref)" target="_blank" rel="noopener"
+          >Résumé</a
+        >
         <button
           type="button"
           class="search-trigger"
@@ -62,7 +65,7 @@
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { assetUrl } from '@/assetUrl'
-import { site, sections } from '@/data/site'
+import { resumeHref, site, sections } from '@/data/site'
 import { sectionHref, type SectionId } from '@/navigation'
 import { useTheme } from '@/theme'
 

@@ -156,6 +156,23 @@
   align-items: center;
   gap: 8px;
 }
+.resume-link {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--bg);
+  background: var(--text);
+  transition: background-color 0.2s;
+}
+.resume-link:hover {
+  color: var(--bg);
+  background: var(--accent);
+  text-decoration: none;
+}
 .search-trigger {
   display: inline-flex;
   align-items: center;
@@ -695,7 +712,8 @@
   .section-nav a {
     padding: 8px;
   }
-  .search-trigger kbd {
+  .search-trigger kbd,
+  .resume-link {
     display: none;
   }
   .search-trigger {

@@ -10,17 +10,17 @@ export const awards: Award[] = [
   {
     year: 'May 2023',
     title: 'Silver Medal',
-    org: 'ICPC National Invitational Contest — Shaanxi',
+    org: 'ICPC Invitational — Shaanxi',
   },
   {
     year: 'Dec 2022',
     title: 'Bronze Medal',
-    org: 'ICPC National Invitational Contest — Nanjing',
+    org: 'ICPC Invitational — Nanjing',
   },
   {
     year: 'Oct 2022',
     title: 'Bronze Medal',
-    org: "China Collegiate Women's Programming Contest",
+    org: "CCPC Women's Finals",
   },
   {
     year: 'Aug 2022',

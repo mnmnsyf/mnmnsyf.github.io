@@ -50,7 +50,7 @@ const items = [
   },
   {
     title: 'ArticulateArena',
-    kind: 'Research · 2nd author',
+    kind: 'Research · co-first author',
     year: '2026',
     href: '#/research/articulatearena',
     image: '/articulatearena-category.png',

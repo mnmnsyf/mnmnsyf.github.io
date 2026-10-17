@@ -69,6 +69,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { projectGroups } from '@/data/projects'
 import { articulateArena } from '@/data/publications'
+import { assetUrl } from '@/assetUrl'
 import { navLinks, sections } from '@/data/site'
 import { sectionHref } from '@/navigation'
 import { useTheme } from '@/theme'
@@ -119,11 +120,13 @@ const commands: Command[] = [
     title: link.label,
     meta: link.href.startsWith('mailto:')
       ? link.href.slice('mailto:'.length)
-      : new URL(link.href).hostname.replace(/^www\./, ''),
+      : link.href.startsWith('/')
+        ? 'PDF'
+        : new URL(link.href).hostname.replace(/^www\./, ''),
     run: () =>
       link.href.startsWith('mailto:')
         ? (window.location.href = link.href)
-        : window.open(link.href, '_blank', 'noopener'),
+        : window.open(assetUrl(link.href), '_blank', 'noopener'),
   })),
   {
     key: 'theme',

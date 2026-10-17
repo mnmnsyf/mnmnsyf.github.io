@@ -3,7 +3,7 @@ import type { Project } from './types'
 export const articulateArena: Project = {
   id: 'articulatearena',
   title: 'ArticulateArena: A Metric for Articulated Kinematics',
-  role: 'Second author',
+  role: 'Co-first author',
   period: 'arXiv preprint · Sep 2026',
   tech: ['Kinematics', 'Articulated Objects', 'Simulation', 'Evaluation'],
   summary:
@@ -17,7 +17,7 @@ export const articulateArena: Project = {
     { label: 'Read paper', href: 'https://arxiv.org/abs/2609.33931' },
     { label: 'Project & demos', href: 'https://heyumeng.com/ArticulateArena-web/' },
   ],
-  note: 'Second author. arXiv preprint, September 27, 2026; submitted to ICLR. See the linked paper for the complete author list as published.',
+  note: 'Co-first author. arXiv preprint, September 27, 2026; submitted to ICLR. See the linked paper for the complete author list as published.',
   mediaColumns: 1,
   media: [
     {

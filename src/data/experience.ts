@@ -15,28 +15,28 @@ export const experience: Experience[] = [
       href: 'https://www.math.ucla.edu/~cffjiang/index.html',
     },
     bullets: [
-      'Second author of ArticulateArena: A Metric for Articulated Kinematics, available on arXiv.',
+      'Co-first author of ArticulateArena: A Metric for Articulated Kinematics, available on arXiv.',
       'Contributed to representation-invariant joint-motion metrics and standardized evaluation protocols for articulated objects.',
       'Built and ran multi-model experiments covering model execution, quality assessment, and comparative analysis.',
     ],
   },
   {
     org: 'Chengdu Digital Sky Technology',
-    role: 'Software Engineer · C++ / Unreal Systems',
+    role: 'Software Engineer (C++ / Unreal Systems)',
     links: [
       { label: 'Digital Sky', href: 'https://www.digisky.com/' },
       { label: 'Mandate Order on Steam', href: 'https://store.steampowered.com/app/1733690' },
     ],
-    period: 'Jul 2024 – Dec 2025 · Full-time',
+    period: 'Sep 2023 \u2013 Dec 2025',
     location: 'Chengdu, China',
     bullets: [
-      'Built production C++ engine and simulation systems for Mandate Order, released on Steam Early Access.',
-      'Scaled rendering to 10,000+ entities with GPU instancing to reduce draw-call overhead.',
-      'Designed a multithreaded ECS, separating event triggers from execution across 100+ configurable abilities.',
-      'Built dynamic road-graph routing with heap-based multi-source Dijkstra for threat-aware and supply routes, supporting 1,000+ concurrent agents; batched road-state synchronization across GameWorld and AIWorld.',
-      'Built a supply transportation system on the navigation mesh, automating strategic resource routing across large-scale battles.',
-      'Designed a multi-mode input and UI system on Enhanced Input, supporting layered, context-aware interaction.',
-      'Partitioned terrain with Voronoi diagrams to derive plot adjacency, backing the in-game construction system.',
+      'Shipped production C++ systems for Mandate Order, a commercial Unreal Engine 5 strategy game released on Steam Early Access, growing from intern to full-time engineer.',
+      'Cut connectivity computation by 85% at the typical 1,000-unit workload with spatial hashing on a uniform grid; built a templated KD-tree, union-find and DBSCAN library for 5,000+ unit scenes.',
+      'Built a threat-aware pathfinding service (heap-based multi-source Dijkstra) for 1,000+ concurrent agents, with batched, queue-based state sync to the AI thread.',
+      'Owned the data-driven skill system for 100+ abilities on the project\u2019s multithreaded ECS: triggers decoupled from execution, commander skill preview and release, and Unreal Mass projectile processors.',
+      'Designed reusable input and UI frameworks: prioritized input contexts with reference-counted action monitoring, a stack-based UI layer manager, and a registry-based settings system.',
+      'Implemented Floyd\u2013Warshall routing with cached next hops for command relay across 50+ signal-tower nodes, and Voronoi land partitioning with grid-approximated adjacency.',
+      'Built reusable behavior-tree components, reducing implementation time by approximately 50%.',
     ],
     media: [
       {
@@ -45,22 +45,6 @@ export const experience: Experience[] = [
         alt: 'Mandate Order Steam store page',
         caption: 'Mandate Order on Steam Early Access',
       },
-    ],
-  },
-  {
-    org: 'Chengdu Digital Sky Technology',
-    role: 'Software Engineer Intern · C++ / Unreal Systems',
-    links: [
-      { label: 'Digital Sky', href: 'https://www.digisky.com/' },
-      { label: 'Mandate Order', href: 'https://www.digisky.com/product/mo' },
-    ],
-    period: 'Sep 2023 – Jul 2024 · Internship',
-    location: 'Chengdu, China',
-    bullets: [
-      'Reduced connectivity calculation overhead by 85% at 2,000+ units using a KD-tree and reusable C++ templates.',
-      'Implemented Floyd–Warshall shortest paths for command relay across 50+ connected signal-tower nodes.',
-      'Built reusable behavior-tree components, reducing implementation time by approximately 50%.',
-      'Delivered a playable tavern-management and farming prototype within one month with cross-functional teammates.',
     ],
   },
   {

@@ -1,4 +1,5 @@
 import type { Project } from './data/types'
+import { highlightCards } from './data/highlights'
 
 /** Split a paragraph into its first sentence and the remainder. */
 export function splitLead(text: string): { lead: string; rest: string } {
@@ -20,6 +21,7 @@ export function metricFigure(metric: string): string | null {
 export interface Highlight {
   title: string
   text: string
+  tags?: string[]
   /** Element id inside the notes panel this highlight expands to. */
   target: string
 }
@@ -29,15 +31,20 @@ export interface Highlight {
  * system when the project has modules, otherwise one per write-up paragraph.
  */
 export function projectHighlights(project: Project): Highlight[] {
+  const cards = highlightCards[project.id] ?? []
   if (project.modules?.length) {
     return project.modules.map((module, i) => ({
-      title: module.title,
+      title: cards[i]?.title ?? module.title,
       text: splitLead(module.body[0] ?? '').lead,
+      tags: module.tags ?? cards[i]?.tags,
       target: `${project.id}-m${i}`,
     }))
   }
   return (project.body ?? []).map((paragraph, i) => {
     const { lead, rest } = splitLead(paragraph)
-    return { title: lead, text: rest, target: `${project.id}-p${i}` }
+    const card = cards[i]
+    return card?.title
+      ? { title: card.title, text: lead, tags: card.tags, target: `${project.id}-p${i}` }
+      : { title: lead, text: rest, target: `${project.id}-p${i}` }
   })
 }

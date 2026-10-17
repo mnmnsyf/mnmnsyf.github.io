@@ -30,6 +30,8 @@ export interface ProjectModule {
   /** Overrides the media grid width. Charts need room; screenshots tile fine. */
   mediaColumns?: 1 | 2 | 3
   variants?: MediaVariant[]
+  /** Recruiter-facing keywords, shown as chips on the summary card and the module. */
+  tags?: string[]
 }
 
 export interface Project {

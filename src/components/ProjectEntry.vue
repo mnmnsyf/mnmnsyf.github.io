@@ -75,7 +75,10 @@
               <span class="h-num">{{ pad(i + 1) }}</span>
               <span class="h-body">
                 <strong>{{ item.title }}</strong>
-                <span v-if="item.text" class="h-text">{{ item.text }}</span>
+                <span v-if="item.tags?.length" class="h-tags">
+                  <span v-for="tag in item.tags" :key="tag">{{ tag }}</span>
+                </span>
+                <span v-else-if="item.text" class="h-text">{{ item.text }}</span>
               </span>
               <span class="h-go" aria-hidden="true">↓</span>
             </button>
@@ -124,6 +127,9 @@
             <div class="module-head">
               <span class="h-num">{{ pad(i + 1) }}</span>
               <h4>{{ module.title }}</h4>
+              <p v-if="highlights[i]?.tags?.length" class="h-tags module-tags">
+                <span v-for="tag in highlights[i]!.tags" :key="tag">{{ tag }}</span>
+              </p>
             </div>
             <div class="module-grid" :class="{ stacked: module.mediaColumns === 1 }">
               <div class="prose notes-prose">
@@ -444,6 +450,25 @@ function close() {
   font-weight: 500;
   line-height: 1.45;
   color: var(--text);
+}
+.h-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 4px;
+}
+.h-tags span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.4;
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: var(--text-muted);
+  background: var(--bg-inset);
+}
+.module-tags {
+  grid-column: 2;
+  margin: 2px 0 0;
 }
 .h-text {
   font-size: 13.5px;

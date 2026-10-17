@@ -209,7 +209,7 @@ test('interactive layer: live demos, hero field and on-demand command palette', 
   }
   const entry = pages.get('top')
   assert.ok(entry.includes('class="voronoi-field'))
-  assert.ok(entry.includes('19,977'))
+  assert.ok(entry.includes('years of production C++'))
   for (const pageHtml of pages.values()) {
     assert.ok(pageHtml.includes('aria-label="Open command palette"'))
     assert.ok(!pageHtml.includes('role="dialog"'), 'palette renders only when opened')
@@ -263,4 +263,12 @@ test('projects show one entry at a time with Mandate Order first and clear switc
   assert.ok(
     (await renderRoute(`#/projects/${group.id}`)).includes(`<article id="${group.projects[0].id}"`),
   )
+})
+
+test('resume PDF is linked from every page through the build base', async () => {
+  const { resumeHref } = await server.ssrLoadModule('/src/data/site.ts')
+  const expected = `${server.config.base}${resumeHref.slice(1)}`
+  for (const [section, pageHtml] of pages)
+    assert.ok(pageHtml.includes(`href="${expected}"`), `${section} links the resume`)
+  assert.ok(pages.get('top').includes('Résumé (PDF)'))
 })

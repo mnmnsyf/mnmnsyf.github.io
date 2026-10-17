@@ -4,7 +4,7 @@ import type { NewsItem } from './types'
 export const news: NewsItem[] = [
   {
     date: 'Sep 2026',
-    text: 'ArticulateArena: A Metric for Articulated Kinematics is on arXiv. Second author; contributions to joint-motion metric development and multi-model evaluation.',
+    text: 'ArticulateArena: A Metric for Articulated Kinematics is on arXiv. Co-first author; contributions to joint-motion metric development and multi-model evaluation.',
     links: [
       { label: 'Paper', href: 'https://arxiv.org/abs/2609.33931' },
       { label: 'Project & demos', href: 'https://heyumeng.com/ArticulateArena-web/' },
@@ -12,7 +12,7 @@ export const news: NewsItem[] = [
   },
   {
     date: 'Aug 2026',
-    text: 'Mandate Order — the game I worked on as a UE5 gameplay engineer — launched in Steam Early Access on August 12.',
+    text: 'Mandate Order — the game I worked on as a C++ software engineer — launched in Steam Early Access on August 12.',
     links: [{ label: 'Steam', href: 'https://store.steampowered.com/app/1733690' }],
   },
   {
@@ -30,7 +30,7 @@ export const news: NewsItem[] = [
   },
   {
     date: 'Dec 2025',
-    text: 'Completed eighteen months at Chengdu Digital Sky as a UE5 gameplay engineer, contributing to Mandate Order, a commercial strategy game.',
+    text: 'Completed over two years at Chengdu Digital Sky, from intern to full-time C++ software engineer, building production systems for Mandate Order, a commercial strategy game.',
     links: [{ label: 'Steam', href: 'https://store.steampowered.com/app/1733690' }],
   },
 ]

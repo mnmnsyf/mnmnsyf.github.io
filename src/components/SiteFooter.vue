@@ -15,7 +15,7 @@
         <a
           v-for="l in navLinks"
           :key="l.href"
-          :href="l.href"
+          :href="assetUrl(l.href)"
           :target="l.href.startsWith('mailto:') ? undefined : '_blank'"
           rel="noopener"
         >
@@ -36,6 +36,7 @@
 
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { assetUrl } from '@/assetUrl'
 import { site, navLinks } from '@/data/site'
 import IconGlyph from './IconGlyph.vue'
 

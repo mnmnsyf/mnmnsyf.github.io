@@ -21,7 +21,10 @@ export const education: Education[] = [
     degree: 'B.Eng., School of Computer Science',
     period: '2020 – 2024',
     location: 'Chengdu, China',
-    honors: ['National Scholarship (2023) — 1st in program', 'Special Scholarship (2021, 2022)'],
+    honors: [
+      'National Scholarship: 1st in program (2023)',
+      'University Merit Scholarship: Highest Tier (2021 & 2022)',
+    ],
     coursework: [
       'Computer Graphics',
       'Data Structures',

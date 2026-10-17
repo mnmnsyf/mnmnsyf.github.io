@@ -9,7 +9,7 @@ export interface NavLink {
 /** Public identity and recruiting information. */
 export const site = {
   name: 'Fiona She',
-  roleLine: 'C++ Software Engineer · Software Systems, Graphics & Simulation',
+  roleLine: 'Software Engineer · C++ Systems, Performance & Tooling',
   photo: { src: '/portrait.jpg', alt: 'Fiona She' },
 
   /**
@@ -18,34 +18,33 @@ export const site = {
    * no external or user input reaches this field.
    */
   bio: [
-    `I'm a C++ software engineer, ICPC medalist, and research assistant at the
-     <a href="https://www.math.ucla.edu/aivc/" target="_blank" rel="noopener">AIVC Lab</a>
-     at UCLA, advised by Prof.
-     <a href="https://www.math.ucla.edu/~cffjiang/index.html" target="_blank" rel="noopener">Chenfanfu Jiang</a>,
-     working on articulated-object evaluation for embodied-AI simulation.`,
-    `I'm currently pursuing an M.S. in Computer Science (graphics track) at the
-     <a href="https://www.usc.edu/" target="_blank" rel="noopener">University of Southern California (USC)</a>.
-     My current coursework includes CSCI 566: Deep Learning and Its Applications.`,
-    `<strong>Seeking 2027 full-time roles in C++ software systems, graphics, simulation, and research engineering.</strong>
-     Expected graduation: May 2027.`,
+    `I'm a software engineer who builds performance-critical C++ systems, from graph and
+     spatial algorithms in a shipped real-time strategy game to developer-facing SDKs and tools.`,
     `At
-     <a href="https://www.digisky.com/" target="_blank" rel="noopener">Chengdu Digital Sky</a>,
-     I built production C++ software systems for
-     <a href="https://www.digisky.com/product/mo" target="_blank" rel="noopener">Mandate Order</a>:
-     GPU instancing for 10,000+ entities, multithreaded ECS, and routing for 1,000+ agents.`,
-    `My recent work includes an <a href="#/projects/angle-graphics-sdk">ANGLE-based .NET graphics SDK</a>
-     and <a href="#/projects/path-tracing-denoising">deep learning for path-tracing denoising</a>.
-     For the denoising project, I built a UE5 training-data pipeline and am currently training a neural denoiser in PyTorch,
-     studying reconstruction quality and temporal stability at low sample counts with SVGF and DLSS Ray Reconstruction as comparison baselines.`,
-    `I am also the second author of
-     <a href="#/research/articulatearena">ArticulateArena</a>, now on arXiv and submitted to ICLR.`,
+     <a href="https://www.digisky.com/" target="_blank" rel="noopener">Chengdu Digital Sky</a>
+     (intern to full-time, two-plus years) I owned eight production systems for
+     <a href="https://www.digisky.com/product/mo" target="_blank" rel="noopener">Mandate Order</a>,
+     now on Steam Early Access: pathfinding for 1,000+ agents, spatial indexing, a data-driven skill
+     system, and the input and UI frameworks.`,
+    `<strong>Seeking 2027 full-time roles in C++ software systems, backend and infrastructure, and
+     performance engineering.</strong> M.S. in Computer Science at
+     <a href="https://www.usc.edu/" target="_blank" rel="noopener">USC</a>, May 2027 (current course:
+     CSCI 566 Deep Learning). ICPC medalist; research assistant at UCLA's
+     <a href="https://www.math.ucla.edu/aivc/" target="_blank" rel="noopener">AIVC Lab</a> and co-first author of
+     <a href="#/research/articulatearena">ArticulateArena</a>. Recently: an
+     <a href="#/projects/angle-graphics-sdk">ANGLE-based .NET graphics SDK</a> and
+     <a href="#/projects/path-tracing-denoising">deep learning for path-tracing denoising</a> in PyTorch.`,
   ],
 
   lastUpdated: 'October 2026',
 }
 
+/** The general software engineering resume; site-relative, so render it through assetUrl. */
+export const resumeHref = '/Fiona_She_Resume.pdf'
+
 export const navLinks: NavLink[] = [
   { label: 'Email', href: 'mailto:sheyfff@gmail.com', icon: 'mail' },
+  { label: 'Résumé (PDF)', href: resumeHref, icon: 'cv' },
   { label: 'GitHub', href: 'https://github.com/mnmnsyf', icon: 'github' },
   {
     label: 'LinkedIn',
@@ -57,7 +56,7 @@ export const navLinks: NavLink[] = [
 /** Direct routes to the strongest public evidence. */
 export const featuredWork = [
   {
-    label: 'Research · Second author',
+    label: 'Research · Co-first author',
     title: 'ArticulateArena',
     href: '#/research/articulatearena',
     image: '/articulatearena-category.png',

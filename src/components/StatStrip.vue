@@ -17,9 +17,9 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 /** Figures quoted from the experience and research entries. */
 const stats = [
   {
-    value: 10000,
-    suffix: '+',
-    label: 'entities rendered with GPU instancing',
+    value: 8,
+    suffix: '',
+    label: 'production systems owned in a shipped UE5 game',
     source: 'Mandate Order · Digital Sky',
   },
   {
@@ -31,14 +31,14 @@ const stats = [
   {
     value: 85,
     suffix: '%',
-    label: 'less connectivity overhead at 2,000+ units',
-    source: 'KD-tree + C++ templates',
+    label: 'less connectivity computation at a 1,000-unit workload',
+    source: 'Spatial hashing · uniform grid',
   },
   {
-    value: 19977,
-    suffix: '',
-    label: 'articulated objects in ArticulateArena-20K',
-    source: 'arXiv · second author',
+    value: 2,
+    suffix: '+',
+    label: 'years of production C++, intern to full-time',
+    source: 'Chengdu Digital Sky',
   },
 ]
 
