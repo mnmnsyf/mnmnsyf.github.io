@@ -12,15 +12,15 @@
   --text-faint: #6f6c65;
   --rule: #dad7cf;
   --rule-strong: #b9b5ab;
-  --accent: #d9461b;
-  --accent-hover: #b0360f;
-  --accent-soft: #d9461b1a;
+  --accent: #2a4fe0;
+  --accent-hover: #1d3bb8;
+  --accent-soft: #2a4fe01a;
   --ok: #3f7a4a;
 
   --gl-bg: #f3f2ee;
   --gl-ink: #151513;
   --gl-line: #bdb9ae;
-  --gl-accent: #d9461b;
+  --gl-accent: #2a4fe0;
 
   --font: 'Geist', 'Segoe UI', system-ui, sans-serif;
   --font-mono: 'Geist Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
@@ -44,14 +44,14 @@
     --text-faint: #8a877e;
     --rule: #262521;
     --rule-strong: #3d3b35;
-    --accent: #ff6a3d;
-    --accent-hover: #ff8a63;
-    --accent-soft: #ff6a3d1f;
+    --accent: #7d9bff;
+    --accent-hover: #a3b9ff;
+    --accent-soft: #7d9bff1f;
     --ok: #7fbf7f;
     --gl-bg: #0b0b0a;
     --gl-ink: #edece6;
     --gl-line: #34322c;
-    --gl-accent: #ff6a3d;
+    --gl-accent: #7d9bff;
     color-scheme: dark;
   }
 }
@@ -65,14 +65,14 @@
   --text-faint: #8a877e;
   --rule: #262521;
   --rule-strong: #3d3b35;
-  --accent: #ff6a3d;
-  --accent-hover: #ff8a63;
-  --accent-soft: #ff6a3d1f;
+  --accent: #7d9bff;
+  --accent-hover: #a3b9ff;
+  --accent-soft: #7d9bff1f;
   --ok: #7fbf7f;
   --gl-bg: #0b0b0a;
   --gl-ink: #edece6;
   --gl-line: #34322c;
-  --gl-accent: #ff6a3d;
+  --gl-accent: #7d9bff;
   color-scheme: dark;
 }
 
@@ -165,7 +165,7 @@ kbd {
 }
 ::selection {
   background: var(--accent);
-  color: #fff;
+  color: var(--bg);
 }
 
 /* Theme switch: the new theme grows as a circle from the toggle. */

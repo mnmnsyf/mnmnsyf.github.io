@@ -137,6 +137,8 @@ let colors = {
 let resizeObserver: ResizeObserver | undefined
 let intersection: IntersectionObserver | undefined
 let motionQuery: MediaQueryList | undefined
+// The system theme can change while the page is open; the toggle fires 'themechange'.
+let schemeQuery: MediaQueryList | undefined
 
 function compile(type: number, source: string) {
   const shader = gl!.createShader(type)!
@@ -435,6 +437,8 @@ onMounted(() => {
   host.value.parentElement?.addEventListener('pointerdown', onPointerDown)
   document.addEventListener('visibilitychange', onVisibility)
   window.addEventListener('themechange', readTheme)
+  schemeQuery = window.matchMedia('(prefers-color-scheme: dark)')
+  schemeQuery.addEventListener('change', readTheme)
   canvas.value.addEventListener('webglcontextlost', (e) => {
     e.preventDefault()
     running = false
@@ -455,6 +459,7 @@ onBeforeUnmount(() => {
   host.value?.parentElement?.removeEventListener('pointerdown', onPointerDown)
   document.removeEventListener('visibilitychange', onVisibility)
   window.removeEventListener('themechange', readTheme)
+  schemeQuery?.removeEventListener('change', readTheme)
   gl?.getExtension('WEBGL_lose_context')?.loseContext()
   gl = null
 })
