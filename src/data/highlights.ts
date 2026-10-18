@@ -37,15 +37,15 @@ export const highlightCards: Record<string, HighlightCard[]> = {
   ],
   'engine-subsystems': [
     {
-      title: 'Authoring tool connected to a live engine',
-      tags: ['Developer tools', 'Natural-language input', 'Templates'],
+      title: 'AI-assisted authoring tool for a live engine',
+      tags: ['Developer tooling', 'LLM integration', 'Constrained generation'],
     },
     {
-      title: 'Hot shader recompilation with fallback',
-      tags: ['HLSL', 'Hot reload', 'Error handling'],
+      title: 'Hot reload with safe fallback',
+      tags: ['Hot reload', 'Fault tolerance', 'Error handling', 'HLSL'],
     },
     {
-      title: 'Animation, physics and rendering subsystems',
+      title: 'Multithreaded ECS engine subsystems',
       tags: ['Multithreading', 'ECS', 'Skeletal animation', 'GPU culling'],
     },
   ],

@@ -68,15 +68,19 @@ const engineRendering: ProjectGroup = {
     },
     {
       id: 'engine-subsystems',
-      title: 'AI-Assisted Shader Authoring & Multithreaded Engine Systems',
-      period: 'Jan – May 2026',
-      tech: ['C++', 'Lua', 'DirectX 11', 'HLSL', 'Python'],
+      title: 'AI-Assisted Developer Tool & Multithreaded ECS Real-Time Engine',
+      period: 'Jan \u2013 May 2026',
+      tech: ['C++', 'Multithreading', 'ECS', 'DirectX 11 / HLSL', 'Python', 'Lua'],
       summary:
-        'A shader-authoring tool with live HLSL recompilation, alongside animation, physics and rendering subsystems in the course-provided PrimeEngine framework.',
+        'A real-time engine extended with multithreaded ECS simulation, skeletal animation and GPU culling, plus an AI-assisted shader authoring tool that hot-swaps HLSL into the running engine with a safe fallback. Built on the course-provided PrimeEngine framework.',
+      metrics: [
+        'Shader changes applied live, with no engine restart',
+        'Failed compiles fall back to the last working shader',
+      ],
       body: [
-        'The external tool connects to a live engine session. Manual controls, presets and natural-language input generate editable parameters or HLSL snippets within fixed templates.',
-        'Applying a change recompiles the shader without restarting the engine. Failed compilations retain the last working shader and report the error.',
-        'My engine subsystems include layered skeletal animation, multithreaded ECS physics with independent update cycles, and GPU instance culling through the Rendering Hardware Interface.',
+        'An external authoring tool connects to a live engine session. Manual controls, presets and natural-language prompts generate editable parameters or HLSL snippets inside fixed templates, which keeps AI output constrained and reviewable.',
+        'Applying a change hot-reloads the shader without restarting the engine. A failed compile keeps the last working shader and reports the error, so a bad edit never takes down the running session.',
+        'On the engine side I added multithreaded ECS physics with independent update cycles, layered skeletal animation, and GPU instance culling through the Rendering Hardware Interface.',
       ],
       links: [
         { label: 'Live shader demo', href: 'https://mnmnsyf.github.io/engine-shader-live.mp4' },
