@@ -102,15 +102,21 @@
         <div class="p-notes-inner">
           <section v-if="project.body?.length" class="notes-block">
             <h4 class="spec-label">Write-up</h4>
-            <div class="prose notes-prose">
-              <p
-                v-for="(paragraph, i) in project.body"
-                :id="`${project.id}-p${i}`"
-                :key="i"
-                tabindex="-1"
-              >
-                {{ paragraph }}
-              </p>
+            <div class="writeup" :class="{ 'has-illustration': project.illustration }">
+              <div class="prose notes-prose">
+                <p
+                  v-for="(paragraph, i) in project.body"
+                  :id="`${project.id}-p${i}`"
+                  :key="i"
+                  tabindex="-1"
+                >
+                  {{ paragraph }}
+                </p>
+              </div>
+              <IllustrationFigure
+                v-if="project.illustration"
+                :illustration="project.illustration"
+              />
             </div>
           </section>
           <section v-if="isMandateOrder && project.media?.length" class="notes-block">
@@ -131,6 +137,11 @@
                 <span v-for="tag in highlights[i]!.tags" :key="tag">{{ tag }}</span>
               </p>
             </div>
+            <IllustrationFigure
+              v-if="module.illustration"
+              :illustration="module.illustration"
+              class="module-illustration"
+            />
             <div class="module-grid" :class="{ stacked: module.mediaColumns === 1 }">
               <div class="prose notes-prose">
                 <p v-for="(paragraph, p) in module.body" :key="p">{{ paragraph }}</p>
@@ -164,6 +175,7 @@ import ScreenshotCarousel from './ScreenshotCarousel.vue'
 import MediaGallery from './MediaGallery.vue'
 import MediaGrid from './MediaGrid.vue'
 import VariantToggle from './VariantToggle.vue'
+import IllustrationFigure from './IllustrationFigure.vue'
 
 /** Projects with an in-browser re-creation of their core technique. Loaded on demand. */
 // A chunk that fails to load (e.g. a stale page after a redeploy) drops the demo
@@ -541,6 +553,16 @@ function close() {
 .notes-prose p:focus {
   color: var(--text);
 }
+.writeup.has-illustration {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+.module-illustration {
+  margin-bottom: 22px;
+  max-width: 880px;
+}
 .module-head {
   display: grid;
   grid-template-columns: 30px minmax(0, 1fr);
@@ -603,6 +625,7 @@ function close() {
     padding-left: 0;
   }
   .p-spec.solo .p-highlights ol,
+  .writeup.has-illustration,
   .module-grid {
     grid-template-columns: minmax(0, 1fr);
   }

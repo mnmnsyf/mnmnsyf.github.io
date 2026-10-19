@@ -23,9 +23,17 @@ export interface MediaVariant {
 }
 
 /** A named sub-topic inside a project, e.g. one system the author owned. */
+/** An explanatory drawing, captioned as an illustration so it is never mistaken for a screenshot. */
+export interface Illustration {
+  src: string
+  alt: string
+  caption: string
+}
+
 export interface ProjectModule {
   title: string
   body: string[]
+  illustration?: Illustration
   media?: Media[]
   /** Overrides the media grid width. Charts need room; screenshots tile fine. */
   mediaColumns?: 1 | 2 | 3
@@ -37,6 +45,8 @@ export interface ProjectModule {
 export interface Project {
   id: string
   title: string
+  /** Shown beside the write-up. */
+  illustration?: Illustration
   /** Shown next to the title, e.g. "Gameplay Programmer". */
   role?: string
   period?: string

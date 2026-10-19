@@ -288,6 +288,11 @@ const gameplayEngineering: ProjectGroup = {
       modules: [
         {
           title: 'Threat-aware pathfinding service',
+          illustration: {
+            src: '/illustrations/mo-routing.webp',
+            alt: 'A road map where a blue route bends around a hatched danger zone while the dashed shortest path cuts through it',
+            caption: 'Routes bend around danger, for 1,000+ concurrent agents.',
+          },
           tags: [
             'Graph algorithms',
             'Dijkstra',
@@ -318,6 +323,11 @@ const gameplayEngineering: ProjectGroup = {
         },
         {
           title: 'Command relay routing',
+          illustration: {
+            src: '/illustrations/mo-command-relay.webp',
+            alt: 'Beacon towers on hills linked into a network; a blue signal hops along the shortest chain from a command tent to distant soldiers',
+            caption: 'Orders hop tower to tower along the shortest chain.',
+          },
           tags: ['Floyd\u2013Warshall', 'Caching', 'Complexity trade-offs'],
           body: [
             'All-pairs shortest paths and next hops per beacon network, cached and rebuilt only when the network changes: an O(V\u00b3) rebuild buys constant-time lookups for every order.',
