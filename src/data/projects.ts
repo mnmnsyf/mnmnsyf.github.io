@@ -265,7 +265,7 @@ const gameplayEngineering: ProjectGroup = {
         'System Design',
       ],
       summary:
-        'Production C++ on a shipped Unreal Engine 5 strategy game, intern to full-time over two-plus years. I owned eight systems across graph algorithms, spatial indexing, data-driven gameplay, and input and UI frameworks.',
+        'Production C++ on a shipped Unreal Engine 5 4X strategy game, intern to full-time over two-plus years. I owned eight systems across graph algorithms, spatial indexing, data-driven gameplay, and input and UI frameworks.',
       metrics: [
         '85% less connectivity computation at the typical 1,000-unit workload',
         '1,000+ concurrent agents served by the pathfinding system',
@@ -273,7 +273,7 @@ const gameplayEngineering: ProjectGroup = {
         'Shipped on Steam Early Access, 12 Aug 2026',
       ],
       body: [
-        'A Warring States strategy game by Chengdu Digital Sky with real-time battles of thousands of units. The engine architecture (a multithreaded ECS with GPU instancing at 10,000+ entities) belonged to the project; the systems below are the ones I designed and owned on top of it.',
+        'A Warring States 4X strategy game by Chengdu Digital Sky with real-time battles of thousands of units. The engine architecture (a multithreaded ECS with GPU instancing at 10,000+ entities) belonged to the project; the systems below are the ones I designed and owned on top of it.',
       ],
       links: [
         { label: 'Steam', href: 'https://store.steampowered.com/app/1733690' },
