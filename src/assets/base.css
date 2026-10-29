@@ -197,3 +197,13 @@ kbd {
 :root:lang(zh-CN) :is(.hero-role, .footer-line) {
   word-break: keep-all;
 }
+
+/* CJK glyphs sit taller than Latin ones; the tight Latin display leading clips them. */
+:root:lang(zh-CN) .hero-title {
+  line-height: 1.12;
+  letter-spacing: 0;
+}
+:root:lang(zh-CN) .footer-line {
+  max-width: none;
+  line-height: 1.25;
+}

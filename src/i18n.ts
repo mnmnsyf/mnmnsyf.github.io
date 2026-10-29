@@ -47,27 +47,14 @@ function applyLocale(next: Locale) {
     document.documentElement.lang = next === 'zh' ? 'zh-CN' : 'en'
 }
 
-/** A ?lang= link wins, then the visitor's saved choice. Recruiters see English by default. */
+/** Every visit opens in English; only a ?lang=zh link opens the Chinese version. */
 export function initLocale() {
-  let next: Locale = 'en'
-  try {
-    const requested = new URLSearchParams(window.location.search).get('lang')
-    const saved = localStorage.getItem('lang')
-    const choice = requested ?? saved
-    if (choice === 'zh' || choice === 'en') next = choice
-  } catch {
-    /* Storage can be unavailable; fall back to English. */
-  }
-  applyLocale(next)
+  const requested = new URLSearchParams(window.location.search).get('lang')
+  applyLocale(requested === 'zh' ? 'zh' : 'en')
 }
 
 export function setLocale(next: Locale) {
   applyLocale(next)
-  try {
-    localStorage.setItem('lang', next)
-  } catch {
-    /* The choice still applies to this visit. */
-  }
 }
 
 export function toggleLocale() {

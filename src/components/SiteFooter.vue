@@ -1,9 +1,10 @@
 <template>
   <footer class="footer">
     <div class="footer-cta">
-      <p v-if="locale === 'zh'" class="footer-line">
-        意向：游戏开发、软件工程、图形学<br /><em>欢迎来聊。</em>
-      </p>
+      <template v-if="locale === 'zh'">
+        <p class="footer-kicker">求职意向</p>
+        <p class="footer-line">游戏开发、软件工程、图形学</p>
+      </template>
       <template v-else>
         <p class="footer-kicker">Seeking 2027 full-time roles</p>
         <p class="footer-line">Systems, graphics, simulation — <em>let’s talk.</em></p>
