@@ -1,10 +1,13 @@
 <template>
   <footer class="footer">
     <div class="footer-cta">
-      <p class="footer-kicker">{{ t('Seeking 2027 full-time roles') }}</p>
-      <p class="footer-line">
-        {{ t('Systems, graphics, simulation —') }} <em>{{ t('let’s talk.') }}</em>
+      <p v-if="locale === 'zh'" class="footer-line">
+        意向：游戏开发、软件工程、图形学<br /><em>欢迎来聊。</em>
       </p>
+      <template v-else>
+        <p class="footer-kicker">Seeking 2027 full-time roles</p>
+        <p class="footer-line">Systems, graphics, simulation — <em>let’s talk.</em></p>
+      </template>
       <div class="footer-email">
         <a :href="`mailto:${email}`">{{ email }}</a>
         <button type="button" class="copy" @click="copy">
@@ -27,7 +30,8 @@
       </nav>
       <p class="footer-meta">
         <span
-          >{{ t('Los Angeles') }} <span class="clock">{{ clock }}</span></span
+          >{{ locale === 'zh' ? '北京' : 'Los Angeles' }}
+          <span class="clock">{{ clock }}</span></span
         >
         <span>{{ t('Last updated') }} {{ t(site.lastUpdated) }}</span>
         <span>Vue · WebGL2 · Canvas</span>
@@ -37,11 +41,11 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { assetUrl } from '@/assetUrl'
 import { site, navLinks } from '@/data/site'
 import IconGlyph from './IconGlyph.vue'
-import { t } from '@/i18n'
+import { locale, t } from '@/i18n'
 
 const email = navLinks.find((l) => l.href.startsWith('mailto:'))!.href.slice('mailto:'.length)
 const copied = ref(false)
@@ -60,18 +64,21 @@ async function copy() {
   }
 }
 
-const formatter =
-  typeof Intl !== 'undefined'
-    ? new Intl.DateTimeFormat('en-US', {
-        timeZone: 'America/Los_Angeles',
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZoneName: 'short',
-      })
-    : null
-function tick() {
-  if (formatter) clock.value = formatter.format(new Date())
+/** Local time where the reader is likely to be: Beijing for Chinese, Los Angeles otherwise. */
+const formatters = {
+  en: { locale: 'en-US', timeZone: 'America/Los_Angeles', timeZoneName: 'short' as const },
+  zh: { locale: 'zh-CN', timeZone: 'Asia/Shanghai', timeZoneName: undefined },
 }
+function tick() {
+  if (typeof Intl === 'undefined') return
+  const { locale: tag, ...zone } = formatters[locale.value]
+  clock.value = new Intl.DateTimeFormat(tag, {
+    ...zone,
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date())
+}
+watch(locale, tick)
 onMounted(() => {
   tick()
   timer = setInterval(tick, 15000)

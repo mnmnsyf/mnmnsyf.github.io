@@ -10,11 +10,11 @@
         </p>
         <h1 class="hero-title">
           <span class="hero-line"
-            ><span>{{ site.name }}</span></span
+            ><span>{{ t(site.name) }}</span></span
           >
         </h1>
         <p v-if="locale === 'zh'" class="hero-role">
-          游戏开发，做高性能的 <em>C++ 系统</em>、<em>工具</em>和<em>仿真</em>。
+          游戏开发、高性能 <em>C++ 系统</em>、<em>图形学</em>、<em>物理仿真</em>。
         </p>
         <p v-else class="hero-role">
           Software engineer building high-performance <em>C++ systems</em>, <em>tools</em> &amp;

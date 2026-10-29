@@ -192,3 +192,8 @@ kbd {
 :root:lang(zh-CN) :is(em, i, .project-note) {
   font-style: normal;
 }
+
+/* Large Chinese headlines break only at punctuation, never inside a word. */
+:root:lang(zh-CN) :is(.hero-role, .footer-line) {
+  word-break: keep-all;
+}

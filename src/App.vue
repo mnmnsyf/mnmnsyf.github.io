@@ -175,8 +175,8 @@ function updateTitle() {
   const label = sections.find((section) => section.id === route.value.section)?.label ?? ''
   document.title =
     route.value.section === 'top'
-      ? `${site.name} — ${t('Personal Website')}`
-      : `${t(label)} — ${site.name}`
+      ? `${t(site.name)} — ${t('Personal Website')}`
+      : `${t(label)} — ${t(site.name)}`
 }
 function syncRoute() {
   if (window.location.hash === '#main-content') return

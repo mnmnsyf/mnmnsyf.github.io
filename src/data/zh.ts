@@ -19,7 +19,8 @@ export const zh: Record<string, string> = {
   'Personal Website': '个人网站',
   'Main navigation': '主导航',
   Résumé: '简历',
-  'Résumé (PDF)': '简历（PDF，英文）',
+  'Résumé (PDF)': '简历',
+  'Fiona She': '佘泳霏',
   'Jump to': '快速跳转',
   'Open command palette': '打开命令面板',
   'Switch to light theme': '切换到浅色主题',
@@ -27,13 +28,9 @@ export const zh: Record<string, string> = {
   'back to introduction': '返回首页',
 
   // Footer
-  'Seeking 2027 full-time roles': '寻找 2027 年全职岗位',
-  'Systems, graphics, simulation —': '做系统、图形、仿真，',
-  'let’s talk.': '欢迎来聊。',
   Copy: '复制',
   Copied: '已复制',
   'Contact and profiles': '联系方式与主页',
-  'Los Angeles': '洛杉矶',
   'Last updated': '最后更新',
   'October 2026': '2026 年 10 月',
   Email: '邮箱',
@@ -212,11 +209,11 @@ export const zh: Record<string, string> = {
 
   // ── Updates ──────────────────────────────────────────────────
   'ArticulateArena: A Metric for Articulated Kinematics is on arXiv. Co-first author; contributions to joint-motion metric development and multi-model evaluation.':
-    'ArticulateArena 论文已挂上 arXiv。我是共同一作，主要做关节运动度量和多模型评测。',
+    'ArticulateArena 论文挂上 arXiv，担任共同一作，主要负责关节运动度量和多模型评测。',
   Paper: '论文',
   'Project & demos': '项目主页与演示',
   'Mandate Order — the game I worked on as a C++ software engineer — launched in Steam Early Access on August 12.':
-    '我参与开发的 Mandate Order 于 8 月 12 日在 Steam 开启抢先体验。',
+    '参与开发的 Mandate Order 于 8 月 12 日在 Steam 开启抢先体验。',
   'Joined the Artificial Intelligence & Visual Computing Lab at UCLA as a research assistant, advised by Prof. Chenfanfu Jiang, working on end-to-end texture generation and data augmentation for multi-part 3D assets.':
     '加入 UCLA 人工智能与视觉计算实验室做研究助理，导师是蒋陈凡夫教授，方向是多部件 3D 资产的端到端纹理生成和数据增强。',
   'AIVC Lab': 'AIVC 实验室',

@@ -191,7 +191,7 @@ test('website uses Fiona without Chinese profile text and describes ongoing deep
   for (const pageHtml of pages.values()) {
     // The language switch is the one Chinese label on the English site.
     const text = pageHtml
-      .replace(/<button[^>]*class="lang-toggle"[^>]*>.*?<\/button>/s, '')
+      .replace(/<button[^>]*class="lang-switch"[^>]*>.*?<\/button>/s, '')
       .replace(/<[^>]*>/g, '')
     assert.ok(!text.includes('Yongfei'))
     assert.ok(!/[\u3400-\u9fff]/u.test(text))
@@ -214,6 +214,7 @@ test('interactive layer: live demos, hero field and on-demand command palette', 
   assert.ok(entry.includes('class="voronoi-field'))
   assert.ok(entry.includes('years of production C++'))
   for (const pageHtml of pages.values()) {
+    assert.match(pageHtml, /class="lang-switch"[^>]*aria-checked="false"/)
     assert.ok(pageHtml.includes('aria-label="Open command palette"'))
     assert.ok(!pageHtml.includes('role="dialog"'), 'palette renders only when opened')
   }
@@ -288,13 +289,10 @@ test('Chinese version translates the site and presents Fiona as a game developer
       zhProjects.set(project.id, await renderPage(`#/projects/${project.id}`))
     const entry = zhPages.get('top')
     assert.ok(entry.includes('欢迎来到我的个人主页。'))
-    assert.ok(entry.includes('Fiona She'))
+    assert.ok(entry.includes('佘泳霏'))
     assert.ok(entry.includes('游戏开发'))
-    assert.ok(
-      entry.includes('>EN<') ||
-        entry.includes('> EN <') ||
-        /lang-toggle[^>]*>\s*EN\s*</.test(entry),
-    )
+    assert.match(entry, /class="lang-switch"[^>]*aria-checked="true"/)
+    assert.ok(entry.includes('意向：游戏开发、软件工程、图形学'))
     const all = [...zhPages.values(), ...zhProjects.values()].join('')
     const text = all.replace(/<[^>]*>/g, '')
     for (const phrase of ['软件工程师', 'Software engineer', 'Software Engineer', 'Yongfei'])

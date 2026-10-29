@@ -1,9 +1,9 @@
 <template>
   <header class="topbar">
     <div class="topbar-inner">
-      <a href="#/" class="brand" :aria-label="`${site.name} — ${t('back to introduction')}`">
+      <a href="#/" class="brand" :aria-label="`${t(site.name)} — ${t('back to introduction')}`">
         <img class="brand-portrait" :src="assetUrl(site.photo.src)" alt="" width="28" height="28" />
-        <span class="brand-name">{{ site.name }}</span>
+        <span class="brand-name">{{ t(site.name) }}</span>
       </a>
       <nav ref="nav" class="section-nav" :aria-label="t('Main navigation')">
         <a
@@ -25,12 +25,15 @@
         }}</a>
         <button
           type="button"
-          class="lang-toggle"
-          :lang="locale === 'zh' ? 'en' : 'zh-CN'"
-          :aria-label="locale === 'zh' ? 'Read in English' : '切换到中文'"
+          class="lang-switch"
+          role="switch"
+          :aria-checked="locale === 'zh'"
+          aria-label="中文 / English"
           @click="toggleLocale"
         >
-          {{ locale === 'zh' ? 'EN' : '中文' }}
+          <span class="lang-thumb" aria-hidden="true"></span>
+          <span class="lang-option" :class="{ on: locale === 'en' }" lang="en">EN</span>
+          <span class="lang-option" :class="{ on: locale === 'zh' }" lang="zh-CN">中</span>
         </button>
         <button
           type="button"
