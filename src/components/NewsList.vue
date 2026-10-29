@@ -1,6 +1,6 @@
 <template>
   <ol class="news">
-    <li v-for="(item, i) in news" :key="item.date + item.text" v-reveal="i * 50">
+    <li v-for="(item, i) in items" :key="item.date + item.text" v-reveal="i * 50">
       <time class="date">{{ item.date }}</time>
       <div class="body">
         <p>{{ item.text }}</p>
@@ -15,7 +15,11 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { news } from '@/data/news'
+import { localize } from '@/i18n'
+
+const items = computed(() => localize(news))
 </script>
 
 <style scoped>

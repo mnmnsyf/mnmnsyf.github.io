@@ -189,7 +189,10 @@ test('website uses Fiona without Chinese profile text and describes ongoing deep
   const entry = pages.get('top')
   assert.ok(entry.includes('Fiona She'))
   for (const pageHtml of pages.values()) {
-    const text = pageHtml.replace(/<[^>]*>/g, '')
+    // The language switch is the one Chinese label on the English site.
+    const text = pageHtml
+      .replace(/<button[^>]*class="lang-toggle"[^>]*>.*?<\/button>/s, '')
+      .replace(/<[^>]*>/g, '')
     assert.ok(!text.includes('Yongfei'))
     assert.ok(!/[\u3400-\u9fff]/u.test(text))
   }
@@ -271,4 +274,108 @@ test('resume PDF is linked from every page through the build base', async () => 
   for (const [section, pageHtml] of pages)
     assert.ok(pageHtml.includes(`href="${expected}"`), `${section} links the resume`)
   assert.ok(pages.get('top').includes('Résumé (PDF)'))
+})
+
+test('Chinese version translates the site and presents Fiona as a game developer', async () => {
+  const { locale } = await server.ssrLoadModule('/src/i18n.ts')
+  locale.value = 'zh'
+  try {
+    const zhPages = new Map()
+    for (const section of sections)
+      zhPages.set(section.id, await renderPage(sectionHref(section.id)))
+    const zhProjects = new Map()
+    for (const project of allProjects)
+      zhProjects.set(project.id, await renderPage(`#/projects/${project.id}`))
+    const entry = zhPages.get('top')
+    assert.ok(entry.includes('欢迎来到我的个人主页。'))
+    assert.ok(entry.includes('Fiona She'))
+    assert.ok(entry.includes('游戏开发'))
+    assert.ok(
+      entry.includes('>EN<') ||
+        entry.includes('> EN <') ||
+        /lang-toggle[^>]*>\s*EN\s*</.test(entry),
+    )
+    const all = [...zhPages.values(), ...zhProjects.values()].join('')
+    const text = all.replace(/<[^>]*>/g, '')
+    for (const phrase of ['软件工程师', 'Software engineer', 'Software Engineer', 'Yongfei'])
+      assert.ok(!text.includes(phrase), `Chinese site must not say ${phrase}`)
+    // Translation never touches links: every project and experience resource still renders.
+    for (const project of [...allProjects, articulateArena])
+      for (const link of project.links)
+        assert.ok(all.includes(link.href.replaceAll('&', '&amp;')), `${project.id} link`)
+    for (const item of experience)
+      for (const link of item.links) assert.ok(all.includes(link.href.replaceAll('&', '&amp;')))
+  } finally {
+    locale.value = 'en'
+  }
+})
+
+test('every English sentence has a Chinese translation and no translation is stale', async () => {
+  const { hasTranslation } = await server.ssrLoadModule('/src/i18n.ts')
+  const { zh } = await server.ssrLoadModule('/src/data/zh.ts')
+  const modules = ['news', 'skills', 'awards', 'education', 'highlights', 'mandateOrderScreenshots']
+  const content = [projectGroups, experience, articulateArena, sections]
+  for (const name of modules) content.push(await server.ssrLoadModule(`/src/data/${name}.ts`))
+  const { site } = await server.ssrLoadModule('/src/data/site.ts')
+  content.push(site.bio, site.lastUpdated, site.roleLine)
+  // Proper names, paper titles and product names stay in English on purpose.
+  const keepEnglish = new Set([
+    'ArticulateArena: A Metric for Articulated Kinematics',
+    'Unreal Engine 5',
+    'DLSS Ray Reconstruction',
+    'DirectX 11 / HLSL',
+    'Jumping Party',
+    'Tavern & Adventure',
+    'Tavern and Adventure',
+    'Little Adventurer',
+    'Little Adventure',
+    'ECS (Unreal Mass)',
+    'Unreal Mass (ECS)',
+    'Mandate Order',
+    'Sight Tour',
+    'OpenGL ES',
+    'DirectX 11',
+    'Unreal Engine',
+    'Visual Studio',
+    'Unreal Insights',
+    'Khronos XML',
+  ])
+  const rawKeys = new Set(['id', 'href', 'src', 'poster', 'image', 'kind', 'icon', 'target'])
+  const missing = []
+  const visit = (value, key) => {
+    if (typeof value === 'string') {
+      if (rawKeys.has(key) || keepEnglish.has(value)) return
+      if (
+        /[a-z]{2,}/.test(value) &&
+        value.trim().split(/\s+/).length >= 2 &&
+        !hasTranslation(value)
+      )
+        missing.push(value)
+    } else if (Array.isArray(value)) value.forEach((item) => visit(item, key))
+    else if (value && typeof value === 'object')
+      for (const [k, v] of Object.entries(value)) visit(v, k)
+  }
+  content.forEach((value) => visit(value, ''))
+  assert.deepEqual([...new Set(missing)], [], 'untranslated English text')
+
+  const { readdirSync, readFileSync, statSync } = await import('node:fs')
+  const { join } = await import('node:path')
+  const root = fileURLToPath(new URL('../src', import.meta.url))
+  const files = []
+  const walk = (dir) => {
+    for (const name of readdirSync(dir)) {
+      const path = join(dir, name)
+      if (statSync(path).isDirectory()) walk(path)
+      else if (/\.(ts|vue)$/.test(name) && !path.endsWith('zh.ts')) files.push(path)
+    }
+  }
+  walk(root)
+  const normalize = (text) => text.replace(/\s+/g, ' ')
+  const source = normalize(files.map((path) => readFileSync(path, 'utf8')).join('\n'))
+    .replaceAll('\\u2013', '–')
+    .replaceAll('\\u2019', '’')
+    .replaceAll('\\u00b3', '³')
+    .replaceAll("\\'", "'")
+  const stale = Object.keys(zh).filter((en) => !source.includes(normalize(en).trim()))
+  assert.deepEqual(stale, [], 'translations whose English no longer exists')
 })

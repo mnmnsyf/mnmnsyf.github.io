@@ -7,7 +7,7 @@
     <canvas
       ref="canvas"
       role="img"
-      aria-label="Interactive inverse kinematics chain following the pointer"
+      :aria-label="t('Interactive inverse kinematics chain following the pointer')"
       @pointermove="onMove"
       @pointerdown="onMove"
       @pointerleave="onLeave"
@@ -15,7 +15,7 @@
     <template #readout>‖e‖ {{ errorLabel }} px · {{ iterations }} it</template>
     <template #controls>
       <button type="button" :aria-pressed="solver === 'dls'" @click="solver = 'dls'">
-        Damped LS
+        {{ t('Damped LS') }}
       </button>
       <button type="button" :aria-pressed="solver === 'transpose'" @click="solver = 'transpose'">
         Jᵀ
@@ -32,6 +32,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import DemoFrame from './DemoFrame.vue'
+import { t } from '@/i18n'
 import { useCanvasLoop } from './useCanvasLoop'
 import { cssColor } from '@/theme'
 

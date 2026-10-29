@@ -11,8 +11,8 @@
           @blur="hovered = -1"
         >
           <span class="work-number">{{ String(index + 1).padStart(2, '0') }}</span>
-          <span class="work-title">{{ item.title }}</span>
-          <span class="work-kind">{{ item.kind }}</span>
+          <span class="work-title">{{ t(item.title) }}</span>
+          <span class="work-kind">{{ t(item.kind) }}</span>
           <span class="work-year">{{ item.year }}</span>
           <span class="work-arrow" aria-hidden="true">→</span>
         </a>
@@ -39,6 +39,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { assetUrl } from '@/assetUrl'
+import { t } from '@/i18n'
 
 const items = [
   {

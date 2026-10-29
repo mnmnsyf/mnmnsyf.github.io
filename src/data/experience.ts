@@ -31,8 +31,8 @@ export const experience: Experience[] = [
     location: 'Chengdu, China',
     bullets: [
       'Shipped production C++ systems for Mandate Order, a commercial Unreal Engine 5 strategy game released on Steam Early Access, growing from intern to full-time engineer.',
-      'Cut connectivity computation by 85% at the typical 1,000-unit workload with spatial hashing on a uniform grid; built a templated KD-tree, union-find and DBSCAN library for 5,000+ unit scenes.',
-      'Built a threat-aware pathfinding service (heap-based multi-source Dijkstra) for 1,000+ concurrent agents, with batched, queue-based state sync to the AI thread.',
+      'Cut connectivity computation by 85% at the typical 2,000-unit workload with spatial hashing on a uniform grid; built a templated KD-tree, union-find and DBSCAN library for 5,000+ unit scenes.',
+      'Built a threat-aware pathfinding service (heap-based multi-source Dijkstra) for 2,000+ concurrent agents, with batched, queue-based state sync to the AI thread.',
       'Owned the data-driven skill system for 100+ abilities on the project\u2019s multithreaded ECS: triggers decoupled from execution, commander skill preview and release, and Unreal Mass projectile processors.',
       'Designed reusable input and UI frameworks: prioritized input contexts with reference-counted action monitoring, a stack-based UI layer manager, and a registry-based settings system.',
       'Implemented Floyd\u2013Warshall routing with cached next hops for command relay across 50+ signal-tower nodes, and Voronoi land partitioning with grid-approximated adjacency.',

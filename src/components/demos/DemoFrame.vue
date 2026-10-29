@@ -1,20 +1,22 @@
 <template>
   <figure class="demo">
     <div class="demo-bar">
-      <span class="demo-live"><span class="pulse" aria-hidden="true"></span>Live</span>
-      <span class="demo-label">{{ label }}</span>
+      <span class="demo-live"><span class="pulse" aria-hidden="true"></span>{{ t('Live') }}</span>
+      <span class="demo-label">{{ t(label) }}</span>
       <span class="demo-readout" aria-hidden="true"><slot name="readout" /></span>
     </div>
     <div class="demo-stage">
       <slot />
-      <p class="demo-hint" aria-hidden="true">{{ hint }}</p>
+      <p class="demo-hint" aria-hidden="true">{{ t(hint) }}</p>
     </div>
     <div class="demo-controls"><slot name="controls" /></div>
-    <figcaption>{{ caption }}</figcaption>
+    <figcaption>{{ t(caption) }}</figcaption>
   </figure>
 </template>
 
 <script setup lang="ts">
+import { t } from '@/i18n'
+
 defineProps<{ label: string; hint: string; caption: string }>()
 </script>
 

@@ -1,25 +1,25 @@
 <template>
-  <article :id="project.id" class="project">
+  <article :id="p.id" class="project">
     <header class="p-head">
       <p class="p-meta">
         <span v-if="index" class="p-index">{{ pad(index) }}</span>
-        <span v-if="project.period">{{ project.period }}</span>
-        <span v-if="project.role">{{ project.role }}</span>
-        <span v-if="demo" class="live-badge">Live demo</span>
+        <span v-if="p.period">{{ p.period }}</span>
+        <span v-if="p.role">{{ p.role }}</span>
+        <span v-if="demo" class="live-badge">{{ t('Live demo') }}</span>
       </p>
-      <h3 class="p-title">{{ project.title }}</h3>
-      <p class="p-summary">{{ project.summary }}</p>
-      <ul class="p-stack" aria-label="Technologies">
-        <li v-for="tech in project.tech" :key="tech">{{ tech }}</li>
+      <h3 class="p-title">{{ p.title }}</h3>
+      <p class="p-summary">{{ p.summary }}</p>
+      <ul class="p-stack" :aria-label="t('Technologies')">
+        <li v-for="tech in p.tech" :key="tech">{{ tech }}</li>
       </ul>
       <div class="p-actions">
         <nav
-          v-if="project.links?.length"
+          v-if="p.links?.length"
           class="link-row project-links"
-          :aria-label="`${project.title} resources`"
+          :aria-label="`${p.title} ${t('resources')}`"
         >
           <a
-            v-for="link in project.links"
+            v-for="link in p.links"
             :key="link.href"
             :href="assetUrl(link.href)"
             target="_blank"
@@ -36,19 +36,19 @@
           @click="toggle"
         >
           <span class="toggle-icon" aria-hidden="true"></span>
-          Technical notes &amp; more visuals
+          {{ t('Technical notes & more visuals') }}
         </button>
       </div>
     </header>
 
-    <div v-if="project.media?.length" class="p-media">
+    <div v-if="p.media?.length" class="p-media">
       <ScreenshotCarousel
         v-if="isMandateOrder"
         :slides="mandateOrderScreenshots"
         label="Mandate Order project screenshots"
         class="p-carousel"
       />
-      <MediaGallery v-else :items="project.media" :label="project.title" />
+      <MediaGallery v-else :items="p.media" :label="p.title" />
     </div>
 
     <div
@@ -57,7 +57,7 @@
       :class="{ solo: !figures.length }"
     >
       <section v-if="figures.length" class="p-results">
-        <h4 class="spec-label">Results</h4>
+        <h4 class="spec-label">{{ t('Results') }}</h4>
         <ul>
           <li v-for="item in figures" :key="item.text">
             <strong v-if="item.figure" class="figure">{{ item.figure }}</strong>
@@ -67,7 +67,7 @@
       </section>
       <section v-if="highlights.length" class="p-highlights">
         <h4 class="spec-label">
-          {{ project.modules?.length ? 'Systems I owned' : 'What I built' }}
+          {{ t(p.modules?.length ? 'Systems I owned' : 'What I built') }}
         </h4>
         <ol>
           <li v-for="(item, i) in highlights" :key="item.target">
@@ -96,36 +96,28 @@
       :class="{ open }"
       :inert="!open"
       role="region"
-      :aria-label="`${project.title} technical notes`"
+      :aria-label="`${p.title} ${t('technical notes')}`"
     >
       <div class="p-notes-clip">
         <div class="p-notes-inner">
-          <section v-if="project.body?.length" class="notes-block">
-            <h4 class="spec-label">Write-up</h4>
-            <div class="writeup" :class="{ 'has-illustration': project.illustration }">
+          <section v-if="p.body?.length" class="notes-block">
+            <h4 class="spec-label">{{ t('Write-up') }}</h4>
+            <div class="writeup" :class="{ 'has-illustration': p.illustration }">
               <div class="prose notes-prose">
-                <p
-                  v-for="(paragraph, i) in project.body"
-                  :id="`${project.id}-p${i}`"
-                  :key="i"
-                  tabindex="-1"
-                >
+                <p v-for="(paragraph, i) in p.body" :id="`${p.id}-p${i}`" :key="i" tabindex="-1">
                   {{ paragraph }}
                 </p>
               </div>
-              <IllustrationFigure
-                v-if="project.illustration"
-                :illustration="project.illustration"
-              />
+              <IllustrationFigure v-if="p.illustration" :illustration="p.illustration" />
             </div>
           </section>
-          <section v-if="isMandateOrder && project.media?.length" class="notes-block">
-            <h4 class="spec-label">Concept art</h4>
-            <MediaGrid :items="project.media" :columns="project.mediaColumns" />
+          <section v-if="isMandateOrder && p.media?.length" class="notes-block">
+            <h4 class="spec-label">{{ t('Concept art') }}</h4>
+            <MediaGrid :items="p.media" :columns="p.mediaColumns" />
           </section>
           <section
-            v-for="(module, i) in project.modules ?? []"
-            :id="`${project.id}-m${i}`"
+            v-for="(module, i) in p.modules ?? []"
+            :id="`${p.id}-m${i}`"
             :key="module.title"
             class="notes-block module"
             tabindex="-1"
@@ -154,14 +146,14 @@
               />
             </div>
           </section>
-          <p v-if="project.note" class="project-note">{{ project.note }}</p>
+          <p v-if="p.note" class="project-note">{{ p.note }}</p>
           <button type="button" class="notes-close" @click="close">
-            Collapse notes <span aria-hidden="true">↑</span>
+            {{ t('Collapse notes') }} <span aria-hidden="true">↑</span>
           </button>
         </div>
       </div>
     </div>
-    <p v-else-if="project.note" class="project-note">{{ project.note }}</p>
+    <p v-else-if="p.note" class="project-note">{{ p.note }}</p>
   </article>
 </template>
 
@@ -171,6 +163,7 @@ import { assetUrl } from '@/assetUrl'
 import type { Project } from '@/data/types'
 import { mandateOrderScreenshots } from '@/data/mandateOrderScreenshots'
 import { metricFigure, projectHighlights } from '@/projectText'
+import { localize, t } from '@/i18n'
 import ScreenshotCarousel from './ScreenshotCarousel.vue'
 import MediaGallery from './MediaGallery.vue'
 import MediaGrid from './MediaGrid.vue'
@@ -188,13 +181,15 @@ const demos: Record<string, Component> = {
 }
 
 const props = defineProps<{ project: Project; index?: number }>()
+/** The project as shown, in the current language. */
+const p = computed(() => localize(props.project))
 const demo = computed(() => demos[props.project.id])
 const isMandateOrder = computed(() => props.project.id === 'project-mo')
 const notesId = computed(() => `${props.project.id}-notes`)
 const hasNotes = computed(() => !!(props.project.body?.length || props.project.modules?.length))
-const highlights = computed(() => projectHighlights(props.project))
+const highlights = computed(() => localize(projectHighlights(p.value)))
 const figures = computed(() =>
-  (props.project.metrics ?? []).map((text) => ({ text, figure: metricFigure(text) })),
+  (p.value.metrics ?? []).map((text) => ({ text, figure: metricFigure(text) })),
 )
 // Notes start expanded so the full technical write-up is visible; the toggle collapses them.
 const open = ref(true)

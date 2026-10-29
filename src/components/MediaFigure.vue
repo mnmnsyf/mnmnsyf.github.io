@@ -11,14 +11,14 @@
       :height="dimensions?.height"
     >
       <source :src="assetUrl(media.src)" type="video/mp4" />
-      Your browser does not support the video tag.
+      {{ t('Your browser does not support the video tag.') }}
     </video>
     <a
       v-else
       :href="assetUrl(media.src)"
       target="_blank"
       rel="noopener noreferrer"
-      :aria-label="`Open full-size image: ${media.alt}`"
+      :aria-label="`${t('Open full-size image')}: ${media.alt}`"
     >
       <img
         :src="assetUrl(media.src)"
@@ -35,6 +35,7 @@
 <script setup lang="ts">
 import { assetUrl } from '@/assetUrl'
 import type { Media } from '@/data/types'
+import { t } from '@/i18n'
 import { computed } from 'vue'
 import { mediaDimensions } from '@/data/mediaDimensions'
 

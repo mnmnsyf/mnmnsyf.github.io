@@ -1,17 +1,18 @@
 <template>
   <ol v-reveal class="awards">
     <li v-for="a in awards" :key="a.year + a.title">
-      <span class="year">{{ a.year }}</span>
+      <span class="year">{{ t(a.year) }}</span>
       <span class="medal" :data-tier="tier(a.title)">
-        <span class="medal-dot" aria-hidden="true"></span>{{ a.title }}
+        <span class="medal-dot" aria-hidden="true"></span>{{ t(a.title) }}
       </span>
-      <span v-if="a.org" class="org">{{ a.org }}</span>
+      <span v-if="a.org" class="org">{{ t(a.org) }}</span>
     </li>
   </ol>
 </template>
 
 <script setup lang="ts">
 import { awards } from '@/data/awards'
+import { t } from '@/i18n'
 
 function tier(title: string) {
   if (/gold|first/i.test(title)) return 'gold'

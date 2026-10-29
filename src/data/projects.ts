@@ -267,8 +267,8 @@ const gameplayEngineering: ProjectGroup = {
       summary:
         'Production C++ on a shipped Unreal Engine 5 4X strategy game, intern to full-time over two-plus years. I owned eight systems across graph algorithms, spatial indexing, data-driven gameplay, and input and UI frameworks.',
       metrics: [
-        '85% less connectivity computation at the typical 1,000-unit workload',
-        '1,000+ concurrent agents served by the pathfinding system',
+        '85% less connectivity computation at the typical 2,000-unit workload',
+        '2,000+ concurrent agents served by the pathfinding system',
         '8 production systems owned, from algorithms to frameworks',
         'Shipped on Steam Early Access, 12 Aug 2026',
       ],
@@ -291,7 +291,7 @@ const gameplayEngineering: ProjectGroup = {
           illustration: {
             src: '/illustrations/mo-routing.webp',
             alt: 'A road map where a blue route bends around a hatched danger zone while the dashed shortest path cuts through it',
-            caption: 'Routes bend around danger, for 1,000+ concurrent agents.',
+            caption: 'Routes bend around danger, for 2,000+ concurrent agents.',
           },
           tags: [
             'Graph algorithms',
@@ -301,7 +301,7 @@ const gameplayEngineering: ProjectGroup = {
             'Message queue',
           ],
           body: [
-            'Heap-based multi-source Dijkstra over a road graph that changes at runtime. Edge weights combine distance, road type, ownership and nearby threats, serving 1,000+ concurrent agents.',
+            'Heap-based multi-source Dijkstra over a road graph that changes at runtime. Edge weights combine distance, road type, ownership and nearby threats, serving 2,000+ concurrent agents.',
             'Road updates are batched into commands and handed to the AI thread through a queue instead of sharing state across threads.',
           ],
         },
@@ -310,7 +310,7 @@ const gameplayEngineering: ProjectGroup = {
           tags: ['Spatial hashing', 'Uniform grid', 'KD-tree', 'Union-find', 'Profiling'],
           body: [
             'Unit grouping needs connected components of soldiers within a distance threshold, rebuilt in real time for selection, formations and pathfinding.',
-            'For the typical 1,000-unit workload I replaced the naive search with spatial hashing on a uniform grid, cutting connectivity computation by 85%. A templated k-dimensional KD-tree (with union-find and DBSCAN) is kept for 5,000\u20136,000-unit scenes, where it pays off. Both paths are instrumented with stat counters.',
+            'For the typical 2,000-unit workload I replaced the naive search with spatial hashing on a uniform grid, cutting connectivity computation by 85%. A templated k-dimensional KD-tree (with union-find and DBSCAN) is kept for 5,000\u20136,000-unit scenes, where it pays off. Both paths are instrumented with stat counters.',
           ],
           media: [
             {

@@ -5,7 +5,9 @@ import { highlightCards } from './data/highlights'
 export function splitLead(text: string): { lead: string; rest: string } {
   // A sentence ends at . ! ? followed by a capital, digit or opening mark,
   // so abbreviations such as "e.g. x" do not split.
-  const match = text.match(/^(.{20,}?[.!?])\s+(?=[A-Z0-9“"(])/)
+  // Chinese sentences end at 。！？ with no following space.
+  const match =
+    text.match(/^(.{20,}?[.!?])\s+(?=[A-Z0-9“"(])/) ?? text.match(/^(.{8,}?[。！？])\s*(?=.)/)
   return match ? { lead: match[1]!, rest: text.slice(match[0].length) } : { lead: text, rest: '' }
 }
 

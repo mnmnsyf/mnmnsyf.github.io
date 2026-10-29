@@ -24,7 +24,7 @@ export const site = {
      <a href="https://www.digisky.com/" target="_blank" rel="noopener">Chengdu Digital Sky</a>
      (intern to full-time, two-plus years) I owned eight production systems for
      <a href="https://www.digisky.com/product/mo" target="_blank" rel="noopener">Mandate Order</a>,
-     now on Steam Early Access: pathfinding for 1,000+ agents, spatial indexing, a data-driven skill
+     now on Steam Early Access: pathfinding for 2,000+ agents, spatial indexing, a data-driven skill
      system, and the input and UI frameworks.`,
     `<strong>Seeking 2027 full-time roles in C++ software systems, backend and infrastructure, and
      performance engineering.</strong> M.S. in Computer Science at

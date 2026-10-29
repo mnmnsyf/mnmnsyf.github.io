@@ -22,9 +22,12 @@
   --gl-line: #bdb9ae;
   --gl-accent: #2a4fe0;
 
-  --font: 'Geist', 'Segoe UI', system-ui, sans-serif;
-  --font-mono: 'Geist Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
-  --font-display: 'Instrument Serif', 'Times New Roman', Georgia, serif;
+  /* Chinese glyphs fall through the Latin faces to the system CJK fonts. */
+  --font-cjk: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC';
+  --font: 'Geist', 'Segoe UI', var(--font-cjk), system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'Cascadia Mono', Consolas, var(--font-cjk), monospace;
+  --font-display:
+    'Instrument Serif', 'Times New Roman', Georgia, 'Songti SC', 'Noto Serif SC', 'SimSun', serif;
 
   --page: 1280px;
   --gutter: 40px;
@@ -183,4 +186,9 @@ kbd {
     animation-iteration-count: 1 !important;
     transition: none !important;
   }
+}
+
+/* Chinese has no true italics; synthesized slanting reads as a rendering fault. */
+:root:lang(zh-CN) :is(em, i, .project-note) {
+  font-style: normal;
 }

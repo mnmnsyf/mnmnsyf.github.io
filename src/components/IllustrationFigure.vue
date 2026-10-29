@@ -9,7 +9,8 @@
       decoding="async"
     />
     <figcaption>
-      <span class="illustration-kind">Illustration</span>{{ illustration.caption }}
+      <span class="illustration-kind">{{ t('Illustration') }}</span
+      >{{ illustration.caption }}
     </figcaption>
   </figure>
 </template>
@@ -19,6 +20,7 @@ import { computed } from 'vue'
 import { assetUrl } from '@/assetUrl'
 import { mediaDimensions } from '@/data/mediaDimensions'
 import type { Illustration } from '@/data/types'
+import { t } from '@/i18n'
 
 const props = defineProps<{ illustration: Illustration }>()
 const dimensions = computed(() => mediaDimensions[props.illustration.src])

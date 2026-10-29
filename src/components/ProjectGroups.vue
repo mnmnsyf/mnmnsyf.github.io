@@ -1,11 +1,11 @@
 <template>
   <div class="projects-layout">
-    <nav class="project-rail" aria-label="Project index">
+    <nav class="project-rail" :aria-label="t('Project index')">
       <p class="rail-count">
-        <span>{{ pad(position + 1) }}</span> / {{ pad(entries.length) }} projects
+        <span>{{ pad(position + 1) }}</span> / {{ pad(entries.length) }} {{ t('projects') }}
       </p>
       <div v-for="group in projectGroups" :key="group.id" class="rail-group">
-        <p :id="group.id" class="rail-group-title">{{ group.title }}</p>
+        <p :id="group.id" class="rail-group-title">{{ t(group.title) }}</p>
         <a
           v-for="project in group.projects"
           :key="project.id"
@@ -15,14 +15,14 @@
           :aria-current="active.project.id === project.id ? 'true' : undefined"
         >
           <span class="rail-num">{{ pad(order.get(project.id)!) }}</span>
-          <span class="rail-title">{{ project.title }}</span>
+          <span class="rail-title">{{ t(project.title) }}</span>
         </a>
       </div>
-      <p class="rail-hint" aria-hidden="true"><kbd>←</kbd><kbd>→</kbd> switch project</p>
+      <p class="rail-hint" aria-hidden="true"><kbd>←</kbd><kbd>→</kbd> {{ t('switch project') }}</p>
     </nav>
 
     <div class="project-stage">
-      <nav ref="chips" class="project-chips" aria-label="Project index (compact)">
+      <nav ref="chips" class="project-chips" :aria-label="t('Project index (compact)')">
         <a
           v-for="entry in entries"
           :key="entry.project.id"
@@ -31,20 +31,20 @@
           :class="{ current: active.project.id === entry.project.id }"
           :aria-current="active.project.id === entry.project.id ? 'true' : undefined"
           ><span>{{ pad(entry.index) }}</span
-          >{{ entry.project.title }}</a
+          >{{ t(entry.project.title) }}</a
         >
       </nav>
 
       <div class="stage-bar">
         <div class="stage-crumb">
-          <span class="crumb-group">{{ active.group.title }}</span>
-          <span v-if="active.group.blurb" class="crumb-blurb">{{ active.group.blurb }}</span>
+          <span class="crumb-group">{{ t(active.group.title) }}</span>
+          <span v-if="active.group.blurb" class="crumb-blurb">{{ t(active.group.blurb) }}</span>
         </div>
         <div class="stage-nav">
           <a
             class="step"
             :href="`#/projects/${previous.project.id}`"
-            :aria-label="`Previous project: ${previous.project.title}`"
+            :aria-label="`${t('Previous project')}: ${t(previous.project.title)}`"
             >←</a
           >
           <span class="step-count"
@@ -53,7 +53,7 @@
           <a
             class="step"
             :href="`#/projects/${next.project.id}`"
-            :aria-label="`Next project: ${next.project.title}`"
+            :aria-label="`${t('Next project')}: ${t(next.project.title)}`"
             >→</a
           >
         </div>
@@ -63,11 +63,11 @@
         <ProjectEntry :key="active.project.id" :project="active.project" :index="active.index" />
       </Transition>
 
-      <nav class="pager" aria-label="Adjacent projects">
+      <nav class="pager" :aria-label="t('Adjacent projects')">
         <a class="pager-card pager-prev" :href="`#/projects/${previous.project.id}`">
-          <span class="pager-label">← Previous</span>
-          <strong>{{ previous.project.title }}</strong>
-          <span class="pager-group">{{ previous.group.title }}</span>
+          <span class="pager-label">{{ t('← Previous') }}</span>
+          <strong>{{ t(previous.project.title) }}</strong>
+          <span class="pager-group">{{ t(previous.group.title) }}</span>
         </a>
         <a class="pager-card pager-next" :href="`#/projects/${next.project.id}`">
           <img
@@ -79,9 +79,9 @@
             decoding="async"
           />
           <span class="pager-copy">
-            <span class="pager-label">Next project →</span>
-            <strong>{{ next.project.title }}</strong>
-            <span class="pager-group">{{ next.group.title }}</span>
+            <span class="pager-label">{{ t('Next project →') }}</span>
+            <strong>{{ t(next.project.title) }}</strong>
+            <span class="pager-group">{{ t(next.group.title) }}</span>
           </span>
         </a>
       </nav>
@@ -96,6 +96,7 @@ import { projectGroups } from '@/data/projects'
 import { mandateOrderScreenshots } from '@/data/mandateOrderScreenshots'
 import type { Project } from '@/data/types'
 import ProjectEntry from './ProjectEntry.vue'
+import { t } from '@/i18n'
 
 /**
  * One project at a time. The route target picks it: a project id, or a

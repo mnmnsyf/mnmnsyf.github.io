@@ -1,5 +1,7 @@
 <template>
-  <a href="#main-content" class="skip-link" @click.prevent="focusMain">Skip to content</a>
+  <a href="#main-content" class="skip-link" @click.prevent="focusMain">{{
+    t('Skip to content')
+  }}</a>
   <div class="site-layout" :data-route="route.section" @click="onRouteLinkClick">
     <SiteNav :active="route.section" @open-palette="paletteOpen = true" />
     <main id="main-content" class="page" tabindex="-1">
@@ -15,7 +17,7 @@
             <SectionBlock
               v-else-if="route.section === 'projects'"
               id="projects"
-              title="Selected projects"
+              :title="t('Selected projects')"
               heading-tag="h1"
             >
               <ProjectGroups :target="route.target" />
@@ -23,7 +25,7 @@
             <SectionBlock
               v-else-if="route.section === 'research'"
               id="research"
-              title="Research"
+              :title="t('Research')"
               heading-tag="h1"
             >
               <ProjectEntry :project="articulateArena" />
@@ -31,7 +33,7 @@
             <SectionBlock
               v-else-if="route.section === 'experience'"
               id="experience"
-              title="Experience"
+              :title="t('Experience')"
               heading-tag="h1"
             >
               <ExperienceList />
@@ -39,7 +41,7 @@
             <SectionBlock
               v-else-if="route.section === 'news'"
               id="news"
-              title="Updates"
+              :title="t('Updates')"
               heading-tag="h1"
             >
               <NewsList />
@@ -47,7 +49,7 @@
             <SectionBlock
               v-else-if="route.section === 'education'"
               id="education"
-              title="Education"
+              :title="t('Education')"
               heading-tag="h1"
             >
               <EducationList />
@@ -55,7 +57,7 @@
             <SectionBlock
               v-else-if="route.section === 'awards'"
               id="awards"
-              title="Awards"
+              :title="t('Awards')"
               heading-tag="h1"
             >
               <AwardList />
@@ -63,7 +65,7 @@
             <SectionBlock
               v-else-if="route.section === 'skills'"
               id="skills"
-              title="Skills"
+              :title="t('Skills')"
               heading-tag="h1"
             >
               <SkillList />
@@ -78,7 +80,7 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import SiteNav from '@/components/SiteNav.vue'
 import SiteHeader from '@/components/SiteHeader.vue'
 import SectionBlock from '@/components/SectionBlock.vue'
@@ -89,6 +91,7 @@ import ProjectEntry from '@/components/ProjectEntry.vue'
 import { articulateArena } from '@/data/publications'
 import { sections, site } from '@/data/site'
 import { resolveRoute } from '@/navigation'
+import { locale, t } from '@/i18n'
 import EducationList from '@/components/EducationList.vue'
 import AwardList from '@/components/AwardList.vue'
 import SkillList from '@/components/SkillList.vue'
@@ -169,9 +172,11 @@ function onRouteLinkClick(event: MouseEvent) {
   }
 }
 function updateTitle() {
-  const label = sections.find((section) => section.id === route.value.section)?.label
+  const label = sections.find((section) => section.id === route.value.section)?.label ?? ''
   document.title =
-    route.value.section === 'top' ? `${site.name} — Personal Website` : `${label} — ${site.name}`
+    route.value.section === 'top'
+      ? `${site.name} — ${t('Personal Website')}`
+      : `${t(label)} — ${site.name}`
 }
 function syncRoute() {
   if (window.location.hash === '#main-content') return
@@ -180,6 +185,7 @@ function syncRoute() {
   updateTitle()
   if (route.value.section === previousSection) void nextTick(positionRoute)
 }
+watch(locale, updateTitle)
 onMounted(() => {
   window.addEventListener('hashchange', syncRoute)
   window.addEventListener('keydown', onGlobalKey)

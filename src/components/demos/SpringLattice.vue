@@ -7,24 +7,25 @@
     <canvas
       ref="canvas"
       role="img"
-      aria-label="Interactive mass-spring soft body that can be dragged with the pointer"
+      :aria-label="t('Interactive mass-spring soft body that can be dragged with the pointer')"
       @pointerdown="onDown"
       @pointermove="onMove"
       @pointerup="onUp"
       @pointercancel="onUp"
     ></canvas>
     <template #readout>
-      {{ particleCount }} nodes · {{ springCount }} springs · area {{ areaPercent }}%
+      {{ particleCount }} {{ t('nodes') }} · {{ springCount }} {{ t('springs') }} · {{ t('area') }}
+      {{ areaPercent }}%
     </template>
     <template #controls>
       <button type="button" :aria-pressed="pressure" @click="pressure = !pressure">
-        Pressure {{ pressure ? 'on' : 'off' }}
+        {{ t('Pressure') }} {{ t(pressure ? 'on' : 'off') }}
       </button>
       <button type="button" :aria-pressed="showSprings" @click="showSprings = !showSprings">
-        Springs
+        {{ t('Springs') }}
       </button>
-      <button type="button" @click="drop">Drop again</button>
-      <span>semi-implicit Euler · {{ SUBSTEPS }} substeps</span>
+      <button type="button" @click="drop">{{ t('Drop again') }}</button>
+      <span>{{ t('semi-implicit Euler') }} · {{ SUBSTEPS }} {{ t('substeps') }}</span>
     </template>
   </DemoFrame>
 </template>
@@ -32,6 +33,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import DemoFrame from './DemoFrame.vue'
+import { t } from '@/i18n'
 import { useCanvasLoop } from './useCanvasLoop'
 import { cssColor } from '@/theme'
 

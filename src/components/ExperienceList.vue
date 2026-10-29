@@ -1,6 +1,6 @@
 <template>
   <ol class="experience">
-    <li v-for="item in experience" :key="item.org + item.period" v-reveal class="entry">
+    <li v-for="item in items" :key="item.org + item.period" v-reveal class="entry">
       <div class="when">
         <span class="period">{{ item.period }}</span>
         <span v-if="item.location" class="location">{{ item.location }}</span>
@@ -9,13 +9,13 @@
         <h2 class="role">{{ item.role }}</h2>
         <p class="org">{{ item.org }}</p>
         <p v-if="item.advisor" class="advisor">
-          Advised by
+          {{ t('Advised by') }}
           <a :href="item.advisor.href" target="_blank" rel="noopener">{{ item.advisor.label }}</a>
         </p>
         <ul class="bullets">
           <li v-for="(b, i) in item.bullets" :key="i">{{ b }}</li>
         </ul>
-        <nav class="link-row experience-links" :aria-label="`${item.role} resources`">
+        <nav class="link-row experience-links" :aria-label="`${item.role} ${t('resources')}`">
           <a
             v-for="link in item.links"
             :key="link.href"
@@ -37,8 +37,13 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { experience } from '@/data/experience'
+import { localize, t } from '@/i18n'
+
 import MediaGrid from './MediaGrid.vue'
+
+const items = computed(() => localize(experience))
 </script>
 
 <style scoped>

@@ -1,8 +1,8 @@
 <template>
   <div class="skills">
-    <p v-reveal class="summary">{{ skillsSummary }}</p>
+    <p v-reveal class="summary">{{ t(skillsSummary) }}</p>
     <div class="skill-grid">
-      <section v-for="(group, g) in skills" :key="group.label" v-reveal="g * 40" class="skill-card">
+      <section v-for="(group, g) in groups" :key="group.label" v-reveal="g * 40" class="skill-card">
         <h2>
           <span aria-hidden="true">{{ String(g + 1).padStart(2, '0') }}</span
           >{{ group.label }}
@@ -16,7 +16,11 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { skills, skillsSummary } from '@/data/skills'
+import { localize, t } from '@/i18n'
+
+const groups = computed(() => localize(skills))
 </script>
 
 <style scoped>

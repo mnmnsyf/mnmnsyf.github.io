@@ -4,7 +4,7 @@
     class="screenshot-carousel"
     role="region"
     aria-roledescription="carousel"
-    :aria-label="label"
+    :aria-label="t(label)"
     @mouseenter="hovered = true"
     @mouseleave="hovered = false"
     @focusin="focused = true"
@@ -21,13 +21,13 @@
           class="carousel-slide"
           target="_blank"
           rel="noopener noreferrer"
-          :aria-label="`Open full-size screenshot ${index + 1}: ${slide.alt}`"
+          :aria-label="`${t('Open full-size screenshot')} ${index + 1}: ${t(slide.alt)}`"
           :aria-hidden="index !== active"
           :tabindex="index === active ? 0 : -1"
         >
           <img
             :src="assetUrl(slide.src)"
-            :alt="slide.alt"
+            :alt="t(slide.alt)"
             width="1920"
             height="1080"
             :loading="index === 0 ? 'eager' : 'lazy'"
@@ -38,15 +38,15 @@
     </div>
     <div class="carousel-controls">
       <div class="carousel-arrows">
-        <button type="button" aria-label="Previous screenshot" @click="previous">←</button>
-        <button type="button" aria-label="Next screenshot" @click="next">→</button>
+        <button type="button" :aria-label="t('Previous screenshot')" @click="previous">←</button>
+        <button type="button" :aria-label="t('Next screenshot')" @click="next">→</button>
       </div>
-      <div class="carousel-dots" aria-label="Choose screenshot">
+      <div class="carousel-dots" :aria-label="t('Choose screenshot')">
         <button
           v-for="(slide, index) in slides"
           :key="slide.src"
           type="button"
-          :aria-label="`Show screenshot ${index + 1}`"
+          :aria-label="`${t('Show screenshot')} ${index + 1}`"
           :aria-pressed="index === active"
           @click="select(index)"
         >
@@ -61,7 +61,7 @@
         <button
           v-if="!reducedMotion"
           type="button"
-          :aria-label="paused ? 'Play slideshow' : 'Pause slideshow'"
+          :aria-label="t(paused ? 'Play slideshow' : 'Pause slideshow')"
           @click="togglePause"
         >
           <span aria-hidden="true">{{ paused ? '▶' : 'Ⅱ' }}</span>
@@ -69,7 +69,7 @@
       </div>
     </div>
     <p class="carousel-credit">
-      Official game screenshots ·
+      {{ t('Official game screenshots ·') }}
       <a :href="mandateOrderScreenshotSource" target="_blank" rel="noopener noreferrer">Steam ↗</a>
     </p>
   </section>
@@ -79,6 +79,7 @@
 import { assetUrl } from '@/assetUrl'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { createCarouselState } from './carouselState'
+import { t } from '@/i18n'
 import { mandateOrderScreenshotSource, type Screenshot } from '@/data/mandateOrderScreenshots'
 const props = withDefaults(defineProps<{ slides: Screenshot[]; label?: string }>(), {
   label: 'Mandate Order screenshots',

@@ -1,18 +1,19 @@
 <template>
   <dl ref="root" class="stats">
     <div v-for="(stat, index) in stats" :key="stat.label" class="stat">
-      <dt>{{ stat.label }}</dt>
+      <dt>{{ t(stat.label) }}</dt>
       <dd>
         <span class="stat-value">{{ display[index] }}</span
         ><span class="stat-suffix">{{ stat.suffix }}</span>
       </dd>
-      <p class="stat-source">{{ stat.source }}</p>
+      <p class="stat-source">{{ t(stat.source) }}</p>
     </div>
   </dl>
 </template>
 
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { t } from '@/i18n'
 
 /** Figures quoted from the experience and research entries. */
 const stats = [
@@ -23,7 +24,7 @@ const stats = [
     source: 'Mandate Order · Digital Sky',
   },
   {
-    value: 1000,
+    value: 2000,
     suffix: '+',
     label: 'concurrent agents on dynamic road-graph routing',
     source: 'Multi-source Dijkstra',
@@ -31,7 +32,7 @@ const stats = [
   {
     value: 85,
     suffix: '%',
-    label: 'less connectivity computation at a 1,000-unit workload',
+    label: 'less connectivity computation at a 2,000-unit workload',
     source: 'Spatial hashing · uniform grid',
   },
   {

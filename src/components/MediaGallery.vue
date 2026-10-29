@@ -5,14 +5,19 @@
         <MediaFigure :key="active.src" :media="active" class="stage-figure" />
       </Transition>
     </div>
-    <div v-if="items.length > 1" class="thumbs" role="group" :aria-label="`${label} visuals`">
+    <div
+      v-if="items.length > 1"
+      class="thumbs"
+      role="group"
+      :aria-label="`${label} ${t('visuals')}`"
+    >
       <button
         v-for="(item, i) in items"
         :key="item.src"
         type="button"
         class="thumb"
         :aria-pressed="i === index"
-        :aria-label="`Show visual ${i + 1}: ${item.alt}`"
+        :aria-label="`${t('Show visual')} ${i + 1}: ${item.alt}`"
         @click="index = i"
       >
         <img
@@ -35,6 +40,7 @@
 import { computed, ref } from 'vue'
 import { assetUrl } from '@/assetUrl'
 import type { Media } from '@/data/types'
+import { t } from '@/i18n'
 import MediaFigure from './MediaFigure.vue'
 
 const props = defineProps<{ items: Media[]; label: string }>()

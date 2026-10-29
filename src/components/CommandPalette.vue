@@ -4,7 +4,7 @@
       class="palette"
       role="dialog"
       aria-modal="true"
-      aria-label="Command palette"
+      :aria-label="t('Command palette')"
       @keydown="onKeydown"
     >
       <div class="palette-search">
@@ -21,7 +21,7 @@
           aria-controls="palette-results"
           :aria-activedescendant="results.length ? `palette-item-${cursor}` : undefined"
           aria-autocomplete="list"
-          placeholder="Search projects, sections, links…"
+          :placeholder="t('Search projects, sections, links…')"
           spellcheck="false"
           autocomplete="off"
         />
@@ -34,7 +34,7 @@
             class="palette-group"
             role="presentation"
           >
-            {{ item.group }}
+            {{ t(item.group) }}
           </li>
           <li
             :id="`palette-item-${index}`"
@@ -55,11 +55,14 @@
             <span class="palette-enter" aria-hidden="true">↵</span>
           </li>
         </template>
-        <li v-if="!results.length" class="palette-empty">No matches for “{{ query }}”.</li>
+        <li v-if="!results.length" class="palette-empty">
+          {{ t('No matches for') }} “{{ query }}”.
+        </li>
       </ul>
       <div class="palette-foot" aria-hidden="true">
-        <span><kbd>↑</kbd><kbd>↓</kbd> move</span><span><kbd>↵</kbd> open</span
-        ><span>{{ results.length }} results</span>
+        <span><kbd>↑</kbd><kbd>↓</kbd> {{ t('move') }}</span
+        ><span><kbd>↵</kbd> {{ t('open') }}</span
+        ><span>{{ results.length }} {{ t('results') }}</span>
       </div>
     </div>
   </div>
@@ -73,6 +76,7 @@ import { assetUrl } from '@/assetUrl'
 import { navLinks, sections } from '@/data/site'
 import { sectionHref } from '@/navigation'
 import { useTheme } from '@/theme'
+import { t, toggleLocale } from '@/i18n'
 
 const emit = defineEmits<{ close: [] }>()
 const { toggle } = useTheme()
@@ -90,11 +94,12 @@ function go(hash: string) {
   else window.location.hash = hash
 }
 
-const commands: Command[] = [
+// Titles follow the current language; group names stay English keys for ordering.
+const commands = computed<Command[]>(() => [
   ...sections.map((section, index) => ({
     key: `section-${section.id}`,
     group: 'Sections',
-    title: section.label,
+    title: t(section.label),
     meta: String(index + 1).padStart(2, '0'),
     run: () => go(sectionHref(section.id)),
   })),
@@ -102,7 +107,7 @@ const commands: Command[] = [
     group.projects.map((project) => ({
       key: `project-${project.id}`,
       group: 'Projects',
-      title: project.title,
+      title: t(project.title),
       meta: project.tech.slice(0, 3).join(' · '),
       run: () => go(`#/projects/${project.id}`),
     })),
@@ -111,13 +116,13 @@ const commands: Command[] = [
     key: 'research',
     group: 'Research',
     title: articulateArena.title,
-    meta: articulateArena.role ?? '',
+    meta: t(articulateArena.role ?? ''),
     run: () => go(`#/research/${articulateArena.id}`),
   },
   ...navLinks.map((link) => ({
     key: `link-${link.label}`,
     group: 'Elsewhere',
-    title: link.label,
+    title: t(link.label),
     meta: link.href.startsWith('mailto:')
       ? link.href.slice('mailto:'.length)
       : link.href.startsWith('/')
@@ -131,11 +136,18 @@ const commands: Command[] = [
   {
     key: 'theme',
     group: 'Actions',
-    title: 'Toggle light / dark theme',
+    title: t('Toggle light / dark theme'),
     meta: 'View Transitions',
     run: () => toggle(),
   },
-]
+  {
+    key: 'language',
+    group: 'Actions',
+    title: t('Switch to Chinese / English'),
+    meta: '中文 / EN',
+    run: () => toggleLocale(),
+  },
+])
 
 /**
  * Fuzzy subsequence match. Consecutive and word-start hits score higher, so
@@ -179,7 +191,7 @@ const groupOrder = ['Sections', 'Projects', 'Research', 'Elsewhere', 'Actions']
 
 const results = computed(() => {
   const q = query.value.trim()
-  const scored = commands
+  const scored = commands.value
     .map((command) => ({ command, result: match(command.title, q) }))
     .filter((entry) => entry.result)
   if (q) scored.sort((a, b) => b.result!.score - a.result!.score)

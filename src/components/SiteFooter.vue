@@ -1,17 +1,19 @@
 <template>
   <footer class="footer">
     <div class="footer-cta">
-      <p class="footer-kicker">Seeking 2027 full-time roles</p>
-      <p class="footer-line">Systems, graphics, simulation — <em>let’s talk.</em></p>
+      <p class="footer-kicker">{{ t('Seeking 2027 full-time roles') }}</p>
+      <p class="footer-line">
+        {{ t('Systems, graphics, simulation —') }} <em>{{ t('let’s talk.') }}</em>
+      </p>
       <div class="footer-email">
         <a :href="`mailto:${email}`">{{ email }}</a>
         <button type="button" class="copy" @click="copy">
-          <span aria-live="polite">{{ copied ? 'Copied' : 'Copy' }}</span>
+          <span aria-live="polite">{{ t(copied ? 'Copied' : 'Copy') }}</span>
         </button>
       </div>
     </div>
     <div class="footer-bottom">
-      <nav class="link-row footer-links" aria-label="Contact and profiles">
+      <nav class="link-row footer-links" :aria-label="t('Contact and profiles')">
         <a
           v-for="l in navLinks"
           :key="l.href"
@@ -20,14 +22,14 @@
           rel="noopener"
         >
           <IconGlyph :name="l.icon" />
-          {{ l.label }}
+          {{ t(l.label) }}
         </a>
       </nav>
       <p class="footer-meta">
         <span
-          >Los Angeles <span class="clock">{{ clock }}</span></span
+          >{{ t('Los Angeles') }} <span class="clock">{{ clock }}</span></span
         >
-        <span>Last updated {{ site.lastUpdated }}</span>
+        <span>{{ t('Last updated') }} {{ t(site.lastUpdated) }}</span>
         <span>Vue · WebGL2 · Canvas</span>
       </p>
     </div>
@@ -39,6 +41,7 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { assetUrl } from '@/assetUrl'
 import { site, navLinks } from '@/data/site'
 import IconGlyph from './IconGlyph.vue'
+import { t } from '@/i18n'
 
 const email = navLinks.find((l) => l.href.startsWith('mailto:'))!.href.slice('mailto:'.length)
 const copied = ref(false)

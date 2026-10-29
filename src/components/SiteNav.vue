@@ -1,11 +1,11 @@
 <template>
   <header class="topbar">
     <div class="topbar-inner">
-      <a href="#/" class="brand" :aria-label="`${site.name} — back to introduction`">
+      <a href="#/" class="brand" :aria-label="`${site.name} — ${t('back to introduction')}`">
         <img class="brand-portrait" :src="assetUrl(site.photo.src)" alt="" width="28" height="28" />
         <span class="brand-name">{{ site.name }}</span>
       </a>
-      <nav ref="nav" class="section-nav" aria-label="Main navigation">
+      <nav ref="nav" class="section-nav" :aria-label="t('Main navigation')">
         <a
           v-for="(section, index) in sections"
           :key="section.id"
@@ -15,18 +15,27 @@
           :aria-current="active === section.id ? 'page' : undefined"
         >
           <span class="nav-number" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span
-          >{{ section.label }}
+          >{{ t(section.label) }}
         </a>
         <span class="nav-indicator" :style="indicator" aria-hidden="true"></span>
       </nav>
       <div class="topbar-actions">
-        <a class="resume-link" :href="assetUrl(resumeHref)" target="_blank" rel="noopener"
-          >Résumé</a
+        <a class="resume-link" :href="assetUrl(resumeHref)" target="_blank" rel="noopener">{{
+          t('Résumé')
+        }}</a>
+        <button
+          type="button"
+          class="lang-toggle"
+          :lang="locale === 'zh' ? 'en' : 'zh-CN'"
+          :aria-label="locale === 'zh' ? 'Read in English' : '切换到中文'"
+          @click="toggleLocale"
         >
+          {{ locale === 'zh' ? 'EN' : '中文' }}
+        </button>
         <button
           type="button"
           class="search-trigger"
-          aria-label="Open command palette"
+          :aria-label="t('Open command palette')"
           aria-keyshortcuts="Control+K Meta+K"
           @click="$emit('open-palette')"
         >
@@ -34,13 +43,13 @@
             <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.4" />
             <path d="m10.5 10.5 3 3" stroke="currentColor" stroke-width="1.4" />
           </svg>
-          <span class="search-label">Jump to</span>
+          <span class="search-label">{{ t('Jump to') }}</span>
           <kbd>{{ shortcut }}</kbd>
         </button>
         <button
           type="button"
           class="theme-toggle"
-          :aria-label="theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
+          :aria-label="t(theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme')"
           @click="onToggle"
         >
           <svg viewBox="0 0 20 20" aria-hidden="true" :class="theme">
@@ -68,6 +77,7 @@ import { assetUrl } from '@/assetUrl'
 import { resumeHref, site, sections } from '@/data/site'
 import { sectionHref, type SectionId } from '@/navigation'
 import { useTheme } from '@/theme'
+import { locale, t, toggleLocale } from '@/i18n'
 
 const props = defineProps<{ active: SectionId }>()
 defineEmits<{ 'open-palette': [] }>()
@@ -98,7 +108,7 @@ function onToggle(event: MouseEvent) {
 
 let resizeObserver: ResizeObserver | undefined
 watch(
-  () => props.active,
+  () => [props.active, locale.value],
   () => void nextTick(placeIndicator),
 )
 onMounted(() => {

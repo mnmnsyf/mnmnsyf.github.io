@@ -3,6 +3,7 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import { reveal } from './directives/reveal'
+import { initLocale } from './i18n'
 
 // After a redeploy, a cached page can request chunks that no longer exist.
 // Reload to pick up the current build, at most once per 30 seconds.
@@ -18,4 +19,5 @@ window.addEventListener('vite:preloadError', (event) => {
   window.location.reload()
 })
 
+initLocale()
 createApp(App).directive('reveal', reveal).mount('#app')

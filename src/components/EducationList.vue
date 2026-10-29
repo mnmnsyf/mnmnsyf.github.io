@@ -1,6 +1,6 @@
 <template>
   <ol class="education">
-    <li v-for="item in education" :key="item.school" v-reveal class="entry">
+    <li v-for="item in items" :key="item.school" v-reveal class="entry">
       <div class="when">
         <span class="period">{{ item.period }}</span>
         <span v-if="item.location">{{ item.location }}</span>
@@ -16,13 +16,13 @@
         </p>
         <dl class="details">
           <template v-if="item.honors?.length">
-            <dt>Honors</dt>
+            <dt>{{ t('Honors') }}</dt>
             <dd>
               <span v-for="h in item.honors" :key="h" class="chip">{{ h }}</span>
             </dd>
           </template>
           <template v-if="item.coursework?.length">
-            <dt>Coursework</dt>
+            <dt>{{ t('Coursework') }}</dt>
             <dd>
               <span v-for="c in item.coursework" :key="c" class="chip">{{ c }}</span>
             </dd>
@@ -34,7 +34,11 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { education } from '@/data/education'
+import { localize, t } from '@/i18n'
+
+const items = computed(() => localize(education))
 </script>
 
 <style scoped>
