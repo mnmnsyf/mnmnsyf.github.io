@@ -15,7 +15,7 @@
           :aria-current="active === section.id ? 'page' : undefined"
         >
           <span class="nav-number" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span
-          >{{ t(section.label) }}
+          >{{ t(section.nav) }}
         </a>
         <span class="nav-indicator" :style="indicator" aria-hidden="true"></span>
       </nav>

@@ -32,8 +32,8 @@ export const site = {
      CSCI 566 Deep Learning). ICPC medalist; research assistant at UCLA's
      <a href="https://www.math.ucla.edu/aivc/" target="_blank" rel="noopener">AIVC Lab</a> and co-first author of
      <a href="#/research/articulatearena">ArticulateArena</a>. Recently: an
-     <a href="#/projects/angle-graphics-sdk">ANGLE-based .NET graphics SDK</a> and
-     <a href="#/projects/path-tracing-denoising">deep learning for path-tracing denoising</a> in PyTorch.`,
+     <a href="#/engine/angle-graphics-sdk">ANGLE-based .NET graphics SDK</a> and
+     <a href="#/graphics/path-tracing-denoising">deep learning for path-tracing denoising</a> in PyTorch.`,
   ],
 
   lastUpdated: 'October 2026',
@@ -65,27 +65,25 @@ export const featuredWork = [
   {
     label: 'C++ / C# · SDK & Tools',
     title: 'ANGLE Graphics SDK',
-    href: '#/projects/angle-graphics-sdk',
+    href: '#/engine/angle-graphics-sdk',
     image: '/angle-sdk-architecture.svg',
     alt: 'ANGLE graphics SDK architecture',
   },
   {
     label: 'UE5 / PyTorch · In progress',
     title: 'Path Tracing Denoising',
-    href: '#/projects/path-tracing-denoising',
+    href: '#/graphics/path-tracing-denoising',
     image: '/denoising-workflow.svg',
     alt: 'Path-tracing denoising training and evaluation workflow',
   },
 ]
 
-/** Independent sections in sidebar order. */
+/** Independent sections in navigation order. `nav` is the short top-bar label. */
 export const sections = [
-  { id: 'top', label: 'Entry' },
-  { id: 'projects', label: 'Projects' },
-  { id: 'research', label: 'Research' },
-  { id: 'experience', label: 'Experience' },
-  { id: 'news', label: 'Updates' },
-  { id: 'education', label: 'Education' },
-  { id: 'awards', label: 'Awards' },
-  { id: 'skills', label: 'Skills' },
+  { id: 'top', label: 'Entry', nav: 'Entry' },
+  { id: 'engine', label: 'Engine Development', nav: 'Engine' },
+  { id: 'gameplay', label: 'Gameplay Development', nav: 'Gameplay' },
+  { id: 'graphics', label: 'Graphics & Simulation', nav: 'Graphics' },
+  { id: 'research', label: 'Research', nav: 'Research' },
+  { id: 'about', label: 'About', nav: 'About' },
 ] as const

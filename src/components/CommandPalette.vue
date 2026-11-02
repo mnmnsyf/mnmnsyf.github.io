@@ -74,7 +74,7 @@ import { projectGroups } from '@/data/projects'
 import { articulateArena } from '@/data/publications'
 import { assetUrl } from '@/assetUrl'
 import { navLinks, sections } from '@/data/site'
-import { sectionHref } from '@/navigation'
+import { projectHref, sectionHref } from '@/navigation'
 import { useTheme } from '@/theme'
 import { t, toggleLocale } from '@/i18n'
 
@@ -95,6 +95,13 @@ function go(hash: string) {
 }
 
 // Titles follow the current language; group names stay English keys for ordering.
+// Mandate Order is listed under two roles; the palette lists each project once.
+const uniqueProjects = [
+  ...new Map(
+    projectGroups.flatMap((group) => group.projects).map((project) => [project.id, project]),
+  ).values(),
+]
+
 const commands = computed<Command[]>(() => [
   ...sections.map((section, index) => ({
     key: `section-${section.id}`,
@@ -103,15 +110,13 @@ const commands = computed<Command[]>(() => [
     meta: String(index + 1).padStart(2, '0'),
     run: () => go(sectionHref(section.id)),
   })),
-  ...projectGroups.flatMap((group) =>
-    group.projects.map((project) => ({
-      key: `project-${project.id}`,
-      group: 'Projects',
-      title: t(project.title),
-      meta: project.tech.slice(0, 3).join(' · '),
-      run: () => go(`#/projects/${project.id}`),
-    })),
-  ),
+  ...uniqueProjects.map((project) => ({
+    key: `project-${project.id}`,
+    group: 'Projects',
+    title: t(project.title),
+    meta: project.tech.slice(0, 3).join(' · '),
+    run: () => go(projectHref(project.id)),
+  })),
   {
     key: 'research',
     group: 'Research',

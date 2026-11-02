@@ -137,6 +137,7 @@
             <div class="module-grid" :class="{ stacked: module.mediaColumns === 1 }">
               <div class="prose notes-prose">
                 <p v-for="(paragraph, p) in module.body" :key="p">{{ paragraph }}</p>
+                <ModuleResults v-if="module.results?.length" :results="module.results" />
               </div>
               <VariantToggle v-if="module.variants?.length" :variants="module.variants" />
               <MediaGrid
@@ -167,6 +168,7 @@ import { localize, t } from '@/i18n'
 import ScreenshotCarousel from './ScreenshotCarousel.vue'
 import MediaGallery from './MediaGallery.vue'
 import MediaGrid from './MediaGrid.vue'
+import ModuleResults from './ModuleResults.vue'
 import VariantToggle from './VariantToggle.vue'
 import IllustrationFigure from './IllustrationFigure.vue'
 

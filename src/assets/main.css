@@ -706,6 +706,56 @@
   }
 }
 
+/* ---------- Skill modules on the entry page ---------- */
+.focus-list {
+  border-top: 1px solid var(--rule);
+}
+.focus-row {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 15em) minmax(0, 1fr) 24px;
+  align-items: baseline;
+  gap: 8px 24px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--rule);
+  color: var(--text);
+}
+.focus-row:hover {
+  text-decoration: none;
+}
+.focus-num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+}
+.focus-title {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 2.4vw, 32px);
+  line-height: 1.1;
+}
+.focus-claim {
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+.focus-arrow {
+  color: var(--text-faint);
+  transition:
+    transform 0.3s var(--ease-out),
+    color 0.2s;
+}
+.focus-row:hover .focus-arrow {
+  color: var(--accent);
+  transform: translateX(4px);
+}
+@media (max-width: 860px) {
+  .focus-row {
+    grid-template-columns: 32px minmax(0, 1fr) 20px;
+  }
+  .focus-claim {
+    grid-column: 2;
+  }
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 1100px) {
   .topbar-inner {

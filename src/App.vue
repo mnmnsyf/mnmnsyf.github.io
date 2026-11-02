@@ -15,12 +15,12 @@
           <div :key="route.section" class="section-view" :data-section="route.section">
             <SiteHeader v-if="route.section === 'top'" />
             <SectionBlock
-              v-else-if="route.section === 'projects'"
-              id="projects"
-              :title="t('Selected projects')"
+              v-else-if="activeModule"
+              :id="activeModule.id"
+              :title="t(activeModule.title)"
               heading-tag="h1"
             >
-              <ProjectGroups :target="route.target" />
+              <ModulePage :module="activeModule" :target="route.target" />
             </SectionBlock>
             <SectionBlock
               v-else-if="route.section === 'research'"
@@ -31,44 +31,12 @@
               <ProjectEntry :project="articulateArena" />
             </SectionBlock>
             <SectionBlock
-              v-else-if="route.section === 'experience'"
-              id="experience"
-              :title="t('Experience')"
+              v-else-if="route.section === 'about'"
+              id="about"
+              :title="t('About')"
               heading-tag="h1"
             >
-              <ExperienceList />
-            </SectionBlock>
-            <SectionBlock
-              v-else-if="route.section === 'news'"
-              id="news"
-              :title="t('Updates')"
-              heading-tag="h1"
-            >
-              <NewsList />
-            </SectionBlock>
-            <SectionBlock
-              v-else-if="route.section === 'education'"
-              id="education"
-              :title="t('Education')"
-              heading-tag="h1"
-            >
-              <EducationList />
-            </SectionBlock>
-            <SectionBlock
-              v-else-if="route.section === 'awards'"
-              id="awards"
-              :title="t('Awards')"
-              heading-tag="h1"
-            >
-              <AwardList />
-            </SectionBlock>
-            <SectionBlock
-              v-else-if="route.section === 'skills'"
-              id="skills"
-              :title="t('Skills')"
-              heading-tag="h1"
-            >
-              <SkillList />
+              <AboutPage />
             </SectionBlock>
           </div>
         </Transition>
@@ -80,27 +48,28 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import SiteNav from '@/components/SiteNav.vue'
 import SiteHeader from '@/components/SiteHeader.vue'
 import SectionBlock from '@/components/SectionBlock.vue'
-import NewsList from '@/components/NewsList.vue'
-import ExperienceList from '@/components/ExperienceList.vue'
-import ProjectGroups from '@/components/ProjectGroups.vue'
 import ProjectEntry from '@/components/ProjectEntry.vue'
 import { articulateArena } from '@/data/publications'
 import { sections, site } from '@/data/site'
 import { resolveRoute } from '@/navigation'
 import { locale, t } from '@/i18n'
-import EducationList from '@/components/EducationList.vue'
-import AwardList from '@/components/AwardList.vue'
-import SkillList from '@/components/SkillList.vue'
+import ModulePage from '@/components/ModulePage.vue'
+import AboutPage from '@/components/AboutPage.vue'
+import { skillModules } from '@/data/modules'
 import SiteFooter from '@/components/SiteFooter.vue'
 import CommandPalette from '@/components/CommandPalette.vue'
 
 const props = defineProps<{ initialHash?: string }>()
 const route = ref(
   resolveRoute(props.initialHash ?? (typeof window === 'undefined' ? '#/' : window.location.hash)),
+)
+
+const activeModule = computed(() =>
+  skillModules.find((module) => module.id === route.value.section),
 )
 
 const paletteOpen = ref(false)
@@ -123,11 +92,11 @@ function focusMain() {
   document.getElementById('main-content')?.focus()
 }
 function scrollRoute() {
-  // Projects show one at a time: open each at the top so the index stays in view.
-  const target =
-    route.value.target && route.value.section !== 'projects'
-      ? document.getElementById(route.value.target)
-      : null
+  // Role pages show one project at a time: open at the project index so it stays in view.
+  const { section, target: id } = route.value
+  const target = id
+    ? document.getElementById(activeModule.value ? `${section}-projects` : id)
+    : null
   if (target) {
     // Layout offsets exclude the entrance transform, so deep links do not jump
     // again when the transition finishes.

@@ -32,8 +32,8 @@ const stats = [
   {
     value: 85,
     suffix: '%',
-    label: 'less connectivity computation at a 2,000-unit workload',
-    source: 'Spatial hashing · uniform grid',
+    label: 'less connectivity time at 2,000 soldiers',
+    source: 'Templated KD-tree · union-find',
   },
   {
     value: 2,

@@ -27,7 +27,7 @@
           </li>
         </ul>
         <div class="hero-actions">
-          <a class="button button-primary" href="#/projects"
+          <a class="button button-primary" href="#/engine"
             >{{ t('Selected work') }} <span aria-hidden="true">→</span></a
           >
           <a class="button" :href="assetUrl(resumeHref)" target="_blank" rel="noopener"
@@ -41,9 +41,23 @@
           t('Move to disturb the field · click to add a site.')
         }}</span>
         {{ t('Voronoi partitions also ran') }}
-        <a href="#/projects/project-mo">{{ t('land ownership in Mandate Order →') }}</a>
+        <a href="#/engine/project-mo">{{ t('land ownership in Mandate Order →') }}</a>
       </p>
     </header>
+
+    <section class="entry-section" aria-labelledby="focus-heading">
+      <h2 id="focus-heading" class="entry-label">{{ t('What I do') }}</h2>
+      <ol class="focus-list">
+        <li v-for="(module, index) in skillModules" :key="module.id" v-reveal="index * 60">
+          <a class="focus-row" :href="`#/${module.id}`">
+            <span class="focus-num">{{ String(index + 1).padStart(2, '0') }}</span>
+            <span class="focus-title">{{ t(module.title) }}</span>
+            <span class="focus-claim">{{ t(module.claim) }}</span>
+            <span class="focus-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+      </ol>
+    </section>
 
     <section class="entry-section about" aria-labelledby="about-heading">
       <h2 id="about-heading" class="entry-label">{{ t('About') }}</h2>
@@ -64,10 +78,7 @@
     </section>
 
     <section class="entry-section" aria-labelledby="work-heading">
-      <div class="entry-label-row">
-        <h2 id="work-heading" class="entry-label">{{ t('Selected work') }}</h2>
-        <a class="entry-more" href="#/projects">{{ t('All projects →') }}</a>
-      </div>
+      <h2 id="work-heading" class="entry-label">{{ t('Selected work') }}</h2>
       <WorkIndex />
     </section>
 
@@ -89,7 +100,7 @@
               )
             }}
           </p>
-          <a class="button" href="#/projects/project-mo"
+          <a class="button" href="#/engine/project-mo"
             >{{ t('Inside the systems') }} <span aria-hidden="true">→</span></a
           >
         </div>
@@ -99,7 +110,7 @@
     <section class="entry-section" aria-labelledby="latest-heading">
       <div class="entry-label-row">
         <h2 id="latest-heading" class="entry-label">{{ t('Latest') }}</h2>
-        <a class="entry-more" href="#/news">{{ t('All updates →') }}</a>
+        <a class="entry-more" href="#/about/news">{{ t('All updates →') }}</a>
       </div>
       <ol class="latest">
         <li v-for="item in latest" :key="item.date + item.text" v-reveal>
@@ -114,6 +125,7 @@
 import { assetUrl } from '@/assetUrl'
 import { resumeHref, site } from '@/data/site'
 import { news } from '@/data/news'
+import { skillModules } from '@/data/modules'
 import { locale, localize, t } from '@/i18n'
 import { mandateOrderScreenshots } from '@/data/mandateOrderScreenshots'
 import ScreenshotCarousel from './ScreenshotCarousel.vue'

@@ -4,12 +4,11 @@
       <p class="rail-count">
         <span>{{ pad(position + 1) }}</span> / {{ pad(entries.length) }} {{ t('projects') }}
       </p>
-      <div v-for="group in projectGroups" :key="group.id" class="rail-group">
-        <p :id="group.id" class="rail-group-title">{{ t(group.title) }}</p>
+      <div class="rail-group">
         <a
           v-for="project in group.projects"
           :key="project.id"
-          :href="`#/projects/${project.id}`"
+          :href="`#/${section}/${project.id}`"
           class="rail-link"
           :class="{ current: active.project.id === project.id }"
           :aria-current="active.project.id === project.id ? 'true' : undefined"
@@ -26,7 +25,7 @@
         <a
           v-for="entry in entries"
           :key="entry.project.id"
-          :href="`#/projects/${entry.project.id}`"
+          :href="`#/${section}/${entry.project.id}`"
           class="chip"
           :class="{ current: active.project.id === entry.project.id }"
           :aria-current="active.project.id === entry.project.id ? 'true' : undefined"
@@ -36,14 +35,10 @@
       </nav>
 
       <div class="stage-bar">
-        <div class="stage-crumb">
-          <span class="crumb-group">{{ t(active.group.title) }}</span>
-          <span v-if="active.group.blurb" class="crumb-blurb">{{ t(active.group.blurb) }}</span>
-        </div>
         <div class="stage-nav">
           <a
             class="step"
-            :href="`#/projects/${previous.project.id}`"
+            :href="`#/${section}/${previous.project.id}`"
             :aria-label="`${t('Previous project')}: ${t(previous.project.title)}`"
             >←</a
           >
@@ -52,7 +47,7 @@
           >
           <a
             class="step"
-            :href="`#/projects/${next.project.id}`"
+            :href="`#/${section}/${next.project.id}`"
             :aria-label="`${t('Next project')}: ${t(next.project.title)}`"
             >→</a
           >
@@ -64,12 +59,11 @@
       </Transition>
 
       <nav class="pager" :aria-label="t('Adjacent projects')">
-        <a class="pager-card pager-prev" :href="`#/projects/${previous.project.id}`">
+        <a class="pager-card pager-prev" :href="`#/${section}/${previous.project.id}`">
           <span class="pager-label">{{ t('← Previous') }}</span>
           <strong>{{ t(previous.project.title) }}</strong>
-          <span class="pager-group">{{ t(previous.group.title) }}</span>
         </a>
-        <a class="pager-card pager-next" :href="`#/projects/${next.project.id}`">
+        <a class="pager-card pager-next" :href="`#/${section}/${next.project.id}`">
           <img
             v-if="thumbnail(next.project)"
             :key="next.project.id"
@@ -81,7 +75,6 @@
           <span class="pager-copy">
             <span class="pager-label">{{ t('Next project →') }}</span>
             <strong>{{ t(next.project.title) }}</strong>
-            <span class="pager-group">{{ t(next.group.title) }}</span>
           </span>
         </a>
       </nav>
@@ -92,30 +85,27 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { assetUrl } from '@/assetUrl'
-import { projectGroups } from '@/data/projects'
 import { mandateOrderScreenshots } from '@/data/mandateOrderScreenshots'
-import type { Project } from '@/data/types'
+import type { Project, ProjectGroup } from '@/data/types'
 import ProjectEntry from './ProjectEntry.vue'
 import { t } from '@/i18n'
 
 /**
- * One project at a time. The route target picks it: a project id, or a
- * category id (its first project). With no target the first entry, Mandate
- * Order, is shown. Only the active project's media is ever rendered.
+ * One project of a role page at a time. The route target picks it by id; with
+ * no target the group's first project is shown. Only the active project's
+ * media is ever rendered.
  */
-const props = defineProps<{ target?: string | null }>()
+const props = defineProps<{ group: ProjectGroup; section: string; target?: string | null }>()
 
-const entries = projectGroups
-  .flatMap((group) => group.projects.map((project) => ({ project, group })))
-  .map((entry, i) => ({ ...entry, index: i + 1 }))
+const entries = props.group.projects.map((project, i) => ({ project, index: i + 1 }))
 const order = new Map(entries.map((entry) => [entry.project.id, entry.index]))
 
 const position = computed(() => {
   const target = props.target
-  const direct = entries.findIndex((entry) => entry.project.id === target)
-  if (direct >= 0) return direct
-  const group = entries.findIndex((entry) => entry.group.id === target)
-  return Math.max(group, 0)
+  return Math.max(
+    entries.findIndex((entry) => entry.project.id === target),
+    0,
+  )
 })
 const active = computed(() => entries[position.value]!)
 const previous = computed(() => entries[(position.value - 1 + entries.length) % entries.length]!)
@@ -155,9 +145,10 @@ function onKey(event: KeyboardEvent) {
   // Leave arrow keys to fields, sliders, carousels and media controls.
   if (el?.closest('input, textarea, select, video, [role="region"], [contenteditable="true"]'))
     return
-  if (event.key === 'ArrowRight') window.location.hash = `#/projects/${next.value.project.id}`
+  if (event.key === 'ArrowRight')
+    window.location.hash = `#/${props.section}/${next.value.project.id}`
   else if (event.key === 'ArrowLeft')
-    window.location.hash = `#/projects/${previous.value.project.id}`
+    window.location.hash = `#/${props.section}/${previous.value.project.id}`
 }
 
 onMounted(() => {
@@ -202,14 +193,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   display: grid;
   gap: 2px;
 }
-.rail-group-title {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-  margin-bottom: 6px;
-}
 .rail-link {
   display: grid;
   grid-template-columns: 26px minmax(0, 1fr);
@@ -253,30 +236,12 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 /* Stage header */
 .stage-bar {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   gap: 24px;
   padding-bottom: 18px;
   margin-bottom: 40px;
   border-bottom: 1px solid var(--rule);
-}
-.stage-crumb {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 14px;
-  min-width: 0;
-}
-.crumb-group {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-.crumb-blurb {
-  font-size: 13.5px;
-  color: var(--text-muted);
 }
 .stage-nav {
   display: flex;
@@ -425,12 +390,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .pager-next strong {
   font-size: 38px;
 }
-.pager-group {
-  font-size: 13px;
-  color: var(--text-muted);
-}
-.pager-next .pager-label,
-.pager-next .pager-group {
+.pager-next .pager-label {
   color: #ffffffb3;
 }
 
@@ -492,9 +452,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   .stage-bar {
     align-items: flex-start;
     margin-bottom: 28px;
-  }
-  .crumb-blurb {
-    display: none;
   }
   .pager {
     grid-template-columns: minmax(0, 1fr);

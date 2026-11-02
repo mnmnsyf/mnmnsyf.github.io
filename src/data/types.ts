@@ -40,6 +40,13 @@ export interface ProjectModule {
   variants?: MediaVariant[]
   /** Recruiter-facing keywords, shown as chips on the summary card and the module. */
   tags?: string[]
+  /** Measured outcomes, shown as a row of figures under the write-up. */
+  results?: ModuleResult[]
+}
+
+export interface ModuleResult {
+  value: string
+  label: string
 }
 
 export interface Project {

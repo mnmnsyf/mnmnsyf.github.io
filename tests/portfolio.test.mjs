@@ -20,7 +20,8 @@ const { experience } = await server.ssrLoadModule('/src/data/experience.ts')
 const { articulateArena } = await server.ssrLoadModule('/src/data/publications.ts')
 const { default: App } = await server.ssrLoadModule('/src/App.vue')
 const { sections } = await server.ssrLoadModule('/src/data/site.ts')
-const { resolveRoute, sectionHref } = await server.ssrLoadModule('/src/navigation.ts')
+const { resolveRoute, sectionHref, projectHref } = await server.ssrLoadModule('/src/navigation.ts')
+const { skillModules } = await server.ssrLoadModule('/src/data/modules.ts')
 async function renderPage(initialHash) {
   const app = createSSRApp(App, { initialHash })
   app.directive('reveal', { getSSRProps: () => ({}) })
@@ -32,14 +33,23 @@ const pages = new Map(
   ),
 )
 const html = [...pages.values()].join('')
-const allProjects = projectGroups.flatMap((group) => group.projects)
-// Projects render one at a time, so each has its own route.
+// Each role page shows its group's projects one at a time, so each has its own route.
+const roleProjects = skillModules.flatMap((module) =>
+  projectGroups
+    .find((group) => group.id === module.projectGroup)
+    .projects.map((project) => ({ section: module.id, project })),
+)
+const allProjects = [...new Map(roleProjects.map(({ project }) => [project.id, project])).values()]
 const projectPages = new Map(
   await Promise.all(
-    allProjects.map(async (project) => [project.id, await renderPage(`#/projects/${project.id}`)]),
+    roleProjects.map(async ({ section, project }) => [
+      `#/${section}/${project.id}`,
+      await renderPage(`#/${section}/${project.id}`),
+    ]),
   ),
 )
 const projectHtml = [...projectPages.values()].join('')
+const projectPage = (id) => projectPages.get(projectHref(id))
 const routeCache = new Map()
 async function renderRoute(hash) {
   if (!routeCache.has(hash)) routeCache.set(hash, await renderPage(hash))
@@ -105,7 +115,8 @@ test('portfolio renders a keyboard skip link and one main landmark', () => {
 })
 
 test('Mandate Order replaces static previews with screenshot carousels', () => {
-  assert.equal([...html.matchAll(/aria-roledescription="carousel"/g)].length, 2)
+  // The entry page, and Mandate Order on the Engine and Gameplay pages.
+  assert.equal([...html.matchAll(/aria-roledescription="carousel"/g)].length, 3)
   assert.ok(html.includes('Next screenshot'))
   assert.ok(html.includes('Pause slideshow'))
   for (let index = 1; index <= 4; index++) {
@@ -136,14 +147,23 @@ test('carousel navigation wraps and pauses automatic changes for interaction and
   assert.equal(state.active.value, 3)
 })
 
-test('Entry and Projects render as separate sections', async () => {
+test('Entry and role pages render as separate sections, with no separate Projects page', async () => {
   const entryHtml = pages.get('top')
   assert.ok(entryHtml.includes('Welcome to my personal website.'))
   assert.ok(!entryHtml.includes('<article id="project-mo"'))
-  const projectsHtml = pages.get('projects')
-  assert.ok(projectsHtml.includes('<article id="project-mo"'))
-  assert.ok(!projectsHtml.includes('Welcome to my personal website.'))
-  assert.ok(!projectsHtml.includes('id="experience"'))
+  assert.ok(!sections.some((section) => section.id === 'projects'))
+  for (const role of ['engine', 'gameplay']) {
+    const roleHtml = pages.get(role)
+    assert.ok(roleHtml.includes('<article id="project-mo"'), `${role} opens on Mandate Order`)
+    assert.ok(!roleHtml.includes('Welcome to my personal website.'))
+    assert.ok(!roleHtml.includes('id="experience"'))
+  }
+  assert.ok(pages.get('graphics').includes('<article id="software-rasterizer"'))
+  // Mandate Order shows only the systems that make each role's case.
+  assert.ok(pages.get('engine').includes('KD-tree connectivity for squad hulls'))
+  assert.ok(!pages.get('engine').includes('Data-driven skill system'))
+  assert.ok(pages.get('gameplay').includes('Data-driven skill system'))
+  assert.ok(!pages.get('gameplay').includes('KD-tree connectivity for squad hulls'))
   for (const section of sections) {
     assert.equal([...pages.get(section.id).matchAll(/data-section="[^"]+"/g)].length, 1)
   }
@@ -151,20 +171,37 @@ test('Entry and Projects render as separate sections', async () => {
 
 test('navigation resolves section URLs and legacy project anchors', async () => {
   assert.deepEqual(resolveRoute('#/projects/project-mo'), {
-    section: 'projects',
+    section: 'engine',
     target: 'project-mo',
   })
-  assert.deepEqual(resolveRoute('#project-mo'), { section: 'projects', target: 'project-mo' })
+  assert.deepEqual(resolveRoute('#/projects/ik-skinning'), {
+    section: 'graphics',
+    target: 'ik-skinning',
+  })
+  assert.deepEqual(resolveRoute('#/projects'), { section: 'engine', target: null })
+  assert.deepEqual(resolveRoute('#/projects/animation-simulation'), {
+    section: 'graphics',
+    target: null,
+  })
+  assert.deepEqual(resolveRoute('#/gameplay/project-mo'), {
+    section: 'gameplay',
+    target: 'project-mo',
+  })
+  assert.deepEqual(resolveRoute('#/graphics/project-mo'), { section: 'graphics', target: null })
+  assert.deepEqual(resolveRoute('#project-mo'), { section: 'engine', target: 'project-mo' })
   assert.deepEqual(resolveRoute('#articulatearena'), {
     section: 'research',
     target: 'articulatearena',
   })
-  assert.deepEqual(resolveRoute('#/experience'), { section: 'experience', target: null })
+  assert.deepEqual(resolveRoute('#/experience'), { section: 'about', target: 'experience' })
+  assert.deepEqual(resolveRoute('#news'), { section: 'about', target: 'news' })
+  assert.deepEqual(resolveRoute('#/skills'), { section: 'engine', target: null })
+  assert.deepEqual(resolveRoute('#/about/awards'), { section: 'about', target: 'awards' })
   assert.deepEqual(resolveRoute('#/'), { section: 'top', target: null })
   assert.deepEqual(resolveRoute('#/research/project-mo'), { section: 'research', target: null })
   assert.deepEqual(resolveRoute('#%malformed'), { section: 'top', target: null })
   const legacy = await renderPage('#project-mo')
-  assert.ok(legacy.includes('data-section="projects"'))
+  assert.ok(legacy.includes('data-section="engine"'))
   assert.ok(legacy.includes('<article id="project-mo"'))
 })
 
@@ -204,7 +241,7 @@ test('website uses Fiona without Chinese profile text and describes ongoing deep
 
 test('interactive layer: live demos, hero field and on-demand command palette', () => {
   for (const id of ['jello-simulation', 'ik-skinning']) {
-    const projectsHtml = projectPages.get(id)
+    const projectsHtml = projectPage(id)
     const start = projectsHtml.indexOf(`<article id="${id}"`)
     const article = projectsHtml.slice(start, projectsHtml.indexOf('</article>', start))
     assert.match(article, /<canvas[^>]*role="img"/, `${id} needs its live demo`)
@@ -230,8 +267,8 @@ test('project notes toggle sits beside resources and highlights come from author
     lead: 'First sentence is here.',
     rest: 'Second one follows.',
   })
-  for (const project of allProjects) {
-    const projectsHtml = projectPages.get(project.id)
+  for (const { section, project } of roleProjects) {
+    const projectsHtml = projectPages.get(`#/${section}/${project.id}`)
     const start = projectsHtml.indexOf(`<article id="${project.id}"`)
     const article = projectsHtml.slice(start, projectsHtml.indexOf('</article>', start))
     const actions = article.slice(
@@ -250,23 +287,21 @@ test('project notes toggle sits beside resources and highlights come from author
   }
 })
 
-test('projects show one entry at a time with Mandate Order first and clear switching', async () => {
+test('role pages show one project at a time with clear switching', async () => {
   const countArticles = (page) => [...page.matchAll(/<article id="/g)].length
-  assert.equal(countArticles(pages.get('projects')), 1)
-  assert.ok(pages.get('projects').includes('<article id="project-mo"'))
-  for (const [id, page] of projectPages) {
-    assert.equal(countArticles(page), 1, `${id} renders alone`)
-    assert.ok(page.includes(`<article id="${id}"`))
+  for (const module of skillModules) assert.equal(countArticles(pages.get(module.id)), 1)
+  for (const { section, project } of roleProjects) {
+    const href = `#/${section}/${project.id}`
+    const page = projectPages.get(href)
+    assert.equal(countArticles(page), 1, `${href} renders alone`)
+    assert.ok(page.includes(`<article id="${project.id}"`))
     const currentLinks = [...page.matchAll(/<a\b[^>]*\brail-link\b[^>]*aria-current="true"/g)]
-    assert.equal(currentLinks.length, 1, `${id} highlights one index entry`)
-    assert.ok(currentLinks[0][0].includes(`href="#/projects/${id}"`))
+    assert.equal(currentLinks.length, 1, `${href} highlights one index entry`)
+    assert.ok(currentLinks[0][0].includes(`href="${href}"`))
     assert.ok(page.includes('aria-label="Next project:'))
     assert.ok(page.includes('aria-label="Previous project:'))
   }
-  const group = projectGroups[1]
-  assert.ok(
-    (await renderRoute(`#/projects/${group.id}`)).includes(`<article id="${group.projects[0].id}"`),
-  )
+  assert.ok(!html.includes('href="#/projects'), 'no links to the retired Projects page')
 })
 
 test('resume PDF is linked from every page through the build base', async () => {
@@ -285,8 +320,8 @@ test('Chinese version translates the site and presents Fiona as a game developer
     for (const section of sections)
       zhPages.set(section.id, await renderPage(sectionHref(section.id)))
     const zhProjects = new Map()
-    for (const project of allProjects)
-      zhProjects.set(project.id, await renderPage(`#/projects/${project.id}`))
+    for (const { section, project } of roleProjects)
+      zhProjects.set(`${section}/${project.id}`, await renderPage(`#/${section}/${project.id}`))
     const entry = zhPages.get('top')
     assert.ok(entry.includes('欢迎来到我的个人主页。'))
     assert.ok(entry.includes('佘泳霏'))
@@ -312,7 +347,14 @@ test('Chinese version translates the site and presents Fiona as a game developer
 test('every English sentence has a Chinese translation and no translation is stale', async () => {
   const { hasTranslation } = await server.ssrLoadModule('/src/i18n.ts')
   const { zh } = await server.ssrLoadModule('/src/data/zh.ts')
-  const modules = ['news', 'skills', 'awards', 'education', 'highlights', 'mandateOrderScreenshots']
+  const modules = [
+    'news',
+    'modules',
+    'awards',
+    'education',
+    'highlights',
+    'mandateOrderScreenshots',
+  ]
   const content = [projectGroups, experience, articulateArena, sections]
   for (const name of modules) content.push(await server.ssrLoadModule(`/src/data/${name}.ts`))
   const { site } = await server.ssrLoadModule('/src/data/site.ts')
@@ -331,6 +373,7 @@ test('every English sentence has a Chinese translation and no translation is sta
     'ECS (Unreal Mass)',
     'Unreal Mass (ECS)',
     'Mandate Order',
+    'O(n log n)',
     'Sight Tour',
     'OpenGL ES',
     'DirectX 11',
@@ -338,6 +381,9 @@ test('every English sentence has a Chinese translation and no translation is sta
     'Visual Studio',
     'Unreal Insights',
     'Khronos XML',
+    'Unreal Enhanced Input',
+    'C# / .NET',
+    'OpenGL / OpenGL ES',
   ])
   const rawKeys = new Set(['id', 'href', 'src', 'poster', 'image', 'kind', 'icon', 'target'])
   const missing = []
@@ -373,6 +419,7 @@ test('every English sentence has a Chinese translation and no translation is sta
   const source = normalize(files.map((path) => readFileSync(path, 'utf8')).join('\n'))
     .replaceAll('\\u2013', '–')
     .replaceAll('\\u2019', '’')
+    .replaceAll('\\u00b2', '²')
     .replaceAll('\\u00b3', '³')
     .replaceAll("\\'", "'")
   const stale = Object.keys(zh).filter((en) => !source.includes(normalize(en).trim()))
