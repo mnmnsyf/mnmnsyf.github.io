@@ -1,0 +1,449 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;font:14px system-ui,sans-serif}[hidden]{display:none!important}</style></head><body>
+<title>ReSTIR 霓虹万灯</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600&family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500&display=swap">
+<style>
+/* Layout: full-height viewer, canvas fills the middle, thin control rail below. Single dark look on purpose (neon night scene). */
+:root{
+  --bg:#07060d; --panel:#100e1c; --line:#2a2540; --fg:#e9e6f5; --muted:#9a93b8;
+  --magenta:#ff3fb4; --cyan:#3fe0ff;
+  --display:"Chakra Petch", "Noto Sans SC", system-ui, sans-serif;
+  --body:"Noto Sans SC", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);display:flex;flex-direction:column;overflow:hidden}
+header{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline;padding-block:10px 8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:1px solid var(--line)}
+h1{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:.04em;margin:0}
+h1 span{color:var(--magenta)}
+.sub{color:var(--muted);font-size:13px}
+#stage{position:relative;flex:1;min-height:0}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab;image-rendering:auto}
+.tag{position:absolute;top:10px;font-family:var(--mono);font-size:12px;padding:4px 8px;background:rgba(7,6,13,.72);border:1px solid var(--line);border-radius:4px;pointer-events:none;max-width:44%}
+.tag b{display:block;font-weight:600;font-size:13px}
+#tagL{left:max(10px,env(safe-area-inset-left,0px))} #tagL b{color:var(--muted)}
+#tagR{right:max(10px,env(safe-area-inset-right,0px));text-align:right} #tagR b{color:var(--cyan)}
+#err{position:absolute;inset:auto 16px 16px 16px;color:#ffb4b4;font-family:var(--mono);font-size:12px;white-space:pre-wrap}
+.rail{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:max(10px,env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--panel);font-size:13px}
+.rail label{display:flex;gap:6px;align-items:center;color:var(--muted)}
+.rail select,.rail button{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:4px 8px}
+.rail button[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan)}
+.rail button:focus-visible,.rail select:focus-visible,.rail input:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+input[type=range]{accent-color:var(--magenta);width:110px}
+#stats{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+</style>
+
+<header>
+  <h1>ReSTIR <span>霓虹万灯</span></h1>
+  <div class="sub">左：每像素随机挑 1 盏灯（1 spp）。右：ReSTIR（RIS + temporal + spatial 复用）。同样每像素只投 1 条阴影光线。拖动画面中间的分割线对比，拖其他位置转动相机。</div>
+</header>
+<div id="stage">
+  <canvas id="c" aria-label="ReSTIR 与 1 spp 实时对比画面"></canvas>
+  <div class="tag" id="tagL"><b>1 spp 均匀采样</b>每像素 1 盏随机灯</div>
+  <div class="tag" id="tagR"><b>ReSTIR DI</b><span id="tagRtxt">16 候选 + temporal + spatial</span></div>
+  <div id="err"></div>
+</div>
+<div class="rail">
+  <label for="nl">光源数
+    <select id="nl"><option value="1000">1,000</option><option value="10000" selected>10,000</option><option value="50000">50,000</option><option value="200000">200,000</option></select>
+  </label>
+  <label for="cand">RIS 候选
+    <select id="cand"><option>4</option><option>8</option><option selected>16</option><option>32</option></select>
+  </label>
+  <button id="bt" aria-pressed="true">Temporal</button>
+  <button id="bs" aria-pressed="true">Spatial</button>
+  <button id="bcam" aria-pressed="true">相机自动旋转</button>
+  <label for="exp">曝光 <input id="exp" type="range" min="0.3" max="4" step="0.05" value="1.3"></label>
+  <label for="scale">分辨率
+    <select id="scale"><option value="0.5">50%</option><option value="0.75" selected>75%</option><option value="1">100%</option></select>
+  </label>
+  <div id="stats">--</div>
+</div>
+
+<script>
+(() => {
+const canvas = document.getElementById('c');
+const errBox = document.getElementById('err');
+const gl = canvas.getContext('webgl2', {antialias:false, alpha:false, preserveDrawingBuffer:false});
+if (!gl) { errBox.textContent = '这个浏览器不支持 WebGL2，换 Chrome / Edge / Safari 17+ 再试。'; return; }
+if (!gl.getExtension('EXT_color_buffer_float')) { errBox.textContent = '缺少 EXT_color_buffer_float 扩展，无法存储 reservoir。'; return; }
+
+const COMMON = `#version 300 es
+precision highp float; precision highp int; precision highp sampler2D;
+uniform vec2 uRes; uniform mat4 uInvVP; uniform mat4 uVP; uniform mat4 uPrevVP; uniform vec3 uCamPos;
+uniform float uTime; uniform int uFrame; uniform int uNumLights; uniform float uLightI;
+const float CITY = 40.0; const float HMAX = 12.0; const float MARGIN = 0.12;
+uint hashu(uint x){ x ^= x >> 16; x *= 0x7feb352du; x ^= x >> 15; x *= 0x846ca68bu; x ^= x >> 16; return x; }
+uint pcg(uint v){ uint s = v * 747796405u + 2891336453u; uint w = ((s >> ((s >> 28u) + 4u)) ^ s) * 277803737u; return (w >> 22u) ^ w; }
+float rnd(inout uint s){ s = pcg(s); return float(s >> 8) / 16777216.0; }
+float cellH(ivec2 c){
+  if (c.x % 4 == 0 || c.y % 4 == 0) return 0.0;
+  uint h = hashu(uint(c.x) * 1973u + uint(c.y) * 9277u + 17u);
+  float r = float(h & 65535u) / 65535.0;
+  if (r < 0.05) return 0.0;
+  float d = length(vec2(c) - vec2(CITY * 0.5)) / (CITY * 0.5);
+  return 0.8 + pow(r, 2.2) * 9.0 * (1.25 - 0.8 * d);
+}
+bool slab(vec3 ro, vec3 ird, vec3 bmin, vec3 bmax, out float tn, out float tf, out vec3 nn){
+  vec3 t0 = (bmin - ro) * ird, t1 = (bmax - ro) * ird;
+  vec3 a = min(t0, t1), b = max(t0, t1);
+  tn = max(max(a.x, a.y), a.z); tf = min(min(b.x, b.y), b.z);
+  if (tn == a.x) nn = vec3(-sign(ird.x), 0.0, 0.0);
+  else if (tn == a.y) nn = vec3(0.0, -sign(ird.y), 0.0);
+  else nn = vec3(0.0, 0.0, -sign(ird.z));
+  return tf >= max(tn, 0.0);
+}
+float traceScene(vec3 ro, vec3 rd, float tmax, out vec3 nrm){
+  rd = vec3(abs(rd.x) < 1e-5 ? 1e-5 : rd.x, abs(rd.y) < 1e-5 ? 1e-5 : rd.y, abs(rd.z) < 1e-5 ? 1e-5 : rd.z);
+  vec3 ird = 1.0 / rd; float best = tmax; nrm = vec3(0.0);
+  if (rd.y < 0.0) { float t = -ro.y / rd.y; if (t > 1e-4 && t < best) { best = t; nrm = vec3(0.0, 1.0, 0.0); } }
+  float tn, tf; vec3 nn;
+  if (!slab(ro, ird, vec3(0.0), vec3(CITY, HMAX, CITY), tn, tf, nn)) return best;
+  float t = max(tn, 0.0); if (t > best) return best;
+  vec3 p = ro + rd * (t + 1e-4);
+  ivec2 cell = ivec2(clamp(floor(p.xz), vec2(0.0), vec2(CITY - 1.0)));
+  ivec2 stp = ivec2(rd.x > 0.0 ? 1 : -1, rd.z > 0.0 ? 1 : -1);
+  vec2 nb = vec2(cell) + vec2(stp.x > 0 ? 1.0 : 0.0, stp.y > 0 ? 1.0 : 0.0);
+  vec2 tM = (nb - ro.xz) * ird.xz; vec2 tD = abs(ird.xz);
+  for (int i = 0; i < 100; i++) {
+    float h = cellH(cell);
+    if (h > 0.0) {
+      float a, b; vec3 bn; vec2 c0 = vec2(cell) + MARGIN, c1 = vec2(cell) + 1.0 - MARGIN;
+      if (slab(ro, ird, vec3(c0.x, 0.0, c0.y), vec3(c1.x, h, c1.y), a, b, bn)) { if (a > 1e-4 && a < best) { best = a; nrm = bn; } }
+    }
+    float tnext = min(tM.x, tM.y);
+    if (tnext > best || tnext > tf) break;
+    if (tM.x < tM.y) { cell.x += stp.x; tM.x += tD.x; } else { cell.y += stp.y; tM.y += tD.y; }
+    if (cell.x < 0 || cell.y < 0 || cell.x >= int(CITY) || cell.y >= int(CITY)) break;
+  }
+  return best;
+}
+void getLight(int i, out vec3 pos, out vec3 col){
+  uint s = hashu(uint(i) * 9781u + 1u);
+  float lane = floor(rnd(s) * 10.0) * 4.0 + 0.5 + (rnd(s) - 0.5) * 0.6;
+  float spd = (0.3 + rnd(s) * 1.4) * (rnd(s) < 0.5 ? 1.0 : -1.0);
+  float along = fract(rnd(s) + uTime * spd * 0.015) * CITY;
+  float y = 0.12 + pow(rnd(s), 3.0) * 3.2;
+  pos = (i % 2 == 0) ? vec3(along, y, lane) : vec3(lane, y, along);
+  int k = int(rnd(s) * 5.0);
+  vec3 c = k == 0 ? vec3(1.0, 0.15, 0.65) : k == 1 ? vec3(0.15, 0.85, 1.0) : k == 2 ? vec3(1.0, 0.55, 0.1) : k == 3 ? vec3(0.55, 0.25, 1.0) : vec3(0.3, 1.0, 0.45);
+  col = c * (0.5 + rnd(s));
+}
+vec3 nrmFromId(float id){ int k = int(id + 0.5);
+  return k == 0 ? vec3(1,0,0) : k == 1 ? vec3(-1,0,0) : k == 2 ? vec3(0,1,0) : k == 3 ? vec3(0,-1,0) : k == 4 ? vec3(0,0,1) : vec3(0,0,-1); }
+float idFromNrm(vec3 n){ return n.x > 0.5 ? 0.0 : n.x < -0.5 ? 1.0 : n.y > 0.5 ? 2.0 : n.y < -0.5 ? 3.0 : n.z > 0.5 ? 4.0 : 5.0; }
+vec3 albedoAt(vec3 x, vec3 n){ return (n.y > 0.5 && x.y < 0.01) ? vec3(0.2, 0.2, 0.24) : vec3(0.42, 0.44, 0.52); }
+float lum(vec3 c){ return dot(c, vec3(0.2126, 0.7152, 0.0722)); }
+vec3 fUnsh(int i, vec3 x, vec3 n, out vec3 lp){
+  vec3 col; getLight(i, lp, col); vec3 L = lp - x; float d2 = dot(L, L);
+  float c = max(dot(n, L) * inversesqrt(d2), 0.0);
+  return albedoAt(x, n) * (1.0 / 3.14159) * col * uLightI * c / (d2 + 0.02);
+}
+float phat(int i, vec3 x, vec3 n){ vec3 lp; return lum(fUnsh(i, x, n, lp)); }
+bool visible(vec3 x, vec3 n, vec3 lp){
+  vec3 o = x + n * 2e-3; vec3 L = lp - o; float d = length(L); vec3 nn;
+  return traceScene(o, L / d, d * 0.999, nn) >= d * 0.999;
+}
+uint seedFor(ivec2 px, uint salt){ return hashu(uint(px.x) + uint(px.y) * 4099u + uint(uFrame) * 16777259u + salt * 2654435761u); }
+`;
+
+const VS_TRI = `#version 300 es
+void main(){ vec2 p = vec2((gl_VertexID << 1) & 2, gl_VertexID & 2); gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0); }`;
+
+const FS_G = COMMON + `
+out vec4 o;
+void main(){
+  vec2 ndc = gl_FragCoord.xy / uRes * 2.0 - 1.0;
+  vec4 w = uInvVP * vec4(ndc, 1.0, 1.0);
+  vec3 rd = normalize(w.xyz / w.w - uCamPos);
+  vec3 n; float t = traceScene(uCamPos, rd, 1e4, n);
+  if (dot(n, n) < 0.5) { o = vec4(0.0, 0.0, 0.0, -1.0); return; }
+  o = vec4(uCamPos + rd * t, idFromNrm(n));
+}`;
+
+const FS_T = COMMON + `
+uniform sampler2D uG; uniform sampler2D uGPrev; uniform sampler2D uResPrev; uniform int uCand; uniform int uTemporal;
+out vec4 o;
+void main(){
+  ivec2 px = ivec2(gl_FragCoord.xy); vec4 g = texelFetch(uG, px, 0);
+  if (g.w < 0.0) { o = vec4(-1.0, 0.0, 0.0, 0.0); return; }
+  vec3 x = g.xyz, n = nrmFromId(g.w); uint s = seedFor(px, 1u);
+  float wsum = 0.0, M = 0.0, y = -1.0, py = 0.0; float NL = float(uNumLights);
+  for (int k = 0; k < 32; k++) {
+    if (k >= uCand) break;
+    int i = min(int(rnd(s) * NL), uNumLights - 1);
+    float p = phat(i, x, n); float w = p * NL;
+    wsum += w; M += 1.0;
+    if (rnd(s) * wsum < w) { y = float(i); py = p; }
+  }
+  // visibility reuse: drop the initial sample if it is shadowed, before sharing it
+  if (y >= 0.0) { vec3 lp, lc; getLight(int(y), lp, lc); if (!visible(x, n, lp)) wsum = 0.0; }
+  if (uTemporal == 1) {
+    vec4 c = uPrevVP * vec4(x, 1.0);
+    if (c.w > 0.0) {
+      vec2 uv = c.xy / c.w * 0.5 + 0.5;
+      if (all(greaterThanEqual(uv, vec2(0.0))) && all(lessThan(uv, vec2(1.0)))) {
+        ivec2 pp = ivec2(uv * uRes); vec4 gp = texelFetch(uGPrev, pp, 0);
+        if (abs(gp.w - g.w) < 0.1 && distance(gp.xyz, x) < 0.02 * distance(x, uCamPos) + 0.03) {
+          vec4 r = texelFetch(uResPrev, pp, 0);
+          if (r.x >= 0.0 && r.x < NL) {
+            float Mp = min(r.z, 20.0 * float(uCand));
+            float p = phat(int(r.x), x, n); float w = p * r.y * Mp;
+            wsum += w; M += Mp;
+            if (rnd(s) * wsum < w) { y = r.x; py = p; }
+          }
+        }
+      }
+    }
+  }
+  float W = py > 0.0 ? wsum / (M * py) : 0.0;
+  o = vec4(y, W, M, 0.0);
+}`;
+
+const FS_S = COMMON + `
+uniform sampler2D uG; uniform sampler2D uResT; uniform int uSpatial;
+out vec4 o;
+void main(){
+  ivec2 px = ivec2(gl_FragCoord.xy); vec4 g = texelFetch(uG, px, 0);
+  vec4 r0 = texelFetch(uResT, px, 0);
+  if (g.w < 0.0 || uSpatial == 0) { o = r0; return; }
+  vec3 x = g.xyz, n = nrmFromId(g.w); uint s = seedFor(px, 2u); float NL = float(uNumLights);
+  float y = r0.x; float py = y >= 0.0 ? phat(int(y), x, n) : 0.0;
+  float wsum = py * r0.y * r0.z, M = r0.z;
+  float rad = 24.0 * uRes.y / 720.0;
+  for (int k = 0; k < 5; k++) {
+    float a = rnd(s) * 6.28318, rr = sqrt(rnd(s)) * rad;
+    ivec2 q = px + ivec2(vec2(cos(a), sin(a)) * rr);
+    if (q.x < 0 || q.y < 0 || q.x >= int(uRes.x) || q.y >= int(uRes.y)) continue;
+    vec4 gq = texelFetch(uG, q, 0);
+    if (abs(gq.w - g.w) > 0.1 || abs(dot(gq.xyz - x, n)) > 0.05 || distance(gq.xyz, x) > 0.08 * distance(x, uCamPos) + 0.2) continue;
+    vec4 rq = texelFetch(uResT, q, 0);
+    if (rq.x < 0.0 || rq.x >= NL) continue;
+    float p = phat(int(rq.x), x, n); float w = p * rq.y * rq.z;
+    wsum += w; M += rq.z;
+    if (rnd(s) * wsum < w) { y = rq.x; py = p; }
+  }
+  float W = py > 0.0 ? wsum / (M * py) : 0.0;
+  o = vec4(y, W, M, 0.0);
+}`;
+
+const FS_SHADE = COMMON + `
+uniform sampler2D uG; uniform sampler2D uResS; uniform float uSplit; uniform float uExposure;
+out vec4 o;
+vec3 emissionAt(vec3 x, vec3 n){
+  if (abs(n.y) > 0.5) return vec3(0.0);
+  float u = abs(n.x) > 0.5 ? x.z : x.x;
+  vec2 w = vec2(u * 3.0, x.y * 2.2); vec2 f = fract(w);
+  float inside = step(0.25, f.x) * step(f.x, 0.75) * step(0.3, f.y) * step(f.y, 0.8);
+  uint h = hashu(uint(int(floor(w.x)) + 4096) * 7919u ^ uint(int(floor(w.y)) + 4096) * 104729u ^ uint(int(floor(x.x * 0.999 + x.z * 0.999))) * 31u);
+  float lit = float((h & 7u) == 0u);
+  vec3 c = (h & 8u) != 0u ? vec3(1.0, 0.72, 0.42) : vec3(0.5, 0.72, 1.0);
+  return inside * lit * c * 0.18;
+}
+vec3 aces(vec3 x){ return clamp((x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14), 0.0, 1.0); }
+void main(){
+  ivec2 px = ivec2(gl_FragCoord.xy); vec4 g = texelFetch(uG, px, 0);
+  vec2 uv = gl_FragCoord.xy / uRes;
+  vec3 col;
+  if (g.w < 0.0) {
+    col = mix(vec3(0.03, 0.02, 0.07), vec3(0.11, 0.04, 0.16), pow(1.0 - uv.y, 2.0)) * 0.8;
+  } else {
+    vec3 x = g.xyz, n = nrmFromId(g.w); vec3 a = albedoAt(x, n);
+    col = emissionAt(x, n) + a * vec3(0.006, 0.005, 0.012);
+    if (gl_FragCoord.x < uSplit) {
+      uint s = seedFor(px, 3u); float NL = float(uNumLights);
+      int i = min(int(rnd(s) * NL), uNumLights - 1);
+      vec3 lp; vec3 f = fUnsh(i, x, n, lp);
+      if (lum(f) > 0.0 && visible(x, n, lp)) col += f * NL;
+    } else {
+      vec4 r = texelFetch(uResS, px, 0);
+      if (r.x >= 0.0 && r.y > 0.0) {
+        vec3 lp; vec3 f = fUnsh(int(r.x), x, n, lp);
+        if (visible(x, n, lp)) col += f * r.y;
+      }
+    }
+  }
+  col = aces(col * uExposure);
+  col = pow(col, vec3(1.0 / 2.2));
+  float d = abs(gl_FragCoord.x - uSplit);
+  if (d < 1.0) col = vec3(0.95);
+  o = vec4(col, 1.0);
+}`;
+
+const VS_GLOW = COMMON + `
+out vec3 vCol; out float vDist;
+void main(){
+  vec3 p, c; getLight(gl_VertexID, p, c);
+  vec4 cp = uVP * vec4(p, 1.0); gl_Position = cp;
+  vDist = distance(p, uCamPos);
+  gl_PointSize = clamp(42.0 / vDist * uRes.y / 720.0, 1.5, 9.0);
+  vCol = c;
+}`;
+const FS_GLOW = COMMON + `
+uniform sampler2D uG; uniform float uGlow;
+in vec3 vCol; in float vDist; out vec4 o;
+void main(){
+  vec4 g = texelFetch(uG, ivec2(gl_FragCoord.xy), 0);
+  if (g.w >= 0.0 && distance(g.xyz, uCamPos) < vDist - 0.05) discard;
+  float r = length(gl_PointCoord - 0.5) * 2.0;
+  float a = exp(-r * r * 4.0);
+  o = vec4(vCol * a * uGlow, 1.0);
+}`;
+
+function compile(type, src){
+  const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+  return s;
+}
+function program(vs, fs){
+  const p = gl.createProgram();
+  gl.attachShader(p, compile(gl.VERTEX_SHADER, vs)); gl.attachShader(p, compile(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  const u = {}; const n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+  for (let i = 0; i < n; i++) { const info = gl.getActiveUniform(p, i); u[info.name] = gl.getUniformLocation(p, info.name); }
+  return {p, u};
+}
+let P;
+try {
+  P = { g: program(VS_TRI, FS_G), t: program(VS_TRI, FS_T), s: program(VS_TRI, FS_S), shade: program(VS_TRI, FS_SHADE), glow: program(VS_GLOW, FS_GLOW) };
+} catch (e) { errBox.textContent = 'Shader 编译失败：\n' + e.message; return; }
+const vao = gl.createVertexArray();
+
+// ---- matrices (column-major) ----
+const V3 = {
+  sub:(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]], cross:(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],
+  dot:(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2], norm:a=>{const l=Math.hypot(a[0],a[1],a[2]);return [a[0]/l,a[1]/l,a[2]/l];}
+};
+function perspective(fovy, aspect, near, far){ const f = 1/Math.tan(fovy/2), nf = 1/(near-far);
+  return new Float32Array([f/aspect,0,0,0, 0,f,0,0, 0,0,(far+near)*nf,-1, 0,0,2*far*near*nf,0]); }
+function lookAt(e, c, up){ const z = V3.norm(V3.sub(e,c)), x = V3.norm(V3.cross(up,z)), y = V3.cross(z,x);
+  return new Float32Array([x[0],y[0],z[0],0, x[1],y[1],z[1],0, x[2],y[2],z[2],0, -V3.dot(x,e),-V3.dot(y,e),-V3.dot(z,e),1]); }
+function mul(a, b){ const o = new Float32Array(16);
+  for (let i=0;i<4;i++) for (let j=0;j<4;j++){ let s=0; for (let k=0;k<4;k++) s += a[i+k*4]*b[k+j*4]; o[i+j*4]=s; } return o; }
+function invert(m){ const a=m, o=new Float32Array(16);
+  const a00=a[0],a01=a[1],a02=a[2],a03=a[3],a10=a[4],a11=a[5],a12=a[6],a13=a[7],a20=a[8],a21=a[9],a22=a[10],a23=a[11],a30=a[12],a31=a[13],a32=a[14],a33=a[15];
+  const b00=a00*a11-a01*a10,b01=a00*a12-a02*a10,b02=a00*a13-a03*a10,b03=a01*a12-a02*a11,b04=a01*a13-a03*a11,b05=a02*a13-a03*a12,b06=a20*a31-a21*a30,b07=a20*a32-a22*a30,b08=a20*a33-a23*a30,b09=a21*a32-a22*a31,b10=a21*a33-a23*a31,b11=a22*a33-a23*a32;
+  let det=b00*b11-b01*b10+b02*b09+b03*b08-b04*b07+b05*b06; det=1/det;
+  o[0]=(a11*b11-a12*b10+a13*b09)*det;o[1]=(a02*b10-a01*b11-a03*b09)*det;o[2]=(a31*b05-a32*b04+a33*b03)*det;o[3]=(a22*b04-a21*b05-a23*b03)*det;
+  o[4]=(a12*b08-a10*b11-a13*b07)*det;o[5]=(a00*b11-a02*b08+a03*b07)*det;o[6]=(a32*b02-a30*b05-a33*b01)*det;o[7]=(a20*b05-a22*b02+a23*b01)*det;
+  o[8]=(a10*b10-a11*b08+a13*b06)*det;o[9]=(a01*b08-a00*b10-a03*b06)*det;o[10]=(a30*b04-a31*b02+a33*b00)*det;o[11]=(a21*b02-a20*b04-a23*b00)*det;
+  o[12]=(a11*b07-a10*b09-a12*b06)*det;o[13]=(a00*b09-a01*b07+a02*b06)*det;o[14]=(a31*b01-a30*b03-a32*b00)*det;o[15]=(a20*b03-a21*b01+a22*b00)*det;
+  return o; }
+
+// ---- render targets ----
+let W = 0, H = 0, T = null;
+function makeTarget(){
+  const tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texStorage2D(gl.TEXTURE_2D, 1, gl.RGBA32F, W, H);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  const fb = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+  return {tex, fb};
+}
+function clearTarget(t, v){ gl.bindFramebuffer(gl.FRAMEBUFFER, t.fb); gl.viewport(0,0,W,H); gl.clearBufferfv(gl.COLOR, 0, v); }
+function resize(){
+  const scale = parseFloat(document.getElementById('scale').value);
+  const r = canvas.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = Math.max(64, Math.round(r.width * dpr * scale)), h = Math.max(64, Math.round(r.height * dpr * scale));
+  if (w === W && h === H && T) return;
+  W = w; H = h; canvas.width = W; canvas.height = H;
+  if (T) for (const k in T) { const t = T[k]; gl.deleteTexture(t.tex); gl.deleteFramebuffer(t.fb); }
+  T = { g0: makeTarget(), g1: makeTarget(), rt: makeTarget(), r0: makeTarget(), r1: makeTarget() };
+  clearTarget(T.g0, [0,0,0,-1]); clearTarget(T.g1, [0,0,0,-1]);
+  clearTarget(T.r0, [-1,0,0,0]); clearTarget(T.r1, [-1,0,0,0]);
+  prevVP = null;
+}
+
+// ---- state & UI ----
+const state = { numLights: 10000, cand: 16, temporal: true, spatial: true, autoCam: true, exposure: 1.3, split: 0.5 };
+let yaw = 0.6, pitch = 0.42, dist = 26, time = 0, frame = 0, prevVP = null, swap = 0;
+const $ = id => document.getElementById(id);
+function updateTag(){ $('tagRtxt').textContent = `${state.cand} 候选` + (state.temporal ? ' + temporal' : '') + (state.spatial ? ' + spatial' : ''); }
+$('nl').onchange = e => { state.numLights = +e.target.value; clearTarget(T.r0,[-1,0,0,0]); clearTarget(T.r1,[-1,0,0,0]); };
+$('cand').onchange = e => { state.cand = +e.target.value; updateTag(); };
+function toggle(btn, key){ btn.onclick = () => { state[key] = !state[key]; btn.setAttribute('aria-pressed', state[key]); updateTag(); }; }
+toggle($('bt'), 'temporal'); toggle($('bs'), 'spatial'); toggle($('bcam'), 'autoCam');
+$('exp').oninput = e => state.exposure = +e.target.value;
+$('scale').onchange = () => resize();
+window.addEventListener('resize', resize);
+if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { state.autoCam = false; $('bcam').setAttribute('aria-pressed', 'false'); }
+
+let drag = null;
+canvas.addEventListener('pointerdown', e => {
+  const r = canvas.getBoundingClientRect(); const sx = r.left + r.width * state.split;
+  drag = Math.abs(e.clientX - sx) < 28 ? {mode:'split'} : {mode:'orbit', x:e.clientX, y:e.clientY};
+  canvas.setPointerCapture(e.pointerId); canvas.style.cursor = drag.mode === 'split' ? 'ew-resize' : 'grabbing';
+});
+canvas.addEventListener('pointermove', e => {
+  const r = canvas.getBoundingClientRect();
+  if (!drag) { canvas.style.cursor = Math.abs(e.clientX - (r.left + r.width * state.split)) < 28 ? 'ew-resize' : 'grab'; return; }
+  if (drag.mode === 'split') state.split = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+  else { yaw -= (e.clientX - drag.x) * 0.006; pitch = Math.min(1.35, Math.max(0.08, pitch + (e.clientY - drag.y) * 0.005)); drag.x = e.clientX; drag.y = e.clientY; }
+});
+const endDrag = () => { drag = null; canvas.style.cursor = 'grab'; };
+canvas.addEventListener('pointerup', endDrag); canvas.addEventListener('pointercancel', endDrag);
+canvas.addEventListener('wheel', e => { e.preventDefault(); dist = Math.min(60, Math.max(6, dist * (1 + e.deltaY * 0.001))); }, {passive:false});
+
+function setCommon(prog, VP, invVP){
+  const u = prog.u; gl.useProgram(prog.p);
+  if (u.uRes) gl.uniform2f(u.uRes, W, H);
+  if (u.uInvVP) gl.uniformMatrix4fv(u.uInvVP, false, invVP);
+  if (u.uVP) gl.uniformMatrix4fv(u.uVP, false, VP);
+  if (u.uPrevVP) gl.uniformMatrix4fv(u.uPrevVP, false, prevVP || VP);
+  if (u.uCamPos) gl.uniform3fv(u.uCamPos, camPos);
+  if (u.uTime) gl.uniform1f(u.uTime, time);
+  if (u.uFrame) gl.uniform1i(u.uFrame, frame);
+  if (u.uNumLights) gl.uniform1i(u.uNumLights, state.numLights);
+  if (u.uLightI) gl.uniform1f(u.uLightI, 400 / state.numLights);
+}
+function bindTex(prog, name, unit, tex){ if (!prog.u[name]) return; gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, tex); gl.uniform1i(prog.u[name], unit); }
+
+let camPos = [0,0,0], last = performance.now(), fpsAvg = 0;
+function frameLoop(now){
+  const dt = Math.min(0.1, (now - last) / 1000); last = now;
+  fpsAvg = fpsAvg ? fpsAvg * 0.92 + (1 / Math.max(dt, 1e-4)) * 0.08 : 1 / Math.max(dt, 1e-4);
+  time += dt; if (state.autoCam && !drag) yaw += dt * 0.06;
+  resize();
+  const center = [20, 1.5, 20];
+  camPos = [center[0] + Math.cos(yaw) * Math.cos(pitch) * dist, center[1] + Math.sin(pitch) * dist, center[2] + Math.sin(yaw) * Math.cos(pitch) * dist];
+  const VP = mul(perspective(55 * Math.PI / 180, W / H, 0.1, 500), lookAt(camPos, center, [0,1,0]));
+  const invVP = invert(VP);
+  const gCur = swap ? T.g1 : T.g0, gPrev = swap ? T.g0 : T.g1;
+  const rCur = swap ? T.r1 : T.r0, rPrev = swap ? T.r0 : T.r1;
+  gl.bindVertexArray(vao); gl.viewport(0, 0, W, H); gl.disable(gl.BLEND);
+
+  gl.bindFramebuffer(gl.FRAMEBUFFER, gCur.fb); setCommon(P.g, VP, invVP); gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  gl.bindFramebuffer(gl.FRAMEBUFFER, T.rt.fb); setCommon(P.t, VP, invVP);
+  bindTex(P.t, 'uG', 0, gCur.tex); bindTex(P.t, 'uGPrev', 1, gPrev.tex); bindTex(P.t, 'uResPrev', 2, rPrev.tex);
+  gl.uniform1i(P.t.u.uCand, state.cand); gl.uniform1i(P.t.u.uTemporal, state.temporal && prevVP ? 1 : 0);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  gl.bindFramebuffer(gl.FRAMEBUFFER, rCur.fb); setCommon(P.s, VP, invVP);
+  bindTex(P.s, 'uG', 0, gCur.tex); bindTex(P.s, 'uResT', 1, T.rt.tex); gl.uniform1i(P.s.u.uSpatial, state.spatial ? 1 : 0);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null); setCommon(P.shade, VP, invVP);
+  bindTex(P.shade, 'uG', 0, gCur.tex); bindTex(P.shade, 'uResS', 1, rCur.tex);
+  gl.uniform1f(P.shade.u.uSplit, state.split * W); gl.uniform1f(P.shade.u.uExposure, state.exposure);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
+  setCommon(P.glow, VP, invVP); bindTex(P.glow, 'uG', 0, gCur.tex); gl.uniform1f(P.glow.u.uGlow, Math.min(1, 0.9 * Math.sqrt(10000 / state.numLights)));
+  gl.drawArrays(gl.POINTS, 0, Math.min(state.numLights, 50000));
+  gl.disable(gl.BLEND);
+
+  prevVP = VP; swap ^= 1; frame++;
+  if (frame % 10 === 0) $('stats').textContent = `${fpsAvg.toFixed(0)} fps · ${W}×${H} · ${state.numLights.toLocaleString()} 盏灯`;
+  requestAnimationFrame(frameLoop);
+}
+updateTag();
+requestAnimationFrame(frameLoop);
+})();
+</script>
+</body></html>
