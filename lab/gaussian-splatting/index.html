@@ -1,0 +1,370 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;font:14px system-ui,sans-serif}[hidden]{display:none!important}</style></head><body>
+<title>Gaussian 点溅射浏览器</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600&family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500&display=swap">
+<style>
+/* Layout: full-height viewer, canvas fills the middle, control rail below. Single dark look on purpose (viewer chrome around a rendered scene). */
+:root{
+  --bg:#0b0f0d; --panel:#111815; --line:#24302b; --fg:#e7efe9; --muted:#93a59b;
+  --leaf:#7fd18b; --amber:#f2b45a;
+  --display:"Chakra Petch", "Noto Sans SC", system-ui, sans-serif;
+  --body:"Noto Sans SC", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);display:flex;flex-direction:column;overflow:hidden}
+header{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline;padding-block:10px 8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:1px solid var(--line)}
+h1{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:.04em;margin:0}
+h1 span{color:var(--leaf)}
+.sub{color:var(--muted);font-size:13px}
+#stage{position:relative;flex:1;min-height:0}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+#mode{position:absolute;top:10px;left:max(10px,env(safe-area-inset-left,0px));font-family:var(--mono);font-size:12px;padding:6px 9px;background:rgba(11,15,13,.75);border:1px solid var(--line);border-radius:4px;pointer-events:none;max-width:min(420px,70%)}
+#mode b{display:block;color:var(--leaf);font-size:13px;margin-bottom:2px}
+#busy{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--mono);color:var(--muted);background:var(--bg)}
+#busy[hidden]{display:none}
+#err{position:absolute;inset:auto 16px 16px 16px;color:#ffb4b4;font-family:var(--mono);font-size:12px;white-space:pre-wrap}
+.rail{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:max(10px,env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--panel);font-size:13px}
+.rail label{display:flex;gap:6px;align-items:center;color:var(--muted)}
+.rail select,.rail button{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:4px 8px}
+.seg{display:flex;gap:0}
+.seg button{border-radius:0}
+.seg button:first-child{border-radius:4px 0 0 4px}
+.seg button:last-child{border-radius:0 4px 4px 0}
+.seg button+button{border-left:none}
+.rail button[aria-pressed="true"]{border-color:var(--leaf);color:var(--leaf)}
+.rail button:focus-visible,.rail select:focus-visible{outline:2px solid var(--leaf);outline-offset:2px}
+#stats{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+</style>
+
+<header>
+  <h1>Gaussian <span>点溅射浏览器</span></h1>
+  <div class="sub">把每个 Gaussian 随机撒成像素大小的不透明点，靠深度测试取最近点（WebGL 里用硬件 depth test 代替论文的 64-bit atomic min），不排序、不做 alpha blending。拖动看四周，W/A/S/D 移动，滚轮前后。</div>
+</header>
+<div id="stage">
+  <canvas id="c" aria-label="Gaussian 点溅射实时渲染画面"></canvas>
+  <div id="mode"><b>GPS 随机点</b><span id="modetxt"></span></div>
+  <div id="busy">正在生成场景…</div>
+  <div id="err"></div>
+</div>
+<div class="rail">
+  <div class="seg" role="group" aria-label="渲染模式">
+    <button id="m0" aria-pressed="true">GPS 随机点</button>
+    <button id="m1" aria-pressed="false">每个 Gaussian 1 点</button>
+    <button id="m2" aria-pressed="false">点数热力图</button>
+  </div>
+  <label for="ng">Gaussian 数
+    <select id="ng"><option value="250000">25 万</option><option value="600000" selected>60 万</option><option value="1200000">120 万</option><option value="2000000">200 万</option></select>
+  </label>
+  <label for="ss">Supersampling
+    <select id="ss"><option value="1">1×1</option><option value="2" selected>2×2</option></select>
+  </label>
+  <label for="tm">时间累积
+    <select id="tm"><option value="acc" selected>静止时累积</option><option value="ema">EMA 0.9（无重投影）</option><option value="off">关闭</option></select>
+  </label>
+  <button id="bfly" aria-pressed="true">自动飞行</button>
+  <button id="bcull" aria-pressed="true">分组剔除</button>
+  <div id="stats">--</div>
+</div>
+
+<script>
+(() => {
+const canvas = document.getElementById('c'), errBox = document.getElementById('err'), busy = document.getElementById('busy');
+const gl = canvas.getContext('webgl2', {antialias:false, alpha:false});
+if (!gl) { errBox.textContent = '这个浏览器不支持 WebGL2。'; busy.hidden = true; return; }
+const hasFloat = !!gl.getExtension('EXT_color_buffer_float');
+const $ = id => document.getElementById(id);
+
+// ---------- procedural scene ----------
+const WORLD = 220, GRID = 16;
+function mulberry(a){ return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function vnoise(x, z){ const xi = Math.floor(x), zi = Math.floor(z), xf = x - xi, zf = z - zi;
+  const h = (i, j) => { let n = Math.imul(i, 374761393) + Math.imul(j, 668265263); n = Math.imul(n ^ (n >>> 13), 1274126177); return ((n ^ (n >>> 16)) >>> 0) / 4294967296; };
+  const u = xf * xf * (3 - 2 * xf), v = zf * zf * (3 - 2 * zf);
+  return (h(xi,zi) * (1-u) + h(xi+1,zi) * u) * (1-v) + (h(xi,zi+1) * (1-u) + h(xi+1,zi+1) * u) * v; }
+function height(x, z){ return vnoise(x*0.02, z*0.02) * 14 + vnoise(x*0.07+9, z*0.07) * 3.5 + vnoise(x*0.25, z*0.25+3) * 0.6 - 6; }
+function li2(a){ let s = 0, p = a; for (let k = 1; k < 60; k++) { s += p / (k * k); p *= a; } return s; }
+
+function buildScene(N){
+  const rnd = mulberry(1234567);
+  const pos = new Float32Array(N*3), scl = new Float32Array(N*3), col = new Uint8Array(N*4), ext = new Float32Array(N*2);
+  let i = 0;
+  const push = (x,y,z, sx,sy,sz, r,g,b, a, rot) => { if (i >= N) return false;
+    pos[i*3]=x; pos[i*3+1]=y; pos[i*3+2]=z; scl[i*3]=sx; scl[i*3+1]=sy; scl[i*3+2]=sz;
+    col[i*4]=Math.max(0,Math.min(255,r*255)); col[i*4+1]=Math.max(0,Math.min(255,g*255)); col[i*4+2]=Math.max(0,Math.min(255,b*255)); col[i*4+3]=a*255;
+    ext[i*2]=rot; ext[i*2+1]=li2(Math.min(a,0.99)); i++; return true; };
+  const half = WORLD / 2, nGround = Math.floor(N * 0.55), nTreesBudget = Math.floor(N * 0.38);
+  for (let k = 0; k < nGround; k++) {
+    const x = (rnd()-0.5)*WORLD, z = (rnd()-0.5)*WORLD, y = height(x,z);
+    const path = Math.abs(z - 18*Math.sin(x*0.03)) < 2.2;
+    const n = vnoise(x*0.15, z*0.15), dry = vnoise(x*0.04+40, z*0.04);
+    let r,g,b;
+    if (path) { r=0.55+n*0.1; g=0.45+n*0.08; b=0.32; }
+    else if (y > 8) { const t=rnd()*0.15; r=0.45+t; g=0.45+t; b=0.42+t; }
+    else { r = 0.16 + dry*0.35 + n*0.08; g = 0.36 + n*0.22 - dry*0.05; b = 0.1 + n*0.05; }
+    if (!path && rnd() < 0.04) { const f=rnd(); if (f<0.4){r=0.98;g=0.85;b=0.2;} else if (f<0.7){r=0.95;g=0.95;b=0.95;} else {r=0.7;g=0.35;b=0.9;} }
+    const s = 0.45 + rnd()*0.5;
+    push(x, y + 0.04, z, s, 0.05, s*(0.6+rnd()*0.8), r, g, b, 0.65 + rnd()*0.3, rnd()*Math.PI);
+  }
+  while (i < nGround + nTreesBudget) {
+    const tx = (rnd()-0.5)*WORLD*0.96, tz = (rnd()-0.5)*WORLD*0.96;
+    if (Math.abs(tz - 18*Math.sin(tx*0.03)) < 4) continue;
+    if (vnoise(tx*0.03+7, tz*0.03) < 0.42) continue;
+    const ty = height(tx, tz); if (ty > 5) continue;
+    const H = 4 + rnd()*6, R = 1.6 + rnd()*1.8, hue = rnd();
+    let base = hue < 0.12 ? [0.85,0.42,0.12] : hue < 0.2 ? [0.75,0.2,0.15] : [0.12+rnd()*0.08, 0.32+rnd()*0.15, 0.1];
+    for (let k = 0; k < 14; k++) { const t = k/14; push(tx+(rnd()-0.5)*0.1, ty + t*H*0.8, tz+(rnd()-0.5)*0.1, 0.18, H*0.06, 0.18, 0.28, 0.2, 0.13, 0.95, 0); }
+    const cnt = 160 + Math.floor(rnd()*160);
+    for (let k = 0; k < cnt; k++) {
+      let dx, dy, dz; do { dx=rnd()*2-1; dy=rnd()*2-1; dz=rnd()*2-1; } while (dx*dx+dy*dy+dz*dz > 1);
+      const shade = 0.65 + 0.5*(dy*0.5+0.5);
+      const s = 0.18 + rnd()*0.22;
+      if (!push(tx+dx*R, ty+H+dy*R*0.85, tz+dz*R, s, s*0.8, s, base[0]*shade*(0.85+rnd()*0.3), base[1]*shade*(0.85+rnd()*0.3), base[2]*shade, 0.6+rnd()*0.35, rnd()*Math.PI)) break;
+    }
+  }
+  while (i < N) {
+    const x = (rnd()-0.5)*WORLD, z = (rnd()-0.5)*WORLD, y = height(x,z);
+    const s = 0.3 + rnd()*0.9, g = 0.38 + rnd()*0.15;
+    for (let k = 0; k < 6 && i < N; k++) push(x+(rnd()-0.5)*s*2, y+rnd()*s*0.8, z+(rnd()-0.5)*s*2, s*0.6, s*0.45, s*0.6, g, g*0.97, g*0.92, 0.9, rnd()*Math.PI);
+  }
+  // sort into GRID x GRID ground chunks so whole groups can be frustum-culled (paper step 1)
+  const cellOf = new Uint32Array(N), counts = new Uint32Array(GRID*GRID);
+  for (let k = 0; k < N; k++) { const cx = Math.min(GRID-1, Math.max(0, Math.floor((pos[k*3]+half)/WORLD*GRID))), cz = Math.min(GRID-1, Math.max(0, Math.floor((pos[k*3+2]+half)/WORLD*GRID))); cellOf[k] = cz*GRID+cx; counts[cellOf[k]]++; }
+  const start = new Uint32Array(GRID*GRID+1); for (let c = 0; c < GRID*GRID; c++) start[c+1] = start[c] + counts[c];
+  const fill = start.slice(0, GRID*GRID);
+  const P = new Float32Array(N*3), S = new Float32Array(N*3), C = new Uint8Array(N*4), E = new Float32Array(N*2);
+  const box = []; for (let c = 0; c < GRID*GRID; c++) box.push([1e9,1e9,1e9,-1e9,-1e9,-1e9]);
+  for (let k = 0; k < N; k++) { const c = cellOf[k], j = fill[c]++;
+    P.set(pos.subarray(k*3,k*3+3), j*3); S.set(scl.subarray(k*3,k*3+3), j*3); C.set(col.subarray(k*4,k*4+4), j*4); E.set(ext.subarray(k*2,k*2+2), j*2);
+    const r = Math.max(scl[k*3], scl[k*3+1], scl[k*3+2]) * 3, b = box[c];
+    for (let a = 0; a < 3; a++) { b[a] = Math.min(b[a], pos[k*3+a]-r); b[a+3] = Math.max(b[a+3], pos[k*3+a]+r); } }
+  return {N, P, S, C, E, start, box};
+}
+
+// ---------- GL ----------
+const VS_SPLAT = `#version 300 es
+precision highp float; precision highp int;
+layout(location=0) in vec3 aPos; layout(location=1) in vec3 aScale; layout(location=2) in vec4 aCol; layout(location=3) in vec2 aExt;
+uniform mat4 uVP; uniform vec3 uCam; uniform float uFocal; uniform float uSub; uniform int uK; uniform uint uSeed; uniform int uMode; uniform int uBase;
+out vec3 vCol;
+uint hashu(uint x){ x ^= x >> 16; x *= 0x7feb352du; x ^= x >> 15; x *= 0x846ca68bu; x ^= x >> 16; return x; }
+float rnd(inout uint s){ s = hashu(s); return float(s >> 8) / 16777216.0; }
+const vec3 FOG = vec3(0.62, 0.74, 0.86);
+vec3 heat(float t){ t = clamp(t, 0.0, 1.0); return vec3(smoothstep(0.3,0.8,t), smoothstep(0.0,0.45,t) * (1.0 - smoothstep(0.75,1.0,t)) + smoothstep(0.9,1.0,t), 1.0 - smoothstep(0.1,0.5,t)); }
+void main(){
+  int k = gl_VertexID; uint gid = uint(gl_InstanceID + uBase);
+  vec3 toC = aPos - uCam; float z = length(toC);
+  vec4 cc = uVP * vec4(aPos, 1.0);
+  float r3 = max(aScale.x, max(aScale.y, aScale.z)) * 3.0;
+  if (cc.w < -r3 || z < 0.05) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
+  // expected point count from projected footprint (paper: lambda = (1/A) * 2pi/sqrt|Sigma| * Li2(alpha))
+  float sig2 = (aScale.x*aScale.y + aScale.y*aScale.z + aScale.x*aScale.z) / 3.0;
+  float areaPx = 6.28318 * sig2 * (uFocal / z) * (uFocal / z);
+  float lambda = areaPx * uSub * aExt.y;
+  uint s = hashu(gid * 2654435761u ^ uSeed);
+  int n; float grow = 1.0;
+  if (uMode == 1) { n = 1; }
+  else {
+    float fl = floor(lambda); n = int(fl) + (rnd(s) < lambda - fl ? 1 : 0);
+    if (n > uK) { grow = min(2.5, sqrt(float(n) / float(uK))); n = uK; }
+  }
+  if (k >= n) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
+  vec3 w;
+  if (uMode == 1) w = aPos;
+  else {
+    uint s2 = hashu(gid * 9781u + uint(k) * 6271u ^ uSeed * 31u);
+    float u1 = max(rnd(s2), 1e-6), u2 = rnd(s2), u3 = max(rnd(s2), 1e-6), u4 = rnd(s2);
+    float rA = sqrt(-2.0 * log(u1)), rB = sqrt(-2.0 * log(u3));
+    vec3 g = vec3(rA * cos(6.28318 * u2), rA * sin(6.28318 * u2), rB * cos(6.28318 * u4));
+    if (dot(g, g) > 9.0) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
+    vec3 l = g * aScale; float c = cos(aExt.x), sn = sin(aExt.x);
+    w = aPos + vec3(c * l.x - sn * l.z, l.y, sn * l.x + c * l.z);
+  }
+  gl_Position = uVP * vec4(w, 1.0);
+  gl_PointSize = uMode == 1 ? 1.0 : grow;
+  vec3 col = aCol.rgb;
+  if (uMode == 2) col = heat(lambda / float(uK));
+  float fog = 1.0 - exp(-z * 0.0075);
+  vCol = mix(col, FOG, uMode == 2 ? 0.0 : fog * 0.85);
+}`;
+const FS_SPLAT = `#version 300 es
+precision highp float; in vec3 vCol; out vec4 o; void main(){ o = vec4(vCol, 1.0); }`;
+const VS_TRI = `#version 300 es
+void main(){ vec2 p = vec2((gl_VertexID << 1) & 2, gl_VertexID & 2); gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0); }`;
+const FS_RESOLVE = `#version 300 es
+precision highp float; uniform sampler2D uSplat; uniform sampler2D uHist; uniform int uSS; uniform float uBlend; uniform vec2 uRes;
+out vec4 o;
+vec3 sky(float y){ return mix(vec3(0.62,0.74,0.86), vec3(0.33,0.52,0.78), clamp(y*1.4-0.2,0.0,1.0)); }
+void main(){
+  ivec2 p = ivec2(gl_FragCoord.xy); vec3 c = vec3(0.0); vec2 uv = gl_FragCoord.xy / uRes;
+  for (int j = 0; j < 2; j++) for (int i = 0; i < 2; i++) {
+    if (i >= uSS || j >= uSS) continue;
+    vec4 t = texelFetch(uSplat, p * uSS + ivec2(i, j), 0);
+    c += t.a > 0.5 ? t.rgb : sky(uv.y);
+  }
+  c /= float(uSS * uSS);
+  vec3 h = texelFetch(uHist, p, 0).rgb;
+  o = vec4(mix(c, h, uBlend), 1.0);
+}`;
+const FS_COPY = `#version 300 es
+precision highp float; uniform sampler2D uT; out vec4 o; void main(){ o = vec4(texelFetch(uT, ivec2(gl_FragCoord.xy), 0).rgb, 1.0); }`;
+
+function compile(type, src){ const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; }
+function program(vs, fs){ const p = gl.createProgram(); gl.attachShader(p, compile(gl.VERTEX_SHADER, vs)); gl.attachShader(p, compile(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  const u = {}; const n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS); for (let i = 0; i < n; i++) { const info = gl.getActiveUniform(p, i); u[info.name] = gl.getUniformLocation(p, info.name); } return {p, u}; }
+let PS, PR, PC;
+try { PS = program(VS_SPLAT, FS_SPLAT); PR = program(VS_TRI, FS_RESOLVE); PC = program(VS_TRI, FS_COPY); }
+catch (e) { errBox.textContent = 'Shader 编译失败：\n' + e.message; busy.hidden = true; return; }
+
+let scene = null; const bufs = {}; const vao = gl.createVertexArray(), emptyVao = gl.createVertexArray();
+function upload(sc){
+  for (const k in bufs) gl.deleteBuffer(bufs[k]);
+  const mk = (data) => { const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW); return b; };
+  bufs.P = mk(sc.P); bufs.S = mk(sc.S); bufs.C = mk(sc.C); bufs.E = mk(sc.E);
+}
+function bindRange(first){
+  gl.bindVertexArray(vao);
+  const set = (loc, buf, size, type, norm, stride) => { gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, size, type, norm, 0, first * stride); gl.vertexAttribDivisor(loc, 1); };
+  set(0, bufs.P, 3, gl.FLOAT, false, 12); set(1, bufs.S, 3, gl.FLOAT, false, 12); set(2, bufs.C, 4, gl.UNSIGNED_BYTE, true, 4); set(3, bufs.E, 2, gl.FLOAT, false, 8);
+}
+
+// ---------- targets ----------
+let W = 0, H = 0, SS = 2, T = null;
+function tex(w, h, fmt, ifmt, type){ const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t); gl.texImage2D(gl.TEXTURE_2D, 0, ifmt, w, h, 0, fmt, type, null);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST); return t; }
+function resize(){
+  const r = canvas.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+  const ss = +$('ss').value;
+  const w = Math.max(64, Math.round(r.width * dpr)), h = Math.max(64, Math.round(r.height * dpr));
+  if (w === W && h === H && ss === SS && T) return;
+  W = w; H = h; SS = ss; canvas.width = W; canvas.height = H;
+  if (T) { [T.splat, T.depth, T.h0, T.h1].forEach(t => gl.deleteTexture(t)); [T.fbS, T.fb0, T.fb1].forEach(f => gl.deleteFramebuffer(f)); }
+  T = {};
+  T.splat = tex(W*SS, H*SS, gl.RGBA, gl.RGBA8, gl.UNSIGNED_BYTE);
+  T.depth = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, T.depth); gl.texStorage2D(gl.TEXTURE_2D, 1, gl.DEPTH_COMPONENT32F, W*SS, H*SS);
+  T.fbS = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, T.fbS);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, T.splat, 0); gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, T.depth, 0);
+  const hf = hasFloat ? [gl.RGBA, gl.RGBA16F, gl.HALF_FLOAT] : [gl.RGBA, gl.RGBA8, gl.UNSIGNED_BYTE];
+  T.h0 = tex(W, H, ...hf); T.h1 = tex(W, H, ...hf);
+  T.fb0 = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, T.fb0); gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, T.h0, 0);
+  T.fb1 = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, T.fb1); gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, T.h1, 0);
+  accN = 0;
+}
+
+// ---------- camera & math ----------
+const V3 = { sub:(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]], cross:(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]], dot:(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2], norm:a=>{const l=Math.hypot(...a);return a.map(v=>v/l);} };
+function perspective(fovy, aspect, near, far){ const f = 1/Math.tan(fovy/2), nf = 1/(near-far); return new Float32Array([f/aspect,0,0,0, 0,f,0,0, 0,0,(far+near)*nf,-1, 0,0,2*far*near*nf,0]); }
+function lookDir(e, d){ const z = V3.norm(d.map(v=>-v)), x = V3.norm(V3.cross([0,1,0], z)), y = V3.cross(z, x);
+  return new Float32Array([x[0],y[0],z[0],0, x[1],y[1],z[1],0, x[2],y[2],z[2],0, -V3.dot(x,e),-V3.dot(y,e),-V3.dot(z,e),1]); }
+function mul(a, b){ const o = new Float32Array(16); for (let i=0;i<4;i++) for (let j=0;j<4;j++){ let s=0; for (let k=0;k<4;k++) s += a[i+k*4]*b[k+j*4]; o[i+j*4]=s; } return o; }
+function planes(m){ const r = (i) => [m[i], m[4+i], m[8+i], m[12+i]]; const r0=r(0), r1=r(1), r2=r(2), r3=r(3);
+  return [r3.map((v,i)=>v+r0[i]), r3.map((v,i)=>v-r0[i]), r3.map((v,i)=>v+r1[i]), r3.map((v,i)=>v-r1[i]), r3.map((v,i)=>v+r2[i]), r3.map((v,i)=>v-r2[i])]; }
+function boxVisible(pl, b){ for (const p of pl) { const x = p[0] > 0 ? b[3] : b[0], y = p[1] > 0 ? b[4] : b[1], z = p[2] > 0 ? b[5] : b[2]; if (p[0]*x + p[1]*y + p[2]*z + p[3] < 0) return false; } return true; }
+
+const st = { mode: 0, fly: true, cull: true };
+let cam = [0, 10, 60], yaw = Math.PI, pitch = -0.12, t = 0, frame = 0, accN = 0, lastVP = null, ping = 0;
+const keys = new Set();
+window.addEventListener('keydown', e => { if (['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyQ','KeyE'].includes(e.code)) { keys.add(e.code); if (st.fly) setFly(false); } });
+window.addEventListener('keyup', e => keys.delete(e.code));
+let drag = null;
+canvas.addEventListener('pointerdown', e => { drag = {x:e.clientX, y:e.clientY}; canvas.setPointerCapture(e.pointerId); canvas.style.cursor = 'grabbing'; if (st.fly) setFly(false); });
+canvas.addEventListener('pointermove', e => { if (!drag) return; yaw -= (e.clientX - drag.x) * 0.005; pitch = Math.max(-1.4, Math.min(1.4, pitch - (e.clientY - drag.y) * 0.005)); drag.x = e.clientX; drag.y = e.clientY; });
+const end = () => { drag = null; canvas.style.cursor = 'grab'; }; canvas.addEventListener('pointerup', end); canvas.addEventListener('pointercancel', end);
+canvas.addEventListener('wheel', e => { e.preventDefault(); const d = [Math.cos(pitch)*Math.sin(yaw), Math.sin(pitch), Math.cos(pitch)*Math.cos(yaw)]; const s = -e.deltaY * 0.03; cam = cam.map((v,i)=>v+d[i]*s); if (st.fly) setFly(false); }, {passive:false});
+
+function setMode(m){ st.mode = m; ['m0','m1','m2'].forEach((id,i)=>$(id).setAttribute('aria-pressed', i===m)); accN = 0;
+  $('mode').querySelector('b').textContent = ['GPS 随机点','每个 Gaussian 1 点','点数热力图'][m]; }
+['m0','m1','m2'].forEach((id,i)=> $(id).onclick = () => setMode(i));
+function setFly(v){ st.fly = v; $('bfly').setAttribute('aria-pressed', v); }
+$('bfly').onclick = () => setFly(!st.fly);
+$('bcull').onclick = () => { st.cull = !st.cull; $('bcull').setAttribute('aria-pressed', st.cull); };
+$('ss').onchange = () => resize(); $('tm').onchange = () => { accN = 0; };
+$('ng').onchange = () => load(+$('ng').value);
+window.addEventListener('resize', resize);
+if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) setFly(false);
+
+function load(N){
+  busy.hidden = false; busy.textContent = `正在生成 ${(N/10000).toFixed(0)} 万个 Gaussian…`;
+  setTimeout(() => { scene = buildScene(N); upload(scene); busy.hidden = true; accN = 0; }, 30);
+}
+
+let last = performance.now(), fps = 0;
+function loop(now){
+  requestAnimationFrame(loop);
+  if (!scene) return;
+  const dt = Math.min(0.1, (now - last) / 1000); last = now; fps = fps ? fps*0.92 + 0.08/Math.max(dt,1e-4) : 1/Math.max(dt,1e-4);
+  resize();
+  let moved = false;
+  if (st.fly) {
+    t += dt * 0.035; const R = 70 + 20 * Math.sin(t * 0.7);
+    const nx = Math.sin(t) * R, nz = Math.cos(t) * R;
+    const ahead = [Math.sin(t + 0.25) * R, 0, Math.cos(t + 0.25) * R];
+    cam = [nx, Math.max(height(nx, nz), height(ahead[0], ahead[2])) + 15 + 3 * Math.sin(t * 1.3), nz];
+    const d = V3.norm([ahead[0] - nx, -4.5, ahead[2] - nz]);
+    const inward = V3.norm([-nx, 0, -nz]);
+    const dd = V3.norm([d[0] * 0.75 + inward[0] * 0.25, d[1], d[2] * 0.75 + inward[2] * 0.25]);
+    yaw = Math.atan2(dd[0], dd[2]); pitch = Math.asin(dd[1]); moved = true;
+  } else if (keys.size) {
+    const f = [Math.sin(yaw), 0, Math.cos(yaw)], rgt = [Math.cos(yaw), 0, -Math.sin(yaw)], sp = 14 * dt;
+    if (keys.has('KeyW') || keys.has('ArrowUp')) cam = cam.map((v,i)=>v+f[i]*sp);
+    if (keys.has('KeyS') || keys.has('ArrowDown')) cam = cam.map((v,i)=>v-f[i]*sp);
+    if (keys.has('KeyA') || keys.has('ArrowLeft')) cam = cam.map((v,i)=>v+rgt[i]*sp);
+    if (keys.has('KeyD') || keys.has('ArrowRight')) cam = cam.map((v,i)=>v-rgt[i]*sp);
+    if (keys.has('KeyE')) cam[1] += sp; if (keys.has('KeyQ')) cam[1] -= sp;
+    moved = true;
+  }
+  const dir = [Math.cos(pitch)*Math.sin(yaw), Math.sin(pitch), Math.cos(pitch)*Math.cos(yaw)];
+  const fov = 60 * Math.PI / 180;
+  const VP = mul(perspective(fov, W/H, 0.1, 600), lookDir(cam, dir));
+  if (lastVP) { let diff = 0; for (let i = 0; i < 16; i++) diff += Math.abs(VP[i] - lastVP[i]); if (diff > 1e-5) moved = true; }
+  lastVP = VP;
+  const tm = $('tm').value;
+  if (moved && tm === 'acc') accN = 0;
+
+  // 1) splat pass into supersampled target: depth test LESS == atomic min on depth
+  gl.bindFramebuffer(gl.FRAMEBUFFER, T.fbS); gl.viewport(0, 0, W*SS, H*SS);
+  gl.clearColor(0,0,0,0); gl.clearDepth(1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.enable(gl.DEPTH_TEST); gl.depthFunc(gl.LESS);
+  gl.useProgram(PS.p); const u = PS.u;
+  gl.uniformMatrix4fv(u.uVP, false, VP); gl.uniform3fv(u.uCam, cam);
+  gl.uniform1f(u.uFocal, (H*SS) / (2 * Math.tan(fov/2)) / SS); gl.uniform1f(u.uSub, SS*SS);
+  const K = st.mode === 1 ? 1 : Math.min(32, 8 * SS * SS); gl.uniform1i(u.uK, K);
+  gl.uniform1ui(u.uSeed, (frame * 2654435761) >>> 0); gl.uniform1i(u.uMode, st.mode);
+  const pl = planes(VP); let visG = 0, visChunks = 0, runStart = -1;
+  const flush = (a, b) => { if (b <= a) return; bindRange(a); gl.uniform1i(u.uBase, a); gl.drawArraysInstanced(gl.POINTS, 0, K, b - a); visG += b - a; };
+  for (let c = 0; c <= GRID*GRID; c++) {
+    const ok = c < GRID*GRID && scene.start[c+1] > scene.start[c] && (!st.cull || boxVisible(pl, scene.box[c]));
+    if (ok) { visChunks++; if (runStart < 0) runStart = scene.start[c]; }
+    else if (runStart >= 0) { flush(runStart, scene.start[c]); runStart = -1; }
+  }
+  gl.disable(gl.DEPTH_TEST);
+
+  // 2) resolve supersamples + temporal
+  const src = ping ? T.h1 : T.h0, dstFb = ping ? T.fb0 : T.fb1, dst = ping ? T.h0 : T.h1;
+  let blend = 0;
+  if (st.mode !== 2) { if (tm === 'acc') blend = accN / (accN + 1); else if (tm === 'ema') blend = accN > 0 ? 0.9 : 0; }
+  gl.bindVertexArray(emptyVao);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, dstFb); gl.viewport(0, 0, W, H); gl.useProgram(PR.p);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, T.splat); gl.uniform1i(PR.u.uSplat, 0);
+  gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, src); gl.uniform1i(PR.u.uHist, 1);
+  gl.uniform1i(PR.u.uSS, SS); gl.uniform1f(PR.u.uBlend, blend); gl.uniform2f(PR.u.uRes, W, H);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.useProgram(PC.p);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, dst); gl.uniform1i(PC.u.uT, 0);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+  ping ^= 1; accN = Math.min(accN + 1, 255); frame++;
+
+  if (frame % 10 === 0) {
+    $('stats').textContent = `${fps.toFixed(0)} fps · ${(visG/1e4).toFixed(1)} 万 / ${(scene.N/1e4).toFixed(0)} 万 Gaussian 可见 · 分组 ${visChunks}/${GRID*GRID}`;
+    const txt = st.mode === 0 ? `每个 Gaussian 按投影面积和不透明度撒 0–${K} 个点（Li₂(α) 补偿碰撞），${SS}×${SS} 超采样` + (tm === 'acc' ? '，静止后逐帧累积收敛' : tm === 'ema' ? '，EMA 不重投影：移动时会拖影' : '')
+      : st.mode === 1 ? '对照：每个 Gaussian 只画中心 1 个点，近处出现大量空洞' : '颜色 = 期望点数 λ / 上限 K：蓝少红多，近处的 Gaussian 点数暴增';
+    $('modetxt').textContent = txt;
+  }
+}
+resize(); load(+$('ng').value); requestAnimationFrame(loop);
+})();
+</script>
+</body></html>
