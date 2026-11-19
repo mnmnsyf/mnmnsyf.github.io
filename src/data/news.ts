@@ -3,6 +3,16 @@ import type { NewsItem } from './types'
 /** Reverse-chronological. Keep the newest three or four meaningful; prune below that. */
 export const news: NewsItem[] = [
   {
+    date: 'Nov 2026',
+    text: 'Contributed a progressive accumulation mode for stochastic Gaussian splat rendering to CesiumJS. It converges to near-sorted quality while the camera is still, and is now part of an open pull request toward CesiumJS main.',
+    links: [{ label: 'Pull request', href: 'https://github.com/CesiumGS/cesium/pull/14047' }],
+  },
+  {
+    date: 'Nov 2026',
+    text: 'Led K-42 Interceptor, a game jam entry, and worked on everything from design and art to code and commentary. Build a rocket, fly it, and knock an asteroid off course the way NASA’s DART did.',
+    links: [{ label: 'itch.io', href: 'https://fionashe.itch.io/k42defence' }],
+  },
+  {
     date: 'Sep 2026',
     text: 'ArticulateArena: A Metric for Articulated Kinematics is on arXiv. Co-first author; contributions to joint-motion metric development and multi-model evaluation.',
     links: [

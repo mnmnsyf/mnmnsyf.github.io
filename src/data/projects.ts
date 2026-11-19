@@ -56,6 +56,48 @@ const engineRendering: Project[] = [
     ],
   },
   {
+    id: 'cesium-stochastic-splats',
+    title: 'Progressive Accumulation for Stochastic Gaussian Splats in CesiumJS',
+    role: 'Open-source contribution',
+    period: 'Nov 2026',
+    tech: ['JavaScript', 'WebGL 2', 'GLSL', 'Gaussian Splatting', 'Temporal Accumulation'],
+    summary:
+      'An opt-in rendering mode for CesiumJS that lets unsorted, stochastic Gaussian splats converge to the quality of sorted rendering whenever the camera stops moving.',
+    metrics: [
+      'Error against a sorted reference: 11.5 RMSE with the existing TAA, 2.4 after 512 frames',
+      '39 dB PSNR and 0.97 SSIM at 256 frames on a 287K-splat tileset',
+    ],
+    body: [
+      'Stochastic transparency draws Gaussian splats without sorting them, but the image is noisy, and an earlier attempt in CesiumJS was closed for that reason. The existing TAA blends history with a fixed weight and clamps it to the neighborhood, so its error stopped falling at about 11.5 RMSE against a sorted reference.',
+      'I added a progressive mode to the TAA stage. While the camera is still, each new frame goes into a 1/N running average without clamping, and any camera movement resets it to normal TAA. I also moved the history buffer to 32-bit float: with half-float history, the 1/N increments were rounded away after about 128 frames and the image drifted brighter.',
+      'On the tower tileset (287K splats, 1080p) the error kept falling to 2.4 RMSE at 512 frames and matched an offline float64 average of the same frames, which confirms the accumulation is correct. The change was merged into the stochastic splat feature branch and is part of the pull request toward CesiumJS main.',
+    ],
+    links: [
+      { label: 'My pull request', href: 'https://github.com/CesiumGS/cesium/pull/14041' },
+      {
+        label: 'Pull request to CesiumJS main',
+        href: 'https://github.com/CesiumGS/cesium/pull/14047',
+      },
+    ],
+    note: 'Built with an engineer on the Cesium team, on top of his stochastic splat branch. My part is the progressive mode, the float history and the quality measurements.',
+    mediaColumns: 1,
+    media: [
+      {
+        kind: 'image',
+        src: '/cesium-splats-zoom.jpg',
+        alt: 'Close-up of a fence rendered with one stochastic frame, TAA, progressive accumulation and sorted splats',
+        caption:
+          'One stochastic frame, TAA and progressive after 256 frames, and the sorted reference.',
+      },
+      {
+        kind: 'image',
+        src: '/cesium-splats-comparison.jpg',
+        alt: 'Grid comparing TAA and progressive accumulation at 16, 64 and 256 frames against a sorted reference',
+        caption: 'TAA levels off while progressive keeps converging (early 400×300 test).',
+      },
+    ],
+  },
+  {
     id: 'engine-subsystems',
     title: 'AI-Assisted Developer Tool & Multithreaded ECS Real-Time Engine',
     period: 'Jan \u2013 May 2026',
@@ -509,6 +551,42 @@ const gameplayEngineering: Project[] = [
     ],
   },
   {
+    id: 'k42-interceptor',
+    title: 'K-42 Interceptor',
+    role: 'Game jam · Project lead',
+    period: 'Nov 2026',
+    tech: ['Unreal Engine 5', 'C++', 'Game Design', 'UI Design', 'Blender'],
+    summary:
+      'A game jam entry about planetary defense: build a rocket, fly it by hand, and steer a DART-style spacecraft into an asteroid to push it off course.',
+    body: [
+      'I led the project and worked on every part of it: game design, UI and art, gameplay code, and the launch commentary.',
+      'The loop is build, launch, upgrade. Every flight pays, even a failed one, so the player climbs a little higher each time, past real landmarks at their real heights (clouds, the Kármán line, the ISS, the Moon), until the rocket reaches escape speed. Each part carries its own delta-v budget, so staging and boosters matter for real reasons.',
+      'The last act follows NASA’s DART mission. An early hit moves the asteroid further by the flyby than a harder late one, and every hit adds to the last, so the physics is also the scoring. An announcer calls the countdown and the climb, timed to a real Atlas V launch; the voice lines were generated with ElevenLabs.',
+    ],
+    links: [{ label: 'Play on itch.io', href: 'https://fionashe.itch.io/k42defence' }],
+    media: [
+      {
+        kind: 'video',
+        src: '/k42-liftoff.mp4',
+        poster: '/k42-liftoff-poster.jpg',
+        alt: 'Rocket lifting off while the player keeps it upright, with speed and altitude readouts',
+        caption: 'Liftoff: keep the rocket upright against the wind.',
+      },
+      {
+        kind: 'image',
+        src: '/k42-assembly.jpg',
+        alt: 'Assembly building screen with rocket parts, budget and upgrade options',
+        caption: 'Assembly building: pick and upgrade parts between flights.',
+      },
+      {
+        kind: 'image',
+        src: '/k42-mission-log.jpg',
+        alt: 'Mission log after a flight showing max altitude, landmarks reached and earnings',
+        caption: 'Mission log: every flight pays, even a short one.',
+      },
+    ],
+  },
+  {
     id: 'others',
     links: [
       { label: 'Jumping Party', href: 'https://github.com/mnmnsyf/JumpingParty' },
@@ -572,13 +650,17 @@ export const projectGroups: ProjectGroup[] = [
     title: 'Gameplay Development',
     blurb:
       'Gameplay systems in a shipped strategy game, crowd navigation, rehab gameplay and prototypes.',
-    projects: [mandateOrderFor(7, 5, 6), ...pick('orca', 'sight-tour', 'others')],
+    projects: [
+      mandateOrderFor(7, 5, 6),
+      ...pick('k42-interceptor', 'orca', 'sight-tour', 'others'),
+    ],
   },
   {
     id: 'graphics-simulation',
     title: 'Graphics & Simulation',
     blurb: 'Rendering, animation and physics built from first principles.',
     projects: pick(
+      'cesium-stochastic-splats',
       'software-rasterizer',
       'path-tracing-denoising',
       'ik-skinning',

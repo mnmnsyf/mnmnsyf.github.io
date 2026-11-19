@@ -36,7 +36,7 @@ export const site = {
      <a href="#/graphics/path-tracing-denoising">deep learning for path-tracing denoising</a> in PyTorch.`,
   ],
 
-  lastUpdated: 'October 2026',
+  lastUpdated: 'November 2026',
 }
 
 /** The general software engineering resume; site-relative, so render it through assetUrl. */
@@ -70,11 +70,11 @@ export const featuredWork = [
     alt: 'ANGLE graphics SDK architecture',
   },
   {
-    label: 'UE5 / PyTorch · In progress',
-    title: 'Path Tracing Denoising',
-    href: '#/graphics/path-tracing-denoising',
-    image: '/denoising-workflow.svg',
-    alt: 'Path-tracing denoising training and evaluation workflow',
+    label: 'WebGL 2 / GLSL · Open source',
+    title: 'CesiumJS Gaussian Splats',
+    href: '#/graphics/cesium-stochastic-splats',
+    image: '/cesium-splats-zoom.jpg',
+    alt: 'Stochastic, TAA, progressive and sorted Gaussian splat renders side by side',
   },
 ]
 

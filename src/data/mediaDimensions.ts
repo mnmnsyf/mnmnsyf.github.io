@@ -1,5 +1,10 @@
 /** Intrinsic asset sizes reserve layout space before lazy media loads. */
 export const mediaDimensions: Record<string, { width: number; height: number }> = {
+  '/cesium-splats-zoom.jpg': { width: 1452, height: 270 },
+  '/cesium-splats-comparison.jpg': { width: 1208, height: 908 },
+  '/k42-liftoff-poster.jpg': { width: 1280, height: 720 },
+  '/k42-assembly.jpg': { width: 1600, height: 900 },
+  '/k42-mission-log.jpg': { width: 1600, height: 900 },
   '/illustrations/mo-routing.webp': { width: 1672, height: 818 },
   '/illustrations/mo-command-relay.webp': { width: 1672, height: 716 },
   '/angle-sdk-architecture.svg': { width: 960, height: 260 },

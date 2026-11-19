@@ -10,6 +10,22 @@ export interface HighlightCard {
 }
 
 export const highlightCards: Record<string, HighlightCard[]> = {
+  'cesium-stochastic-splats': [
+    { title: 'The problem: noisy unsorted splats', tags: ['Stochastic transparency', 'TAA'] },
+    {
+      title: 'Progressive mode and float history',
+      tags: ['Temporal accumulation', 'GLSL', 'Numerical precision'],
+    },
+    { title: 'Measured against a sorted reference', tags: ['RMSE / PSNR / SSIM', 'Benchmarking'] },
+  ],
+  'k42-interceptor': [
+    {
+      title: 'Project lead across every discipline',
+      tags: ['Game design', 'UI & art', 'Gameplay code'],
+    },
+    { title: 'Build, launch, upgrade', tags: ['Progression design', 'Delta-v', 'Unreal Engine 5'] },
+    { title: 'DART-style deflection and commentary', tags: ['Physics as scoring', 'Audio'] },
+  ],
   'angle-graphics-sdk': [
     {
       title: 'Native EGL bridge and GPU resource API',

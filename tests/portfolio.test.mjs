@@ -158,7 +158,7 @@ test('Entry and role pages render as separate sections, with no separate Project
     assert.ok(!roleHtml.includes('Welcome to my personal website.'))
     assert.ok(!roleHtml.includes('id="experience"'))
   }
-  assert.ok(pages.get('graphics').includes('<article id="software-rasterizer"'))
+  assert.ok(pages.get('graphics').includes('<article id="cesium-stochastic-splats"'))
   // Mandate Order shows only the systems that make each role's case.
   assert.ok(pages.get('engine').includes('KD-tree connectivity for squad hulls'))
   assert.ok(!pages.get('engine').includes('Data-driven skill system'))

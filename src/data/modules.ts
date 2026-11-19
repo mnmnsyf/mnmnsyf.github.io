@@ -55,7 +55,9 @@ export const skillModules: SkillModule[] = [
       'Rendering and physics built from first principles: a software rasterizer, deep-learning denoising for path tracing, inverse kinematics with skinning, and soft-body simulation with live demos.',
     skills: [
       'DirectX 11 / HLSL',
+      'WebGL 2 / GLSL',
       'OpenGL / OpenGL ES',
+      'Gaussian Splatting',
       'Post-process shaders',
       'Kinematics',
       'Physics Simulation',

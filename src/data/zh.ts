@@ -31,7 +31,6 @@ export const zh: Record<string, string> = {
   Copied: '已复制',
   'Contact and profiles': '联系方式与主页',
   'Last updated': '最后更新',
-  'October 2026': '2026 年 10 月',
   Email: '邮箱',
 
   // Entry page
@@ -417,7 +416,6 @@ export const zh: Record<string, string> = {
     'UE5 渲染数据用于基线对比和神经网络降噪器训练，并评估质量和时间稳定性',
   'Project workflow; neural denoiser training is still in progress.':
     '项目流程。降噪器还在训练中。',
-  'Path-tracing denoising training and evaluation workflow': '路径追踪降噪的训练与评测流程',
   'UE5 training-data pipeline': 'UE5 训练数据管线',
   'Data pipeline': '数据管线',
   'Baselines and benchmarking harness': '基线与基准测试框架',
@@ -756,4 +754,81 @@ export const zh: Record<string, string> = {
   'Smaller Projects': '其他小项目',
   'Prototypes exploring different gameplay mechanics and visual styles.':
     '一些原型小项目，尝试不同的玩法机制和美术风格。',
+
+  // ── Nov 2026: CesiumJS splats and K-42 ─────────────────────
+  'K-42 Interceptor': 'K-42 Interceptor',
+  'Game jam · Project lead': 'Game Jam · 项目负责人',
+  'Nov 2026': '2026 年 11 月',
+  'Game Design': '游戏策划',
+  'UI Design': 'UI 设计',
+  'A game jam entry about planetary defense: build a rocket, fly it by hand, and steer a DART-style spacecraft into an asteroid to push it off course.':
+    '一款行星防御题材的 Game Jam 作品：自己组装火箭、手动飞上天，再驾驶仿 DART 的航天器撞向小行星，把它推离轨道。',
+  'I led the project and worked on every part of it: game design, UI and art, gameplay code, and the launch commentary.':
+    '我是这个项目的负责人，策划、UI 和美术、玩法代码、发射解说每一块都有参与。',
+  'The loop is build, launch, upgrade. Every flight pays, even a failed one, so the player climbs a little higher each time, past real landmarks at their real heights (clouds, the Kármán line, the ISS, the Moon), until the rocket reaches escape speed. Each part carries its own delta-v budget, so staging and boosters matter for real reasons.':
+    '核心循环是组装、发射、升级。每次发射都有收益，失败了也有，所以玩家每次都能飞得更高一点，一路经过按真实高度摆放的地标（云层、卡门线、ISS、月球），直到火箭达到逃逸速度。每个零件都有自己的 delta-v，分级和助推器的作用都有真实的物理依据。',
+  'The last act follows NASA’s DART mission. An early hit moves the asteroid further by the flyby than a harder late one, and every hit adds to the last, so the physics is also the scoring. An announcer calls the countdown and the climb, timed to a real Atlas V launch; the voice lines were generated with ElevenLabs.':
+    '最后一幕参考 NASA 的 DART 任务：撞得早比撞得狠更有用，越早撞，小行星飞掠地球时偏得越远，每次撞击的效果还会叠加，物理本身就是计分规则。倒计时和爬升过程有解说员播报，节奏按一次真实的 Atlas V 发射来对，语音用 ElevenLabs 生成。',
+  'Play on itch.io': '在 itch.io 上玩',
+  'Rocket lifting off while the player keeps it upright, with speed and altitude readouts':
+    '火箭起飞，玩家控制保持竖直，画面上有速度和高度读数',
+  'Liftoff: keep the rocket upright against the wind.': '起飞：顶着风让火箭保持竖直。',
+  'Assembly building screen with rocket parts, budget and upgrade options':
+    '总装厂房界面，显示火箭零件、预算和升级选项',
+  'Assembly building: pick and upgrade parts between flights.':
+    '总装厂房：每次发射之间挑选和升级零件。',
+  'Mission log after a flight showing max altitude, landmarks reached and earnings':
+    '飞行结束后的任务日志，显示最大高度、到达的地标和收益',
+  'Mission log: every flight pays, even a short one.': '任务日志：哪怕飞得不高，每次也有收益。',
+  'Progressive Accumulation for Stochastic Gaussian Splats in CesiumJS':
+    'CesiumJS 随机高斯泼溅的渐进累积',
+  'Open-source contribution': '开源贡献',
+  'WebGL 2': 'WebGL 2',
+  'Gaussian Splatting': '高斯泼溅',
+  'Temporal Accumulation': '时域累积',
+  'An opt-in rendering mode for CesiumJS that lets unsorted, stochastic Gaussian splats converge to the quality of sorted rendering whenever the camera stops moving.':
+    '给 CesiumJS 加的一个可选渲染模式：相机一停下来，不排序的随机高斯泼溅就会逐渐收敛到和排序渲染一样的画质。',
+  'Error against a sorted reference: 11.5 RMSE with the existing TAA, 2.4 after 512 frames':
+    '相对排序渲染的误差：原来的 TAA 是 11.5 RMSE，512 帧后降到 2.4',
+  '39 dB PSNR and 0.97 SSIM at 256 frames on a 287K-splat tileset':
+    '28.7 万个 splat 的 tileset 上，256 帧时 PSNR 39 dB、SSIM 0.97',
+  'Stochastic transparency draws Gaussian splats without sorting them, but the image is noisy, and an earlier attempt in CesiumJS was closed for that reason. The existing TAA blends history with a fixed weight and clamps it to the neighborhood, so its error stopped falling at about 11.5 RMSE against a sorted reference.':
+    'Stochastic transparency 画高斯泼溅不需要排序，但画面噪点很重，CesiumJS 之前的一次尝试就是因为这个没合进去。原来的 TAA 用固定权重混合历史帧，还会做 neighborhood clamp，所以误差降到 11.5 RMSE 左右就不动了。',
+  'I added a progressive mode to the TAA stage. While the camera is still, each new frame goes into a 1/N running average without clamping, and any camera movement resets it to normal TAA. I also moved the history buffer to 32-bit float: with half-float history, the 1/N increments were rounded away after about 128 frames and the image drifted brighter.':
+    '我在 TAA 里加了 progressive 模式。相机静止时，每一帧按 1/N 权重做累积平均，不做 clamp；相机一动就清零，回到普通 TAA。另外把 history buffer 换成了 32 位 float：用 half-float 的话，大约 128 帧之后 1/N 的增量会被舍入掉，画面会越来越亮。',
+  'On the tower tileset (287K splats, 1080p) the error kept falling to 2.4 RMSE at 512 frames and matched an offline float64 average of the same frames, which confirms the accumulation is correct. The change was merged into the stochastic splat feature branch and is part of the pull request toward CesiumJS main.':
+    '在 tower 数据集（28.7 万个 splat，1080p）上，误差一路降到 512 帧时的 2.4 RMSE，和离线用 float64 直接平均同样这些帧的结果一致，说明累积逻辑没有问题。这个改动已经合进 stochastic splat 的 feature branch，现在是提往 CesiumJS main 的 PR 的一部分。',
+  'My pull request': '我的 PR',
+  'Pull request to CesiumJS main': '提往 CesiumJS main 的 PR',
+  'Built with an engineer on the Cesium team, on top of his stochastic splat branch. My part is the progressive mode, the float history and the quality measurements.':
+    '和 Cesium 团队的一位工程师合作，基于他的 stochastic splat 分支。我负责的是 progressive 模式、float history 和画质测试。',
+  'Close-up of a fence rendered with one stochastic frame, TAA, progressive accumulation and sorted splats':
+    '围栏局部特写，分别是单帧随机渲染、TAA、渐进累积和排序渲染',
+  'One stochastic frame, TAA and progressive after 256 frames, and the sorted reference.':
+    '从左到右：单帧随机渲染、256 帧的 TAA、256 帧的 progressive、排序参考。',
+  'Grid comparing TAA and progressive accumulation at 16, 64 and 256 frames against a sorted reference':
+    '对比 TAA 和渐进累积在 16、64、256 帧时与排序参考的差距',
+  'TAA levels off while progressive keeps converging (early 400×300 test).':
+    'TAA 很快就不再变好，progressive 会一直收敛（早期 400×300 的测试）。',
+  'Contributed a progressive accumulation mode for stochastic Gaussian splat rendering to CesiumJS. It converges to near-sorted quality while the camera is still, and is now part of an open pull request toward CesiumJS main.':
+    '给 CesiumJS 的随机高斯泼溅渲染贡献了 progressive 累积模式，相机静止时画质能收敛到接近排序渲染。目前是提往 CesiumJS main 的 PR 的一部分。',
+  'Pull request': 'PR',
+  'Led K-42 Interceptor, a game jam entry, and worked on everything from design and art to code and commentary. Build a rocket, fly it, and knock an asteroid off course the way NASA’s DART did.':
+    '负责 Game Jam 作品 K-42 Interceptor，从策划、美术到代码和解说都有参与。玩家自己造火箭、自己飞，像 NASA 的 DART 一样把小行星撞离轨道。',
+  'WebGL 2 / GLSL': 'WebGL 2 / GLSL',
+  'The problem: noisy unsorted splats': '问题：不排序的 splat 噪点太重',
+  'Stochastic transparency': '随机透明',
+  'Progressive mode and float history': 'Progressive 模式和 float history',
+  'Temporal accumulation': '时域累积',
+  'Numerical precision': '数值精度',
+  'Measured against a sorted reference': '和排序渲染对比测量',
+  'Project lead across every discipline': '项目负责人，各环节都参与',
+  'Game design': '游戏策划',
+  'UI & art': 'UI 与美术',
+  'Gameplay code': '玩法代码',
+  'Build, launch, upgrade': '组装、发射、升级',
+  'Progression design': '成长设计',
+  'DART-style deflection and commentary': '仿 DART 的偏转和解说',
+  'Physics as scoring': '物理即计分',
+  'November 2026': '2026 年 11 月',
 }
